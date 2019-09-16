@@ -7,7 +7,7 @@ type Relationship struct {
 
 type Model struct {
 	Elements      []*Element
-	Relationships []*Relationship
+	Relationships []Relationship
 }
 
 func (m *Model) AddElement(new Element) error {
@@ -20,38 +20,51 @@ func (m *Model) AddElement(new Element) error {
 
 func (m *Model) AddRelationship(source Element, destination Element) error {
 	// Append to relationships
-	m.Relationships = append(m.Relationships, &Relationship{&source, &destination})
+	m.Relationships = append(m.Relationships, Relationship{&source, &destination})
 	return nil
 }
 
 // Get a slice of all relationships, including implicit parent relationships
-func (m *Model) ImplicitRelationships() []*Relationship {
+func (m *Model) ImplicitRelationships() []Relationship {
 	// Get all the relationships
 	rels := m.Relationships
+	// Prepare a list of implicit relationships (we map to ensure no duplicates)
+	relsMap := make(map[Relationship]bool)
 	// Now add implicit relationships
 	for _, rel := range rels {
-		rels = bubbleUp(rels, rel.Source, rel.Destination, true)
-		rels = bubbleUp(rels, rel.Destination, rel.Source, false)
+		dest := rel.Destination
+		// Now link each of source's anscestors to destination
+		for {
+			// Link all source's anscestors to destination
+			bubbleUpSource(relsMap, rel.Source, dest)
+			// Iterate destination
+			if dest.Parent == nil {
+				break
+			} else {
+				dest = dest.Parent
+			}
+		}
+	}
+	// Extract the keys of the map
+	keys := make([]Relationship, len(relsMap))
+	i := 0
+	for k := range relsMap {
+		keys[i] = k
+		i++
 	}
 	// Return the relationships
-	return rels
+	return keys
 }
 
-func bubbleUp(relationships []*Relationship, subject *Element, object *Element, isSource bool) []*Relationship {
-	for subject.Parent != nil {
-		// Move our subject pointer
-		subject = subject.Parent
+func bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
+	for {
 		// Create the relationship
-		var rel Relationship
-		if isSource {
-			// We are bubbling up from the source element
-			rel = Relationship{Source: subject, Destination: object}
+		relationships[Relationship{Source: source, Destination: dest}] = true
+		if source.Parent == nil {
+			break
 		} else {
-			// We are bubbling up from the destination element
-			rel = Relationship{Source: object, Destination: subject}
+			// Update the pointer
+			source = source.Parent
 		}
-		// Add the relationship
-		relationships = append(relationships, &rel)
 	}
-	return relationships
 }

@@ -27,18 +27,33 @@ func TestImplicitRelationships(t *testing.T) {
 	m := Model{}
 
 	// Create two items, each with one child
-	systemOne := NewItem("SystemOne")
-	systemOneChild := NewItem("SystemOneChild")
-	systemOne.AddChild(&systemOneChild)
-	systemTwo := NewItem("SystemTwo")
-	systemTwoChild := NewItem("SystemTwoChild")
-	systemTwo.AddChild(&systemTwoChild)
+	one := NewItem("One")
+	oneChild := NewItem("OneChild")
+	oneChildChild := NewItem("OneChildChild")
+	one.AddChild(&oneChild)
+	oneChild.AddChild(&oneChildChild)
+
+	two := NewItem("Two")
+	twoChild := NewItem("TwoChild")
+	twoChildChild := NewItem("TwoChildChild")
+	two.AddChild(&twoChild)
+	twoChild.AddChild(&twoChildChild)
 
 	// Link the children together
-	m.AddRelationship(systemOneChild, systemTwoChild)
+	m.AddRelationship(oneChildChild, twoChildChild)
 
 	// Assert implicit relationships
+	assert.Assert(t, is.Contains(m.Relationships, Relationship{Source: &oneChildChild, Destination: &twoChildChild}))
 	assert.Assert(t, is.Len(m.Relationships, 1))
 	implicitRels := m.ImplicitRelationships()
-	assert.Assert(t, is.Len(implicitRels, 3))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &one, Destination: &two}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &one, Destination: &twoChild}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &one, Destination: &twoChildChild}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChild, Destination: &two}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChild, Destination: &twoChild}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChild, Destination: &twoChildChild}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChildChild, Destination: &two}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChildChild, Destination: &twoChild}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChildChild, Destination: &twoChildChild}))
+	assert.Assert(t, is.Len(implicitRels, 9))
 }
