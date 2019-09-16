@@ -18,8 +18,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/briggySmalls/archie/internal"
-
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +30,7 @@ var drawCmd = &cobra.Command{
 		fmt.Println("draw called")
 
 		// Create the model
-		m := getModel()
+		// m := internal.GetModel()
 
 		// Create a view from the model
 

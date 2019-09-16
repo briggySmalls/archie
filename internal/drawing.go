@@ -1,3 +1,9 @@
+package internal
+
+import (
+	"github.com/briggysmalls/archie/internal/views"
+)
+
 type Drawer interface {
-	Draw(View)
+	Draw(views.View)
 }
