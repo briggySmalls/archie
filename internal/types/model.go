@@ -23,3 +23,35 @@ func (m *Model) AddRelationship(source Element, destination Element) error {
 	m.Relationships = append(m.Relationships, &Relationship{&source, &destination})
 	return nil
 }
+
+// Get a slice of all relationships, including implicit parent relationships
+func (m *Model) ImplicitRelationships() []*Relationship {
+	// Get all the relationships
+	rels := m.Relationships
+	// Now add implicit relationships
+	for _, rel := range rels {
+		rels = bubbleUp(rels, rel.Source, rel.Destination, true)
+		rels = bubbleUp(rels, rel.Destination, rel.Source, false)
+	}
+	// Return the relationships
+	return rels
+}
+
+func bubbleUp(relationships []*Relationship, subject *Element, object *Element, isSource bool) []*Relationship {
+	for subject.Parent != nil {
+		// Move our subject pointer
+		subject = subject.Parent
+		// Create the relationship
+		var rel Relationship
+		if isSource {
+			// We are bubbling up from the source element
+			rel = Relationship{Source: subject, Destination: object}
+		} else {
+			// We are bubbling up from the destination element
+			rel = Relationship{Source: object, Destination: subject}
+		}
+		// Add the relationship
+		relationships = append(relationships, &rel)
+	}
+	return relationships
+}

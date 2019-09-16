@@ -28,7 +28,7 @@ func NewActor(name string) Element {
 }
 
 // Add a new element as a child of the specified element
-func (e *Element) AddChild(new Element) error {
+func (e *Element) AddChild(new *Element) error {
 	// Set the element to point to its parent
 	new.Parent = e
 	return nil

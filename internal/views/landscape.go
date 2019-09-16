@@ -19,17 +19,26 @@ func (l *Landscape) Elements() []*types.Element {
 }
 
 func (l *Landscape) Relationships() []*types.Relationship {
+	// Get the view elements
+	viewElements := l.Elements()
 	// Prepare return value
 	var relationships []*types.Relationship
-	// Iterate through the model's relationships
-	for _, rel := range l.Model.Relationships {
-		// Iterate through the view's elements
-		for _, el := range l.Elements() {
-			// Add relationships that include a relevant element
-			if rel.Source == el || rel.Destination == el {
-				relationships = append(relationships, rel)
-			}
+	// Iterate through _all_ of the the model's relationships
+	for _, rel := range l.Model.ImplicitRelationships() {
+		// Add relationships that link relevant elements
+		if Contains(viewElements, rel.Source) && Contains(viewElements, rel.Destination) {
+			relationships = append(relationships, rel)
 		}
 	}
 	return relationships
+}
+
+// Check if an element is in the slice
+func Contains(haystack []*types.Element, needle *types.Element) bool {
+	for _, el := range haystack {
+		if el == needle {
+			return true
+		}
+	}
+	return false
 }

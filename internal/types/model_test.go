@@ -1,50 +1,29 @@
 package types
 
 import (
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
 	"testing"
 )
 
-// Test building a simple model
-func TestModel(t *testing.T) {
-	// Create a test model
-	GetModel()
-}
-
-func GetModel() Model {
-	// First create a model
+// Test implicit relationships
+func TestImplicitRelationships(t *testing.T) {
+	// Create a simple model
 	m := Model{}
 
-	// Create some items
-	system := NewItem("System")
-	ux := NewItem("UX")
-	fg := NewItem("Force generation")
-	ft := NewItem("Force transmission")
+	// Create two items, each with one child
+	systemOne := NewItem("SystemOne")
+	systemOneChild := NewItem("SystemOneChild")
+	systemOne.AddChild(&systemOneChild)
+	systemTwo := NewItem("SystemTwo")
+	systemTwoChild := NewItem("SystemTwoChild")
+	systemTwo.AddChild(&systemTwoChild)
 
-	// Add some children to the system
-	system.AddChild(ux)
-	system.AddChild(fg)
-	system.AddChild(ft)
+	// Link the children together
+	m.AddRelationship(systemOneChild, systemTwoChild)
 
-	// Add some children to the sub-systems
-	ux.AddChild(NewItem("Seat"))
-	ux.AddChild(NewItem("Windshield"))
-	ux.AddChild(NewItem("Windshield"))
-	fuelTank := NewItem("Fuel tank")
-	motor := NewItem("Motor")
-	fg.AddChild(fuelTank)
-	fg.AddChild(motor)
-	wheel := NewItem("Wheel")
-	axle := NewItem("Axle")
-	ft.AddChild(wheel)
-	ft.AddChild(axle)
-
-	// Finally, add the system to the model
-	m.AddElement(system)
-
-	// Add some relationships
-	m.AddRelationship(wheel, axle)
-	m.AddRelationship(fuelTank, motor)
-
-	// Return model
-	return m
+	// Assert implicit relationships
+	assert.Assert(t, is.Len(m.Relationships, 1))
+	implicitRels := m.ImplicitRelationships()
+	assert.Assert(t, is.Len(implicitRels, 3))
 }
