@@ -6,6 +6,21 @@ import (
 	"testing"
 )
 
+func TestElements(t *testing.T) {
+	// Create a simple model
+	m := Model{}
+
+	// Create two items and add them to the model
+	one := NewItem("One")
+	two := NewItem("Two")
+	m.AddElement(one)
+	m.AddElement(two)
+
+	// Assert
+	assert.Assert(t, is.Contains(m.Elements, &one))
+	assert.Assert(t, is.Contains(m.Elements, &two))
+}
+
 // Test implicit relationships
 func TestImplicitRelationships(t *testing.T) {
 	// Create a simple model
