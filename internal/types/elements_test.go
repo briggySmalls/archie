@@ -1,8 +1,9 @@
 package types
 
 import (
-	"gotest.tools/assert"
 	"testing"
+
+	"gotest.tools/assert"
 )
 
 // Test creating an item
@@ -12,7 +13,7 @@ func TestItem(t *testing.T) {
 	// Verify it is not an actor
 	assert.Assert(t, !el.IsActor())
 	// Verify name correct
-	assert.Equal(t, el.name, "MyItem")
+	assert.Equal(t, el.Name, "MyItem")
 }
 
 // Test creating an actor
@@ -22,5 +23,5 @@ func TestActor(t *testing.T) {
 	// Verify it is not an actor
 	assert.Assert(t, el.IsActor())
 	// Verify name correct
-	assert.Equal(t, el.name, "MyActor")
+	assert.Equal(t, el.Name, "MyActor")
 }

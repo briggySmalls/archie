@@ -6,5 +6,5 @@ import (
 
 type View interface {
 	Elements() []*types.Element
-	Relationships() []*types.Relationship
+	Relationships() []types.Relationship
 }

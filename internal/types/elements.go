@@ -7,7 +7,7 @@ const (
 )
 
 type Element struct {
-	name     string
+	Name     string
 	kind     uint
 	Children []*Element
 }
@@ -15,7 +15,7 @@ type Element struct {
 // Create a new item
 func NewItem(name string) Element {
 	return Element{
-		name: name,
+		Name: name,
 		kind: ITEM,
 	}
 }
@@ -23,7 +23,7 @@ func NewItem(name string) Element {
 // Create a new actor
 func NewActor(name string) Element {
 	return Element{
-		name: name,
+		Name: name,
 		kind: ACTOR,
 	}
 }

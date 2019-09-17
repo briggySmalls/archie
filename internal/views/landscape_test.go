@@ -60,5 +60,4 @@ func TestRelationships(t *testing.T) {
 	rel := l.Relationships()[0]
 	assert.Equal(t, rel.Source, &one)
 	assert.Equal(t, rel.Destination, &two)
-
 }
