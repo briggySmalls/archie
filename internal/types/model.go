@@ -1,20 +1,23 @@
 package types
 
+import (
+	"fmt"
+)
+
 type Relationship struct {
 	Source      *Element
 	Destination *Element
 }
 
 type Model struct {
-	Elements      []*Element
+	dummyElement  Element
 	Relationships []Relationship
+	parentMap     map[*Element]*Element
 }
 
 func (m *Model) AddElement(new *Element) error {
-	// Ensure the element appears 'top'
-	new.Parent = nil
 	// Add to the model
-	m.Elements = append(m.Elements, new)
+	m.dummyElement.Children = append(m.dummyElement.Children, new)
 	return nil
 }
 
@@ -26,6 +29,7 @@ func (m *Model) AddRelationship(source *Element, destination *Element) error {
 
 // Get a slice of all relationships, including implicit parent relationships
 func (m *Model) ImplicitRelationships() []Relationship {
+	// Build a map of parents
 	// Get all the relationships
 	rels := m.Relationships
 	// Prepare a list of implicit relationships (we map to ensure no duplicates)
@@ -36,12 +40,12 @@ func (m *Model) ImplicitRelationships() []Relationship {
 		// Now link each of source's anscestors to destination
 		for {
 			// Link all source's anscestors to destination
-			bubbleUpSource(relsMap, rel.Source, dest)
+			m.bubbleUpSource(relsMap, rel.Source, dest)
 			// Iterate destination
-			if dest.Parent == nil {
+			if m.Parent(dest) == nil {
 				break
 			} else {
-				dest = dest.Parent
+				dest = m.Parent(dest)
 			}
 		}
 	}
@@ -56,15 +60,43 @@ func (m *Model) ImplicitRelationships() []Relationship {
 	return keys
 }
 
-func bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
+func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
 	for {
 		// Create the relationship
 		relationships[Relationship{Source: source, Destination: dest}] = true
-		if source.Parent == nil {
+		if m.Parent(source) == nil {
 			break
 		} else {
 			// Update the pointer
-			source = source.Parent
+			source = m.Parent(source)
 		}
+	}
+}
+
+func (m *Model) Parent(el *Element) (*Element, error) {
+	// Index if necessary
+	if len(m.parentMap) == 0 {
+		// Index the tree
+		m.indexChildren(&m.dummyElement)
+	}
+	// Check if we have already found it
+	if parent, ok := m.parentMap[el]; ok {
+		return parent, nil
+	}
+	return nil, fmt.Errorf("Element not found")
+}
+
+// Depth-first indexing of parents
+func (m *Model) indexChildren(el *Element) {
+	// Look at each child
+	for _, child := range el.Children {
+		// Add to map
+		if el.kind == MODEL {
+			m.parentMap[child] = nil
+		} else {
+			m.parentMap[child] = el
+		}
+		// Recurse
+		m.indexChildren(child)
 	}
 }
