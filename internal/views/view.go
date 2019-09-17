@@ -8,3 +8,9 @@ type View interface {
 	Elements() []*types.Element
 	Relationships() []types.Relationship
 }
+
+type View struct {
+
+	Elements []*types.Element
+	Relationships []types.Relationship
+}

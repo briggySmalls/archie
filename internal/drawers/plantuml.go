@@ -13,8 +13,9 @@ const (
 )
 
 type PlantUmlDrawer struct {
-	indent  uint
-	builder strings.Builder
+	indent           uint
+	builder          strings.Builder
+	relevantElements []*types.Element
 }
 
 func (p *PlantUmlDrawer) Draw(view views.View) string {
@@ -35,6 +36,23 @@ func (p *PlantUmlDrawer) Draw(view views.View) string {
 	p.writeLine("@enduml")
 	// Return result
 	return p.builder.String()
+}
+
+func findRelevant(view views.View) []*types.Element {
+	var relevant []*types.Element
+	for _, el := range view.Elements() {
+		// First, add the explicit element
+		relevant = append(relevant, el)
+		// Add parent of element, if it exists
+		if parent, err := m.Parent(el); err != nil {
+			panic(err)
+		} else {
+			if parent != nil {
+				relevant = append(relevant, parent)
+			}
+		}
+	}
+	return relevant
 }
 
 func (p *PlantUmlDrawer) drawComponent(el *types.Element) {

@@ -4,6 +4,6 @@ import (
 	"github.com/briggysmalls/archie/internal/views"
 )
 
-type Drawer interface {
+type TextDrawer interface {
 	Draw(views.View) string
 }
