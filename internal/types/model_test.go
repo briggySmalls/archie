@@ -1,14 +1,15 @@
 package types
 
 import (
+	"testing"
+
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
-	"testing"
 )
 
 func TestElements(t *testing.T) {
 	// Create a simple model
-	m := Model{}
+	m := NewModel()
 
 	// Create two items and add them to the model
 	one := NewItem("One")
@@ -17,14 +18,45 @@ func TestElements(t *testing.T) {
 	m.AddElement(&two)
 
 	// Assert
-	assert.Assert(t, is.Contains(m.Elements, &one))
-	assert.Assert(t, is.Contains(m.Elements, &two))
+	assert.Assert(t, is.Contains(m.Elements(), &one))
+	assert.Assert(t, is.Contains(m.Elements(), &two))
+}
+
+// Test parent indexing
+func TestParentIndexing(t *testing.T) {
+	// Create a simple model
+	m := NewModel()
+
+	// Create two items, each with one child
+	one := NewItem("One")
+	oneChild := NewItem("OneChild")
+	oneChildChild := NewItem("OneChildChild")
+	one.AddChild(&oneChild)
+	oneChild.AddChild(&oneChildChild)
+
+	two := NewItem("Two")
+	twoChild := NewItem("TwoChild")
+	twoChildChild := NewItem("TwoChildChild")
+	two.AddChild(&twoChild)
+	twoChild.AddChild(&twoChildChild)
+
+	// Add the items to the model
+	m.AddElement(&one)
+	m.AddElement(&two)
+
+	// Test parent results
+	AssertParent(t, m, &oneChildChild, &oneChild)
+	AssertParent(t, m, &oneChild, &one)
+	AssertParent(t, m, &one, nil)
+	AssertParent(t, m, &twoChildChild, &twoChild)
+	AssertParent(t, m, &twoChild, &two)
+	AssertParent(t, m, &two, nil)
 }
 
 // Test trivial implicit relationships
 func TestTrivialImplicitRelationships(t *testing.T) {
 	// Create a simple model
-	m := Model{}
+	m := NewModel()
 
 	// Create two items, each with one child
 	one := NewItem("One")
@@ -43,9 +75,9 @@ func TestTrivialImplicitRelationships(t *testing.T) {
 // Test implicit relationships
 func TestDeepImplicitRelationships(t *testing.T) {
 	// Create a simple model
-	m := Model{}
+	m := NewModel()
 
-	// Create two items, each with one child
+	// Create items with children
 	one := NewItem("One")
 	oneChild := NewItem("OneChild")
 	oneChildChild := NewItem("OneChildChild")
@@ -57,6 +89,10 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	twoChildChild := NewItem("TwoChildChild")
 	two.AddChild(&twoChild)
 	twoChild.AddChild(&twoChildChild)
+
+	// Add items to the model
+	m.AddElement(&one)
+	m.AddElement(&two)
 
 	// Link the children together
 	m.AddRelationship(&oneChildChild, &twoChildChild)
@@ -75,4 +111,13 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChildChild, Destination: &twoChild}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &oneChildChild, Destination: &twoChildChild}))
 	assert.Assert(t, is.Len(implicitRels, 9))
+}
+
+// Helper function to assert expected parent
+func AssertParent(t *testing.T, m Model, element *Element, parent *Element) {
+	result, err := m.Parent(element)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, result, parent)
 }

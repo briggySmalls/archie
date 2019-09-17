@@ -15,6 +15,13 @@ type Model struct {
 	parentMap     map[*Element]*Element
 }
 
+// NewModel creates an initialises new model
+func NewModel() Model {
+	m := Model{}
+	m.dummyElement.kind = MODEL
+	return m
+}
+
 func (m *Model) AddElement(new *Element) error {
 	// Add to the model
 	m.dummyElement.Children = append(m.dummyElement.Children, new)
@@ -25,6 +32,10 @@ func (m *Model) AddRelationship(source *Element, destination *Element) error {
 	// Append to relationships
 	m.Relationships = append(m.Relationships, Relationship{source, destination})
 	return nil
+}
+
+func (m *Model) Elements() []*Element {
+	return m.dummyElement.Children
 }
 
 // Get a slice of all relationships, including implicit parent relationships
@@ -42,10 +53,12 @@ func (m *Model) ImplicitRelationships() []Relationship {
 			// Link all source's anscestors to destination
 			m.bubbleUpSource(relsMap, rel.Source, dest)
 			// Iterate destination
-			if m.Parent(dest) == nil {
+			if parent, err := m.Parent(dest); err != nil {
+				panic(err)
+			} else if parent == nil {
 				break
 			} else {
-				dest = m.Parent(dest)
+				dest = parent
 			}
 		}
 	}
@@ -64,11 +77,14 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Elem
 	for {
 		// Create the relationship
 		relationships[Relationship{Source: source, Destination: dest}] = true
-		if m.Parent(source) == nil {
+		// Iterate
+		if parent, err := m.Parent(source); err != nil {
+			panic(err)
+		} else if parent == nil {
 			break
 		} else {
 			// Update the pointer
-			source = m.Parent(source)
+			source = parent
 		}
 	}
 }
@@ -76,10 +92,12 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Elem
 func (m *Model) Parent(el *Element) (*Element, error) {
 	// Index if necessary
 	if len(m.parentMap) == 0 {
+		// Create an empty map
+		m.parentMap = make(map[*Element]*Element)
 		// Index the tree
 		m.indexChildren(&m.dummyElement)
 	}
-	// Check if we have already found it
+	// Fetch the parent from the index
 	if parent, ok := m.parentMap[el]; ok {
 		return parent, nil
 	}

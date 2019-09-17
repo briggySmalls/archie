@@ -1,15 +1,16 @@
 package views
 
 import (
+	"testing"
+
 	"github.com/briggysmalls/archie/internal/types"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
-	"testing"
 )
 
 func TestElements(t *testing.T) {
 	// Create a simple model
-	m := types.Model{}
+	m := types.NewModel()
 
 	// Create two items, each with one child
 	one := types.NewItem("SystemOne")
@@ -33,7 +34,7 @@ func TestElements(t *testing.T) {
 
 func TestRelationships(t *testing.T) {
 	// Create a simple model
-	m := types.Model{}
+	m := types.NewModel()
 
 	// Create two items, each with one child
 	one := types.NewItem("SystemOne")

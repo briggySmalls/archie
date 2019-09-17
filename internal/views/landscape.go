@@ -15,7 +15,7 @@ func NewLandscape(model types.Model) Landscape {
 
 func (l *Landscape) Elements() []*types.Element {
 	// All items of depth 0
-	return l.Model.Elements
+	return l.Model.Elements()
 }
 
 func (l *Landscape) Relationships() []types.Relationship {
