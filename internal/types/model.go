@@ -10,17 +10,17 @@ type Model struct {
 	Relationships []Relationship
 }
 
-func (m *Model) AddElement(new Element) error {
+func (m *Model) AddElement(new *Element) error {
 	// Ensure the element appears 'top'
 	new.Parent = nil
 	// Add to the model
-	m.Elements = append(m.Elements, &new)
+	m.Elements = append(m.Elements, new)
 	return nil
 }
 
-func (m *Model) AddRelationship(source Element, destination Element) error {
+func (m *Model) AddRelationship(source *Element, destination *Element) error {
 	// Append to relationships
-	m.Relationships = append(m.Relationships, Relationship{&source, &destination})
+	m.Relationships = append(m.Relationships, Relationship{source, destination})
 	return nil
 }
 

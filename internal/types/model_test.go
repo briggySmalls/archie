@@ -13,8 +13,8 @@ func TestElements(t *testing.T) {
 	// Create two items and add them to the model
 	one := NewItem("One")
 	two := NewItem("Two")
-	m.AddElement(one)
-	m.AddElement(two)
+	m.AddElement(&one)
+	m.AddElement(&two)
 
 	// Assert
 	assert.Assert(t, is.Contains(m.Elements, &one))
@@ -29,11 +29,11 @@ func TestTrivialImplicitRelationships(t *testing.T) {
 	// Create two items, each with one child
 	one := NewItem("One")
 	two := NewItem("Two")
-	m.AddElement(one)
-	m.AddElement(two)
+	m.AddElement(&one)
+	m.AddElement(&two)
 
 	// Create a single relationship
-	m.AddRelationship(one, two)
+	m.AddRelationship(&one, &two)
 
 	// Assert implicit relationships returns trivial solution
 	assert.Assert(t, is.Contains(m.ImplicitRelationships(), Relationship{Source: &one, Destination: &two}))
@@ -59,7 +59,7 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	twoChild.AddChild(&twoChildChild)
 
 	// Link the children together
-	m.AddRelationship(oneChildChild, twoChildChild)
+	m.AddRelationship(&oneChildChild, &twoChildChild)
 
 	// Assert implicit relationships
 	assert.Assert(t, is.Contains(m.Relationships, Relationship{Source: &oneChildChild, Destination: &twoChildChild}))
