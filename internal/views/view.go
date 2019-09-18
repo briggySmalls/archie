@@ -73,7 +73,7 @@ func addAllAncestors(model *types.Model, elements map[*types.ModelElement]bool, 
 		if parent, err := model.Parent(el); err != nil {
 			// Parent isn't in model
 			panic(err)
-		} else if parent.IsRoot() {
+		} else if parent == nil {
 			// Parent is root, we're done here
 			return elements
 		} else if _, ok := elements[parent]; ok {
