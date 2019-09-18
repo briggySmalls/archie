@@ -2,10 +2,12 @@ package drawers
 
 import (
 	"fmt"
-	"testing"
-	"gotest.tools/assert"
 	"github.com/briggysmalls/archie/internal/types"
 	"github.com/briggysmalls/archie/internal/views"
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
+	"strings"
+	"testing"
 )
 
 func TestDraw(t *testing.T) {
@@ -30,7 +32,15 @@ func TestDraw(t *testing.T) {
 	// Create the landscape view
 	l := views.NewLandscapeView(&m)
 
-	// Create the drawer
+	// Drawer
 	d := PlantUmlDrawer{}
-	fmt.Print(d.Draw(l))
+	output := d.Draw(l)
+
+	// Assert result
+	lines := strings.Split(output, "\n")
+	assert.Equal(t, lines[0], "@startuml")
+	assert.Assert(t, is.Contains(lines, "[One]"))
+	assert.Assert(t, is.Contains(lines, "[Two]"))
+	assert.Assert(t, is.Contains(lines, "[One] --> [Two]"))
+	assert.Equal(t, lines[len(lines)-2], "@enduml")
 }
