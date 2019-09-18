@@ -24,6 +24,11 @@ func NewModel() Model {
 	}
 }
 
+// Get the root elements of the model
+func (m *Model) Elements() []*ModelElement {
+	return m.root.Children
+}
+
 // Add an element to the root of the model
 func (m *Model) AddRootElement(new *Element) {
 	// Add to the model
@@ -45,11 +50,6 @@ func (m *Model) AddChild(parent, child *Element) error {
 	pme.Children = append(pme.Children, cme)
 	// Indicate everything was successful
 	return nil
-}
-
-// Get the root elements of the model
-func (m *Model) Elements() []*ModelElement {
-	return m.root.Children
 }
 
 // Add a link between ModelElements representing two Elements
@@ -161,7 +161,7 @@ func (m *Model) indexChildren(el *ModelElement) {
 	for _, child := range el.Children {
 		// Add to map
 		if el.IsRoot() {
-			m.parentMap[child] = nil
+			m.parentMap[child] = &m.root
 		} else {
 			m.parentMap[child] = el
 		}

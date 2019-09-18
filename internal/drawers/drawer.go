@@ -1,9 +1,9 @@
 package drawers
 
 import (
-	"github.com/briggysmalls/archie/internal/views"
+	"github.com/briggysmalls/archie/internal/types"
 )
 
 type TextDrawer interface {
-	Draw(views.View) string
+	Draw(types.Model) string
 }
