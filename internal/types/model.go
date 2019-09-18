@@ -127,6 +127,9 @@ func (m *Model) Parent(el *ModelElement) (*ModelElement, error) {
 	}
 	// Fetch the parent from the index
 	if parent, ok := m.parentMap[el]; ok {
+		if parent.IsRoot() {
+			return nil, nil
+		}
 		return parent, nil
 	}
 	return nil, fmt.Errorf("Element not found")
