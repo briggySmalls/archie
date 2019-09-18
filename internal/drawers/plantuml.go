@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/briggysmalls/archie/internal/types"
-	"github.com/briggysmalls/archie/internal/views"
 )
 
 const (
@@ -18,19 +17,19 @@ type PlantUmlDrawer struct {
 	relevantElements []*types.Element
 }
 
-func (p *PlantUmlDrawer) Draw(view views.View) string {
+func (p *PlantUmlDrawer) Draw(model types.Model) string {
 	// Reset the drawer
 	p.indent = 0
 	p.builder.Reset()
 	// Add the header
 	p.writeLine("@startuml")
 	// Draw the elements, recursively
-	for _, el := range view.Elements() {
+	for _, el := range model.Elements() {
 		p.drawComponent(el)
 	}
 	// Now draw the relationships
-	for _, rel := range view.Relationships() {
-		p.writeLine("[%s] --> [%s]", rel.Source.Name, rel.Destination.Name)
+	for _, rel := range model.Relationships {
+		p.writeLine("[%s] --> [%s]", rel.Source.Data.Name, rel.Destination.Data.Name)
 	}
 	// Write footer
 	p.writeLine("@enduml")
@@ -38,30 +37,13 @@ func (p *PlantUmlDrawer) Draw(view views.View) string {
 	return p.builder.String()
 }
 
-func findRelevant(view views.View) []*types.Element {
-	var relevant []*types.Element
-	for _, el := range view.Elements() {
-		// First, add the explicit element
-		relevant = append(relevant, el)
-		// Add parent of element, if it exists
-		if parent, err := m.Parent(el); err != nil {
-			panic(err)
-		} else {
-			if parent != nil {
-				relevant = append(relevant, parent)
-			}
-		}
-	}
-	return relevant
-}
-
-func (p *PlantUmlDrawer) drawComponent(el *types.Element) {
+func (p *PlantUmlDrawer) drawComponent(el *types.ModelElement) {
 	if len(el.Children) == 0 {
 		// Write a simple component
-		p.writeLine("[%s]", el.Name)
+		p.writeLine("[%s]", el.Data.Name)
 	} else {
 		// Start a new package
-		p.writeLine("package \"%s\" {", el.Name)
+		p.writeLine("package \"%s\" {", el.Data.Name)
 		p.indent++
 		for _, child := range el.Children {
 			// Recurse through children

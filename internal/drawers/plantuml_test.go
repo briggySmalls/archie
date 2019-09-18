@@ -3,7 +3,7 @@ package drawers
 import (
 	"fmt"
 	"testing"
-
+	"gotest.tools/assert"
 	"github.com/briggysmalls/archie/internal/types"
 	"github.com/briggysmalls/archie/internal/views"
 )
@@ -12,25 +12,25 @@ func TestDraw(t *testing.T) {
 	// Create a simple model
 	m := types.NewModel()
 
-	// Create two items, each with one child
-	one := types.NewItem("SystemOne")
-	oneChild := types.NewItem("SystemOneChild")
-	one.AddChild(&oneChild)
-	two := types.NewItem("SystemTwo")
-	twoChild := types.NewItem("SystemTwoChild")
-	two.AddChild(&twoChild)
+	// Create the items we'll be testing
+	one := types.NewItem("One")
+	oneChild := types.NewItem("OneChild")
+	two := types.NewItem("Two")
+	twoChild := types.NewItem("TwoChild")
 
-	// Add to model
-	m.AddElement(&one)
-	m.AddElement(&two)
+	// Add the items, and their relationships to the model
+	m.AddRootElement(&one)
+	assert.NilError(t, m.AddChild(&one, &oneChild))
+	m.AddRootElement(&two)
+	assert.NilError(t, m.AddChild(&two, &twoChild))
 
-	// Add relationship
-	m.AddRelationship(&one, &two)
+	// Link the children together
+	m.AddRelationship(&oneChild, &twoChild)
 
 	// Create the landscape view
-	l := views.NewLandscape(m)
+	l := views.NewLandscapeView(&m)
 
 	// Create the drawer
 	d := PlantUmlDrawer{}
-	fmt.Print(d.Draw(&l))
+	fmt.Print(d.Draw(l))
 }
