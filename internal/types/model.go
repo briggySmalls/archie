@@ -135,6 +135,33 @@ func (m *Model) Parent(el *ModelElement) (*ModelElement, error) {
 	return nil, fmt.Errorf("Element not found")
 }
 
+func (m *Model) Depth(el *ModelElement) (uint, error) {
+	// Bubble up, while counting
+	depth := uint(0)
+	for {
+		parent, err := m.Parent(el)
+		// Bad input
+		if err != nil {
+			return uint(0), err
+		}
+		// We're done!
+		if parent == nil {
+			return depth, nil
+		}
+		// Keep bubblin'
+		depth++
+		el = parent
+	}
+}
+
+// Helper function for looking up ModelElements from Elements
+func (m *Model) Lookup(el *Element) *ModelElement {
+	if me, ok := m.modelElementMap[el]; ok {
+		return me
+	}
+	panic(fmt.Errorf("Element '%s' not found in model", el.Name))
+}
+
 // Internal function for adding an element to the model
 func (m *Model) addElement(new *Element) *ModelElement {
 	// Wrap the element in a ModelElement
@@ -171,12 +198,4 @@ func (m *Model) indexChildren(el *ModelElement) {
 		// Recurse
 		m.indexChildren(child)
 	}
-}
-
-// Helper function for looking up ModelElements from Elements
-func (m *Model) lookup(el *Element) *ModelElement {
-	if me, ok := m.modelElementMap[el]; ok {
-		return me
-	}
-	panic(fmt.Errorf("Element '%s' not found in model", el.Name))
 }

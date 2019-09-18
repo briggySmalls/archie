@@ -18,8 +18,8 @@ func TestElements(t *testing.T) {
 	m.AddRootElement(&two)
 
 	// Assert
-	assert.Assert(t, m.lookup(&one) != nil)
-	assert.Assert(t, m.lookup(&two) != nil)
+	assert.Assert(t, m.Lookup(&one) != nil)
+	assert.Assert(t, m.Lookup(&two) != nil)
 }
 
 // Test parent indexing
@@ -70,7 +70,7 @@ func TestTrivialImplicitRelationships(t *testing.T) {
 	assert.Assert(
 		t,
 		is.Contains(m.ImplicitRelationships(),
-		Relationship{Source: m.lookup(&one), Destination: m.lookup(&two)}))
+		Relationship{Source: m.Lookup(&one), Destination: m.Lookup(&two)}))
 	assert.Assert(t, is.Len(m.ImplicitRelationships(), 1))
 }
 
@@ -99,27 +99,27 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	m.AddRelationship(&oneChildChild, &twoChildChild)
 
 	// Assert implicit relationships
-	assert.Assert(t, is.Contains(m.Relationships, Relationship{Source: m.lookup(&oneChildChild), Destination: m.lookup(&twoChildChild)}))
+	assert.Assert(t, is.Contains(m.Relationships, Relationship{Source: m.Lookup(&oneChildChild), Destination: m.Lookup(&twoChildChild)}))
 	assert.Assert(t, is.Len(m.Relationships, 1))
 	implicitRels := m.ImplicitRelationships()
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&one), Destination: m.lookup(&two)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&one), Destination: m.lookup(&twoChild)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&one), Destination: m.lookup(&twoChildChild)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&oneChild), Destination: m.lookup(&two)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&oneChild), Destination: m.lookup(&twoChild)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&oneChild), Destination: m.lookup(&twoChildChild)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&oneChildChild), Destination: m.lookup(&two)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&oneChildChild), Destination: m.lookup(&twoChild)}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.lookup(&oneChildChild), Destination: m.lookup(&twoChildChild)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&one), Destination: m.Lookup(&two)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&one), Destination: m.Lookup(&twoChild)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&one), Destination: m.Lookup(&twoChildChild)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&oneChild), Destination: m.Lookup(&two)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&oneChild), Destination: m.Lookup(&twoChild)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&oneChild), Destination: m.Lookup(&twoChildChild)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&oneChildChild), Destination: m.Lookup(&two)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&oneChildChild), Destination: m.Lookup(&twoChild)}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: m.Lookup(&oneChildChild), Destination: m.Lookup(&twoChildChild)}))
 	assert.Assert(t, is.Len(implicitRels, 9))
 }
 
 // Helper function to assert expected parent
 func AssertParent(t *testing.T, m Model, element *Element, parent *Element) {
-	childModelElement := m.lookup(element)
+	childModelElement := m.Lookup(element)
 	var parentModelElement *ModelElement
 	if parent != nil {
-		parentModelElement = m.lookup(parent)
+		parentModelElement = m.Lookup(parent)
 	}
 	result, err := m.Parent(childModelElement)
 	if err != nil {
