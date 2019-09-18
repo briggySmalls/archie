@@ -12,9 +12,8 @@ const (
 )
 
 type PlantUmlDrawer struct {
-	indent           uint
-	builder          strings.Builder
-	relevantElements []*types.Element
+	indent  uint
+	builder strings.Builder
 }
 
 func (p *PlantUmlDrawer) Draw(model types.Model) string {
