@@ -10,14 +10,15 @@ type Relationship struct {
 }
 
 type Model struct {
-	root  ModelElement
-	Relationships []Relationship
+	root            ModelElement
+	Relationships   []Relationship
 	modelElementMap map[*Element]*ModelElement
-	parentMap     map[*ModelElement]*ModelElement
+	parentMap       map[*ModelElement]*ModelElement
 }
 
 // NewModel creates an initialises new model
 func NewModel() Model {
+	// Create a model
 	return Model{
 		modelElementMap: make(map[*Element]*ModelElement),
 	}
@@ -118,13 +119,11 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Mode
 	}
 }
 
+// Get the parent of a ModelElement
 func (m *Model) Parent(el *ModelElement) (*ModelElement, error) {
 	// Index if necessary
-	if len(m.parentMap) == 0 {
-		// Create an empty map
-		m.parentMap = make(map[*ModelElement]*ModelElement)
-		// Index the tree
-		m.indexChildren(&m.root)
+	if !m.isIndexed() {
+		m.populateIndex()
 	}
 	// Fetch the parent from the index
 	if parent, ok := m.parentMap[el]; ok {
@@ -141,6 +140,19 @@ func (m *Model) addElement(new *Element) *ModelElement {
 	m.modelElementMap[new] = &me
 	// Return the ModelElement
 	return &me
+}
+
+// Helper function to check if the parents are indexed
+func (m *Model) isIndexed() bool {
+	return len(m.parentMap) != 0
+}
+
+// Populate the index
+func (m *Model) populateIndex() {
+	// Create an empty map
+	m.parentMap = make(map[*ModelElement]*ModelElement)
+	// Index the tree
+	m.indexChildren(&m.root)
 }
 
 // Depth-first indexing of parents
