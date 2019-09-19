@@ -44,10 +44,10 @@ func TestParentIndexing(t *testing.T) {
 	twoChild.AddChild(&twoChildChild)
 
 	// Test parent results
-	AssertParent(t, &m, &one, &m.root)
+	AssertParent(t, &m, &one, &m.Root)
 	AssertParent(t, &m, &oneChild, &one)
 	AssertParent(t, &m, &oneChildChild, &oneChild)
-	AssertParent(t, &m, &two, &m.root)
+	AssertParent(t, &m, &two, &m.Root)
 	AssertParent(t, &m, &twoChild, &two)
 	AssertParent(t, &m, &twoChildChild, &twoChild)
 }

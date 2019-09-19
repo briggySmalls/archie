@@ -20,9 +20,9 @@ func TestElements(t *testing.T) {
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)
-	assert.NilError(t, m.AddChild(&one, &oneChild))
+	one.AddChild(&oneChild)
 	m.AddRootElement(&two)
-	assert.NilError(t, m.AddChild(&two, &twoChild))
+	two.AddChild(&twoChild)
 
 	// Link the children together
 	m.AddRelationship(&oneChild, &twoChild)
@@ -30,19 +30,14 @@ func TestElements(t *testing.T) {
 	// Create the landscape view
 	l := NewLandscapeView(&m)
 
-	// Pull out the elements from the ModelElements
-	var els []*types.Element
-	for _, me := range l.Elements() {
-		els = append(els, me.Data)
-	}
 	// Check elements are correct
-	assert.Assert(t, is.Contains(els, &one))
-	assert.Assert(t, is.Contains(els, &two))
-	assert.Assert(t, is.Len(els, 2))
+	assert.Assert(t, is.Contains(l.Elements(), &one))
+	assert.Assert(t, is.Contains(l.Elements(), &two))
+	assert.Assert(t, is.Len(l.Elements(), 2))
 
 	// Check relationships are correct
 	assert.Assert(t, is.Len(l.Relationships, 1))
 	rel := l.Relationships[0]
-	assert.Equal(t, rel.Source.Data, &one)
-	assert.Equal(t, rel.Destination.Data, &two)
+	assert.Equal(t, rel.Source, &one)
+	assert.Equal(t, rel.Destination, &two)
 }

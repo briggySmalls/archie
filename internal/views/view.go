@@ -5,43 +5,35 @@ import (
 )
 
 // CreateSubmodel creates a sub-model from the full model
-func CreateSubmodel(model *types.Model, elements []*types.ModelElement) types.Model {
-	// Get the relevant elements (including implicit)
-	relevantElements := getRelevantElements(model, elements)
-	// Create a new model
-	subModel := types.NewModel()
-	// Copy over the elements
-	for _, el := range model.Elements() {
-		// Add the root elements, if relevant
-		if _, ok := relevantElements[el]; ok {
-			subModel.AddRootElement(el.Data)
-		}
-		// Recurse through children
-		copyChildren(&subModel, relevantElements, el)
-	}
-	// Copy over relevant relationships
-	for _, rel := range getRelevantRelationships(model, elements) {
-		subModel.AddRelationship(rel.Source.Data, rel.Destination.Data)
-	}
-	return subModel
+func CreateSubmodel(model *types.Model, elements []*types.Element) types.Model {
+	// Copy the model
+	new := model.Copy()
+	// Get a list of relevant elements
+	relevantEls := getRelevantElements(model, elements)
+	// Overwrite relationships with relevant ones
+	new.Relationships = getRelevantRelationships(model, elements)
+	// Remove irrelevant elements
+	checkChildren(&new, relevantEls, &new.Root)
+	return new
 }
 
-// Copy the children of the specified element, recursively
-func copyChildren(dest *types.Model, relevant map[*types.ModelElement]bool, element *types.ModelElement) {
-	for _, child := range element.Children {
-		// Skip child (and all its children) if not relevant
+func checkChildren(model *types.Model, relevant map[*types.Element]bool, element *types.Element) {
+	// Make a copy of the children array (we want to modify!)
+	newSlice := make([]*types.Element, len(element.Children))
+	copy(newSlice, element.Children)
+	// Iterate
+	for i, child := range newSlice {
+		// Remove if irrelevant
 		if !relevant[child] {
-			continue
+			remove(element.Children, i)
 		}
-		// Add the child
-		dest.AddChild(element.Data, child.Data)
-		// Add the child's children
-		copyChildren(dest, relevant, child)
+		// Otherwise recurse
+		checkChildren(model, relevant, child)
 	}
 }
 
 // Select the relationships that are relevant, including implicit ones
-func getRelevantRelationships(model *types.Model, elements []*types.ModelElement) []types.Relationship {
+func getRelevantRelationships(model *types.Model, elements []*types.Element) []types.Relationship {
 	var relationships []types.Relationship
 	for _, rel := range model.ImplicitRelationships() {
 		// Add relationships that link relevant elements
@@ -53,9 +45,9 @@ func getRelevantRelationships(model *types.Model, elements []*types.ModelElement
 }
 
 // Select the elements that are relevant, including the implicit ones
-func getRelevantElements(model *types.Model, elements []*types.ModelElement) map[*types.ModelElement]bool {
+func getRelevantElements(model *types.Model, elements []*types.Element) map[*types.Element]bool {
 	// Prepare an empty index of relevant elements
-	relevant := make(map[*types.ModelElement]bool)
+	relevant := make(map[*types.Element]bool)
 	// Add elements
 	for _, el := range elements {
 		// First, add the core element
@@ -65,15 +57,12 @@ func getRelevantElements(model *types.Model, elements []*types.ModelElement) map
 }
 
 // Add the specified element to the map, and all its ancestors
-func addAllAncestors(model *types.Model, elements map[*types.ModelElement]bool, el *types.ModelElement) map[*types.ModelElement]bool {
+func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *types.Element) map[*types.Element]bool {
 	for {
 		// Add the current element
 		elements[el] = true
 		// Try add parent
-		if parent, err := model.Parent(el); err != nil {
-			// Parent isn't in model
-			panic(err)
-		} else if parent == nil {
+		if parent := el.Parent; parent == nil {
 			// Parent is root, we're done here
 			return elements
 		} else if _, ok := elements[parent]; ok {
@@ -87,8 +76,13 @@ func addAllAncestors(model *types.Model, elements map[*types.ModelElement]bool, 
 	}
 }
 
+func remove(s []*types.Element, i int) []*types.Element {
+	s[len(s)-1], s[i] = s[i], s[len(s)-1]
+	return s[:len(s)-1]
+}
+
 // Check if an element is in the slice
-func contains(haystack []*types.ModelElement, needle *types.ModelElement) bool {
+func contains(haystack []*types.Element, needle *types.Element) bool {
 	for _, el := range haystack {
 		if el == needle {
 			return true
