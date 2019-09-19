@@ -7,11 +7,16 @@ import (
 // CreateSubmodel creates a sub-model from the full model
 func CreateSubmodel(model *types.Model, elements []*types.Element) types.Model {
 	// Copy the model
-	new := model.Copy()
+	new, elMap := model.Copy()
+	// Convert the elements from the old model to the new
+	newElements := make([]*types.Element, len(elements))
+	for i, el := range elements {
+		newElements[i] = elMap[el]
+	}
 	// Get a list of relevant elements
-	relevantEls := getRelevantElements(model, elements)
+	relevantEls := getRelevantElements(&new, newElements)
 	// Overwrite relationships with relevant ones
-	new.Relationships = getRelevantRelationships(model, elements)
+	new.Relationships = getRelevantRelationships(&new, newElements)
 	// Remove irrelevant elements
 	checkChildren(&new, relevantEls, &new.Root)
 	return new
@@ -48,27 +53,26 @@ func getRelevantRelationships(model *types.Model, elements []*types.Element) []t
 func getRelevantElements(model *types.Model, elements []*types.Element) map[*types.Element]bool {
 	// Prepare an empty index of relevant elements
 	relevant := make(map[*types.Element]bool)
-	// Add elements
 	for _, el := range elements {
-		// First, add the core element
+		// Add the relevant element, and all its ancenstors
 		addAllAncestors(model, relevant, el)
 	}
 	return relevant
 }
 
 // Add the specified element to the map, and all its ancestors
-func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *types.Element) map[*types.Element]bool {
+func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *types.Element) {
 	for {
 		// Add the current element
 		elements[el] = true
 		// Try add parent
-		if parent := el.Parent; parent == nil {
+		if parent := el.Parent; model.IsRoot(parent) {
 			// Parent is root, we're done here
-			return elements
+			return
 		} else if _, ok := elements[parent]; ok {
 			// Parent is already in map, someone got there first
 			// Return early
-			return elements
+			return
 		} else {
 			// Now recurse up through all the parents
 			addAllAncestors(model, elements, parent)

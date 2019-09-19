@@ -55,7 +55,7 @@ func (m *Model) ImplicitRelationships() []Relationship {
 			// Link all source's anscestors to destination
 			m.bubbleUpSource(relsMap, rel.Source, dest)
 			// Iterate destination
-			if parent := dest.Parent; m.isRoot(parent) {
+			if parent := dest.Parent; m.IsRoot(parent) {
 				// This is a root element, so bail
 				break
 			} else {
@@ -82,7 +82,7 @@ func (m *Model) Depth(el *Element) (uint, error) {
 	for {
 		// Get the parent of the element
 		parent := el.Parent
-		if m.isRoot(parent) {
+		if m.IsRoot(parent) {
 			// We're done!
 			return depth, nil
 		}
@@ -92,7 +92,7 @@ func (m *Model) Depth(el *Element) (uint, error) {
 	}
 }
 
-func (m *Model) Copy() Model {
+func (m *Model) Copy() (Model, map[*Element]*Element) {
 	// Create a new model
 	new := NewModel()
 	// Copy the original model into the new
@@ -102,7 +102,7 @@ func (m *Model) Copy() Model {
 	for _, rel := range m.Relationships {
 		new.AddRelationship(elMap[rel.Source], elMap[rel.Destination])
 	}
-	return new
+	return new, elMap
 }
 
 func (m *Model) copyChildren(el *Element, elMap map[*Element]*Element) *Element {
@@ -119,7 +119,7 @@ func (m *Model) copyChildren(el *Element, elMap map[*Element]*Element) *Element 
 	return &new
 }
 
-func (m *Model) isRoot(el *Element) bool {
+func (m *Model) IsRoot(el *Element) bool {
 	// First, check if the element itself is a root
 	if !el.isRoot() {
 		return false
@@ -136,7 +136,7 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Elem
 		// Create the relationship
 		relationships[Relationship{Source: source, Destination: dest}] = true
 		// Iterate
-		if parent := source.Parent; m.isRoot(parent) {
+		if parent := source.Parent; m.IsRoot(parent) {
 			// We've reached the root, we're done!
 			break
 		} else {
