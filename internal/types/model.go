@@ -92,31 +92,50 @@ func (m *Model) Depth(el *Element) (uint, error) {
 	}
 }
 
-func (m *Model) Copy() (Model, map[*Element]*Element) {
+func (m *Model) Copy() (*Model, map[*Element]*Element) {
 	// Create a new model
 	new := NewModel()
-	// Copy the original model into the new
+	// Copy the original to the new
+	new.Root = *m.copyChildren(&m.Root)
+	// HACK
+	for _, child := range new.Root.Children {
+		child.Parent = &new.Root
+	}
+	// Build a mapping between old to new
 	elMap := make(map[*Element]*Element)
-	new.Root = *m.copyChildren(&m.Root, elMap)
+	indexChildren(&m.Root, &new.Root, elMap)
 	// Copy the relationships
 	for _, rel := range m.Relationships {
 		new.AddRelationship(elMap[rel.Source], elMap[rel.Destination])
 	}
-	return new, elMap
+	return &new, elMap
 }
 
-func (m *Model) copyChildren(el *Element, elMap map[*Element]*Element) *Element {
+func (m *Model) copyChildren(el *Element) *Element {
 	// Create a new element copy
 	new := *el
-	// Record the mapping
-	elMap[el] = &new
 	// Reset the slice
 	new.Children = make([]*Element, len(new.Children))
 	// Recursively copy children
-	for _, child := range el.Children {
-		new.Children = append(new.Children, m.copyChildren(child, elMap))
+	for i, origChild := range el.Children {
+		// Update the children
+		new.Children[i] = m.copyChildren(origChild)
+		// Update the parent
+		new.Children[i].Parent = &new
 	}
 	return &new
+}
+
+func indexChildren(orig *Element, copy *Element, elMap map[*Element]*Element) {
+	// Add the current elements to the map
+	elMap[orig] = copy
+	if len(orig.Children) != len(copy.Children) {
+		panic(fmt.Errorf("Element '%s' has different children in copy (%d vs %d)", orig.Name, len(orig.Children), len(copy.Children)))
+	}
+	// Now add the children
+	for i := range orig.Children {
+		indexChildren(orig.Children[i], copy.Children[i], elMap)
+	}
 }
 
 func (m *Model) IsRoot(el *Element) bool {

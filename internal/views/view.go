@@ -14,12 +14,12 @@ func CreateSubmodel(model *types.Model, elements []*types.Element) types.Model {
 		newElements[i] = elMap[el]
 	}
 	// Get a list of relevant elements
-	relevantEls := getRelevantElements(&new, newElements)
+	relevantEls := getRelevantElements(new, newElements)
 	// Overwrite relationships with relevant ones
-	new.Relationships = getRelevantRelationships(&new, newElements)
+	new.Relationships = getRelevantRelationships(new, newElements)
 	// Remove irrelevant elements
-	checkChildren(&new, relevantEls, &new.Root)
-	return new
+	checkChildren(new, relevantEls, &new.Root)
+	return *new
 }
 
 func checkChildren(model *types.Model, relevant map[*types.Element]bool, element *types.Element) {
