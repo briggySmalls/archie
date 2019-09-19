@@ -5,68 +5,40 @@ import (
 )
 
 type Relationship struct {
-	Source      *ModelElement
-	Destination *ModelElement
+	Source      *Element
+	Destination *Element
 }
 
 type Model struct {
-	root            ModelElement
-	Relationships   []Relationship
-	modelElementMap map[*Element]*ModelElement
-	parentMap       map[*ModelElement]*ModelElement
+	root          Element
+	Relationships []Relationship
 }
 
 // NewModel creates an initialises new model
 func NewModel() Model {
 	// Create a model
 	return Model{
-		modelElementMap: make(map[*Element]*ModelElement),
+		root: newModelRoot(),
 	}
 }
 
 // Get the root elements of the model
-func (m *Model) Elements() []*ModelElement {
+func (m *Model) Elements() []*Element {
 	return m.root.Children
 }
 
 // Add an element to the root of the model
 func (m *Model) AddRootElement(new *Element) {
-	// Add to the model
-	me := m.addElement(new)
-	// Make new ModelElement a child of the root
-	m.root.Children = append(m.root.Children, me)
+	// Record the parent
+	new.Parent = &m.root
+	// Make new Element a child of the root
+	m.root.Children = append(m.root.Children, new)
 }
 
-// Update the model to track an element as a child of another
-func (m *Model) AddChild(parent, child *Element) error {
-	// Get the parent by lookup
-	pme, ok := m.modelElementMap[parent]
-	if !ok {
-		return fmt.Errorf("Parent '%s' not found in model", parent.Name)
-	}
-	// Add the child to the model
-	cme := m.addElement(child)
-	// Record that new element is a child
-	pme.Children = append(pme.Children, cme)
-	// Indicate everything was successful
-	return nil
-}
-
-// Add a link between ModelElements representing two Elements
-func (m *Model) AddRelationship(source *Element, destination *Element) error {
-	// Find the corresponding model elements
-	sourceModelElement, ok := m.modelElementMap[source]
-	if !ok {
-		return fmt.Errorf("Source element '%s' not found in model", source.Name)
-	}
-	destModelElement, ok := m.modelElementMap[destination]
-	if !ok {
-		return fmt.Errorf("Destination element '%s' not found in model", source.Name)
-	}
-
+// Add a link between Elements representing two Elements
+func (m *Model) AddRelationship(source, destination *Element) {
 	// Append to relationships
-	m.Relationships = append(m.Relationships, Relationship{sourceModelElement, destModelElement})
-	return nil
+	m.Relationships = append(m.Relationships, Relationship{source, destination})
 }
 
 // Get a slice of all relationships, including implicit parent relationships
@@ -83,11 +55,11 @@ func (m *Model) ImplicitRelationships() []Relationship {
 			// Link all source's anscestors to destination
 			m.bubbleUpSource(relsMap, rel.Source, dest)
 			// Iterate destination
-			if parent, err := m.Parent(dest); err != nil {
-				panic(err)
-			} else if parent == nil {
+			if parent := dest.Parent; m.isRoot(parent) {
+				// This is a root element, so bail
 				break
 			} else {
+				// Now do the same for parent of destination
 				dest = parent
 			}
 		}
@@ -103,49 +75,15 @@ func (m *Model) ImplicitRelationships() []Relationship {
 	return keys
 }
 
-func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *ModelElement, dest *ModelElement) {
-	for {
-		// Create the relationship
-		relationships[Relationship{Source: source, Destination: dest}] = true
-		// Iterate
-		if parent, err := m.Parent(source); err != nil {
-			panic(err)
-		} else if parent == nil {
-			break
-		} else {
-			// Update the pointer
-			source = parent
-		}
-	}
-}
-
-// Get the parent of a ModelElement
-func (m *Model) Parent(el *ModelElement) (*ModelElement, error) {
-	// Index if necessary
-	if !m.isIndexed() {
-		m.populateIndex()
-	}
-	// Fetch the parent from the index
-	if parent, ok := m.parentMap[el]; ok {
-		if parent.IsRoot() {
-			return nil, nil
-		}
-		return parent, nil
-	}
-	return nil, fmt.Errorf("Element not found")
-}
-
-func (m *Model) Depth(el *ModelElement) (uint, error) {
+// Get the depth of an element
+func (m *Model) Depth(el *Element) (uint, error) {
 	// Bubble up, while counting
 	depth := uint(0)
 	for {
-		parent, err := m.Parent(el)
-		// Bad input
-		if err != nil {
-			return uint(0), err
-		}
-		// We're done!
-		if parent == nil {
+		// Get the parent of the element
+		parent := el.Parent
+		if m.isRoot(parent) {
+			// We're done!
 			return depth, nil
 		}
 		// Keep bubblin'
@@ -154,48 +92,29 @@ func (m *Model) Depth(el *ModelElement) (uint, error) {
 	}
 }
 
-// Helper function for looking up ModelElements from Elements
-func (m *Model) Lookup(el *Element) *ModelElement {
-	if me, ok := m.modelElementMap[el]; ok {
-		return me
+func (m *Model) isRoot(el *Element) bool {
+	// First, check if the element itself is a root
+	if !el.isRoot() {
+		return false
 	}
-	panic(fmt.Errorf("Element '%s' not found in model", el.Name))
+	if el != &m.root {
+		// Element is the root of a different model!?
+		panic(fmt.Errorf("Unexpected root found"))
+	}
+	return true
 }
 
-// Internal function for adding an element to the model
-func (m *Model) addElement(new *Element) *ModelElement {
-	// Wrap the element in a ModelElement
-	me := NewModelElement(new)
-	// Cache the Element/ModelElement mapping
-	m.modelElementMap[new] = &me
-	// Return the ModelElement
-	return &me
-}
-
-// Helper function to check if the parents are indexed
-func (m *Model) isIndexed() bool {
-	return len(m.parentMap) != 0
-}
-
-// Populate the index
-func (m *Model) populateIndex() {
-	// Create an empty map
-	m.parentMap = make(map[*ModelElement]*ModelElement)
-	// Index the tree
-	m.indexChildren(&m.root)
-}
-
-// Depth-first indexing of parents
-func (m *Model) indexChildren(el *ModelElement) {
-	// Look at each child
-	for _, child := range el.Children {
-		// Add to map
-		if el.IsRoot() {
-			m.parentMap[child] = &m.root
+func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
+	for {
+		// Create the relationship
+		relationships[Relationship{Source: source, Destination: dest}] = true
+		// Iterate
+		if parent := source.Parent; m.isRoot(parent) {
+			// We've reached the root, we're done!
+			break
 		} else {
-			m.parentMap[child] = el
+			// Iterate for the source's parent
+			source = parent
 		}
-		// Recurse
-		m.indexChildren(child)
 	}
 }

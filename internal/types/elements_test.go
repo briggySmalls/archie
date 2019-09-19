@@ -10,9 +10,8 @@ import (
 func TestItem(t *testing.T) {
 	// Create a test item
 	el := NewItem("MyItem")
-	// Verify it is not an actor
-	assert.Assert(t, !el.IsActor())
-	// Verify name correct
+	// Verify fields
+	assert.Assert(t, el.Kind == ITEM)
 	assert.Equal(t, el.Name, "MyItem")
 }
 
@@ -20,8 +19,15 @@ func TestItem(t *testing.T) {
 func TestActor(t *testing.T) {
 	// Create a test item
 	el := NewActor("MyActor")
-	// Verify it is not an actor
-	assert.Assert(t, el.IsActor())
-	// Verify name correct
+	// Verify fields
+	assert.Assert(t, el.Kind == ACTOR)
 	assert.Equal(t, el.Name, "MyActor")
+}
+
+// Test creating a model root
+func TestModelRoot(t *testing.T) {
+	// Create a test item
+	el := newModelRoot()
+	// Verify it is not an actor
+	assert.Assert(t, el.Kind == MODEL_ROOT)
 }
