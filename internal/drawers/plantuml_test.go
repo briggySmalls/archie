@@ -1,7 +1,6 @@
 package drawers
 
 import (
-	"fmt"
 	"github.com/briggysmalls/archie/internal/types"
 	"github.com/briggysmalls/archie/internal/views"
 	"gotest.tools/assert"
@@ -22,9 +21,9 @@ func TestDraw(t *testing.T) {
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)
-	assert.NilError(t, m.AddChild(&one, &oneChild))
+	one.AddChild(&oneChild)
 	m.AddRootElement(&two)
-	assert.NilError(t, m.AddChild(&two, &twoChild))
+	two.AddChild(&twoChild)
 
 	// Link the children together
 	m.AddRelationship(&oneChild, &twoChild)

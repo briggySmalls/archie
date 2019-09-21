@@ -28,7 +28,7 @@ func (p *PlantUmlDrawer) Draw(model types.Model) string {
 	}
 	// Now draw the relationships
 	for _, rel := range model.Relationships {
-		p.writeLine("[%s] --> [%s]", rel.Source.Data.Name, rel.Destination.Data.Name)
+		p.writeLine("[%s] --> [%s]", rel.Source.Name, rel.Destination.Name)
 	}
 	// Write footer
 	p.writeLine("@enduml")
@@ -36,13 +36,13 @@ func (p *PlantUmlDrawer) Draw(model types.Model) string {
 	return p.builder.String()
 }
 
-func (p *PlantUmlDrawer) drawComponent(el *types.ModelElement) {
+func (p *PlantUmlDrawer) drawComponent(el *types.Element) {
 	if len(el.Children) == 0 {
 		// Write a simple component
-		p.writeLine("[%s]", el.Data.Name)
+		p.writeLine("[%s]", el.Name)
 	} else {
 		// Start a new package
-		p.writeLine("package \"%s\" {", el.Data.Name)
+		p.writeLine("package \"%s\" {", el.Name)
 		p.indent++
 		for _, child := range el.Children {
 			// Recurse through children
