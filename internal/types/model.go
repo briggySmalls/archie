@@ -4,47 +4,56 @@ import (
 	"fmt"
 )
 
+const (
+	ROOT_INDEX = 0
+)
+
 type Relationship struct {
 	Source      *Element
 	Destination *Element
 }
 
 type Model struct {
-	Root          Element
-	Relationships []Relationship
+	Associations []Relationship
+	Composition  map[*Element]*Element
+	Elements     []*Element
 }
 
 // NewModel creates an initialises new model
 func NewModel() Model {
 	// Create a model
-	return Model{
-		Root: newModelRoot(),
+	model := Model{
+		Composition: make(map[*Element]*Element),
 	}
+	// Create a root elment and add it
+	root := newModelRoot()
+	model.Elements = append(model.Elements, &root)
+	return model
 }
 
-// Get the root elements of the model
-func (m *Model) Elements() []*Element {
-	return m.Root.Children
+func (m *Model) AddElement(new, parent *Element) {
+	// Add the new element
+	m.Elements = append(m.Elements, new)
+	// Associate the element with its parent
+	m.Composition[new] = parent
 }
 
 // Add an element to the root of the model
 func (m *Model) AddRootElement(new *Element) {
-	// Record the parent
-	new.Parent = &m.Root
-	// Make new Element a child of the root
-	m.Root.Children = append(m.Root.Children, new)
+	// Add element as a child of the root
+	m.AddElement(new, m.root())
 }
 
-// Add a link between Elements representing two Elements
-func (m *Model) AddRelationship(source, destination *Element) {
+// Add an association between Elements
+func (m *Model) AddAssociation(source, destination *Element) {
 	// Append to relationships
-	m.Relationships = append(m.Relationships, Relationship{source, destination})
+	m.Associations = append(m.Associations, Relationship{source, destination})
 }
 
 // Get a slice of all relationships, including implicit parent relationships
-func (m *Model) ImplicitRelationships() []Relationship {
+func (m *Model) ImplicitAssociations() []Relationship {
 	// Get all the relationships
-	rels := m.Relationships
+	rels := m.Associations
 	// Prepare a list of implicit relationships (we map to ensure no duplicates)
 	relsMap := make(map[Relationship]bool)
 	// Now add implicit relationships
@@ -55,7 +64,7 @@ func (m *Model) ImplicitRelationships() []Relationship {
 			// Link all source's anscestors to destination
 			m.bubbleUpSource(relsMap, rel.Source, dest)
 			// Iterate destination
-			if parent := dest.Parent; m.IsRoot(parent) {
+			if parent := m.parent(dest); m.IsRoot(parent) {
 				// This is a root element, so bail
 				break
 			} else {
@@ -81,7 +90,11 @@ func (m *Model) Depth(el *Element) (uint, error) {
 	depth := uint(0)
 	for {
 		// Get the parent of the element
-		parent := el.Parent
+		parent, err := m.Parent(el)
+		if err != nil {
+			// Failed to find parent
+			return 0, err
+		}
 		if m.IsRoot(parent) {
 			// We're done!
 			return depth, nil
@@ -92,50 +105,33 @@ func (m *Model) Depth(el *Element) (uint, error) {
 	}
 }
 
-func (m *Model) Copy() (*Model, map[*Element]*Element) {
-	// Create a new model
-	new := NewModel()
-	// Copy the original to the new
-	new.Root = *m.copyChildren(&m.Root)
-	// HACK
-	for _, child := range new.Root.Children {
-		child.Parent = &new.Root
+func (m *Model) parent(element *Element) *Element {
+	// Look up the element's parent
+	element, err := m.Parent(element)
+	// We use this function internally, so panic if we fail to find it
+	if err != nil {
+		panic(err)
 	}
-	// Build a mapping between old to new
-	elMap := make(map[*Element]*Element)
-	indexChildren(&m.Root, &new.Root, elMap)
-	// Copy the relationships
-	for _, rel := range m.Relationships {
-		new.AddRelationship(elMap[rel.Source], elMap[rel.Destination])
-	}
-	return &new, elMap
+	return element
 }
 
-func (m *Model) copyChildren(el *Element) *Element {
-	// Create a new element copy
-	new := *el
-	// Reset the slice
-	new.Children = make([]*Element, len(new.Children))
-	// Recursively copy children
-	for i, origChild := range el.Children {
-		// Update the children
-		new.Children[i] = m.copyChildren(origChild)
-		// Update the parent
-		new.Children[i].Parent = &new
+func (m *Model) Parent(element *Element) (*Element, error) {
+	// Lookup
+	element, ok := m.Composition[element]
+	if !ok {
+		return nil, fmt.Errorf("Element '%s' not found in model", element.Name)
 	}
-	return &new
+	return element, nil
 }
 
-func indexChildren(orig *Element, copy *Element, elMap map[*Element]*Element) {
-	// Add the current elements to the map
-	elMap[orig] = copy
-	if len(orig.Children) != len(copy.Children) {
-		panic(fmt.Errorf("Element '%s' has different children in copy (%d vs %d)", orig.Name, len(orig.Children), len(copy.Children)))
+func (m *Model) Children(element *Element) []*Element {
+	var children []*Element
+	for child, parent := range m.Composition {
+		if parent == element {
+			children = append(children, child)
+		}
 	}
-	// Now add the children
-	for i := range orig.Children {
-		indexChildren(orig.Children[i], copy.Children[i], elMap)
-	}
+	return children
 }
 
 func (m *Model) IsRoot(el *Element) bool {
@@ -143,7 +139,7 @@ func (m *Model) IsRoot(el *Element) bool {
 	if !el.isRoot() {
 		return false
 	}
-	if el != &m.Root {
+	if el != m.root() {
 		// Element is the root of a different model!?
 		panic(fmt.Errorf("Unexpected root found"))
 	}
@@ -155,12 +151,17 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Elem
 		// Create the relationship
 		relationships[Relationship{Source: source, Destination: dest}] = true
 		// Iterate
-		if parent := source.Parent; m.IsRoot(parent) {
+		if parent := m.parent(source); m.IsRoot(parent) {
 			// We've reached the root, we're done!
 			break
 		} else {
 			// Iterate for the source's parent
 			source = parent
 		}
+
 	}
+}
+
+func (m *Model) root() *Element {
+	return m.Elements[ROOT_INDEX]
 }

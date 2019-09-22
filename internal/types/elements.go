@@ -7,10 +7,8 @@ const (
 )
 
 type Element struct {
-	Name     string
-	Kind     uint
-	Children []*Element
-	Parent   *Element
+	Name string
+	Kind uint
 }
 
 // Create a new root element
@@ -38,14 +36,6 @@ func newElement(kind uint) Element {
 	return Element{
 		Kind: kind,
 	}
-}
-
-// Update the model to track an element as a child of another
-func (e *Element) AddChild(child *Element) {
-	// Record that new element has a parent
-	child.Parent = e
-	// Copy new element into the model (make it a child)
-	e.Children = append(e.Children, child)
 }
 
 // Internal helper to signify an element is a dummy/root element

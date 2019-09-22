@@ -22,22 +22,28 @@ func TestElements(t *testing.T) {
 	assert.Assert(t, &two != nil)
 }
 
-// Test parent indexing
-func TestParentIndexing(t *testing.T) {
+// Test composition relationships
+func TestComposition(t *testing.T) {
 	// Create a simple model
 	m, elMap := createModel()
 
 	// Test parent results
-	assertParent(t, m, elMap["One"], &m.Root)
+	assertParent(t, m, elMap["One"], m.root())
 	assertParent(t, m, elMap["OneChild"], elMap["One"])
 	assertParent(t, m, elMap["OneChildChild"], elMap["OneChild"])
-	assertParent(t, m, elMap["Two"], &m.Root)
+	assertParent(t, m, elMap["Two"], m.root())
 	assertParent(t, m, elMap["TwoChild"], elMap["Two"])
 	assertParent(t, m, elMap["TwoChildChild"], elMap["TwoChild"])
+
+	// Test children
+	assertChildren(t, m, elMap["One"], []*Element{elMap["OneChild"]})
+	assertChildren(t, m, elMap["OneChild"], []*Element{elMap["OneChildChild"]})
+	assertChildren(t, m, elMap["Two"], []*Element{elMap["TwoChild"]})
+	assertChildren(t, m, elMap["TwoChild"], []*Element{elMap["TwoChildChild"]})
 }
 
 // Test trivial implicit relationships
-func TestTrivialImplicitRelationships(t *testing.T) {
+func TestTrivialImplicitAssociations(t *testing.T) {
 	// Create a simple model
 	m := NewModel()
 
@@ -48,10 +54,10 @@ func TestTrivialImplicitRelationships(t *testing.T) {
 	m.AddRootElement(&two)
 
 	// Create a single relationship
-	m.AddRelationship(&one, &two)
+	m.AddAssociation(&one, &two)
 
 	// Assert implicit relationships returns trivial solution
-	implicitRels := m.ImplicitRelationships()
+	implicitRels := m.ImplicitAssociations()
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &one, Destination: &two}))
 	assert.Assert(t, is.Len(implicitRels, 1))
 }
@@ -62,12 +68,12 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	m, elMap := createModel()
 
 	// Link the children together
-	m.AddRelationship(elMap["OneChildChild"], elMap["TwoChildChild"])
+	m.AddAssociation(elMap["OneChildChild"], elMap["TwoChildChild"])
 
 	// Assert implicit relationships
-	assert.Assert(t, is.Contains(m.Relationships, Relationship{Source: elMap["OneChildChild"], Destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Len(m.Relationships, 1))
-	implicitRels := m.ImplicitRelationships()
+	assert.Assert(t, is.Contains(m.Associations, Relationship{Source: elMap["OneChildChild"], Destination: elMap["TwoChildChild"]}))
+	assert.Assert(t, is.Len(m.Associations, 1))
+	implicitRels := m.ImplicitAssociations()
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["One"], Destination: elMap["Two"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["One"], Destination: elMap["TwoChild"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["One"], Destination: elMap["TwoChildChild"]}))
@@ -80,42 +86,22 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	assert.Assert(t, is.Len(implicitRels, 9))
 }
 
-func TestCopy(t *testing.T) {
-	// Create a simple model
-	m, _ := createModel()
-
-	// Create a copy
-	copy, elMap := m.Copy()
-
-	// Check that the models are similar
-	checkChildrenAreEqual(t, elMap, &m.Root, &copy.Root)
-}
-
-func checkChildrenAreEqual(t *testing.T, elMap map[*Element]*Element, orig *Element, copy *Element) {
-	// Check fields are equal
-	assert.Equal(t, orig.Name, copy.Name)
-	// Check mapping is correct
-	assert.Equal(t, copy, elMap[orig])
-	// Ensure we have matching number of children
-	assert.Equal(t, len(orig.Children), len(copy.Children))
-	// Look at children
-	for i := range orig.Children {
-		// Pull out the relevant child
-		origChild := orig.Children[i]
-		copyChild := copy.Children[i]
-		// Check parent field is updated too
-		assert.Equal(t, copyChild.Parent, copy)
-		// Check the child's fields are the same
-		assert.Equal(t, origChild.Name, copyChild.Name)
-		// Now recurse to these element's children
-		checkChildrenAreEqual(t, elMap, origChild, copyChild)
-	}
-}
-
 // Helper function to assert expected parent
 func assertParent(t *testing.T, m *Model, child *Element, parent *Element) {
+	// Get the parent
+	result, err := m.Parent(child)
+	// Assert the lookup was successful
+	assert.NilError(t, err)
 	// Assert parent is as expected
-	assert.Equal(t, parent, child.Parent)
+	assert.Equal(t, parent, result)
+}
+
+func assertChildren(t *testing.T, m *Model, parent *Element, children []*Element) {
+	result := m.Children(parent)
+	assert.Assert(t, is.Len(result, len(children)))
+	for _, expected := range children {
+		assert.Assert(t, is.Contains(result, expected))
+	}
 }
 
 // Helper function to create a model
@@ -137,10 +123,10 @@ func createModel() (*Model, map[string]*Element) {
 	// Add the items to the model
 	m.AddRootElement(elMap["One"])
 	m.AddRootElement(elMap["Two"])
-	elMap["One"].AddChild(elMap["OneChild"])
-	elMap["OneChild"].AddChild(elMap["OneChildChild"])
-	elMap["Two"].AddChild(elMap["TwoChild"])
-	elMap["TwoChild"].AddChild(elMap["TwoChildChild"])
+	m.AddElement(elMap["OneChild"], elMap["One"])
+	m.AddElement(elMap["OneChildChild"], elMap["OneChild"])
+	m.AddElement(elMap["TwoChild"], elMap["Two"])
+	m.AddElement(elMap["TwoChildChild"], elMap["TwoChild"])
 
 	return &m, elMap
 }
