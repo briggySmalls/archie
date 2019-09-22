@@ -29,7 +29,7 @@ func TestDraw(t *testing.T) {
 	m.AddAssociation(&oneChild, &twoChild)
 
 	// Create the landscape view
-	l := views.NewLandscapeView(&m)
+	l := views.NewItemContextView(&m, &one)
 
 	// Drawer
 	d := PlantUmlDrawer{}
@@ -38,8 +38,10 @@ func TestDraw(t *testing.T) {
 	// Assert result
 	lines := strings.Split(output, "\n")
 	assert.Equal(t, lines[0], "@startuml")
-	assert.Assert(t, is.Contains(lines, "[One]"))
+	assert.Equal(t, lines[2], "    [OneChild]")
+	assert.Equal(t, lines[1], "package \"One\" {")
+	assert.Equal(t, lines[3], "}")
 	assert.Assert(t, is.Contains(lines, "[Two]"))
-	assert.Assert(t, is.Contains(lines, "[One] --> [Two]"))
+	assert.Assert(t, is.Contains(lines, "[OneChild] --> [Two]"))
 	assert.Equal(t, lines[len(lines)-2], "@enduml")
 }
