@@ -10,7 +10,7 @@ func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
 	var elements []*types.Element
 
 	// The main elements of interest are the children of the scope
-	elements = append(elements, scope.Children...)
+	elements = append(elements, model.Children(scope)...)
 
 	// We also want to add elements:
 	// - related to these children
@@ -19,7 +19,7 @@ func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
 	if err != nil {
 		panic(err)
 	}
-	for _, rel := range model.ImplicitRelationships() {
+	for _, rel := range model.ImplicitAssociations() {
 		if linked := getLinked(rel, scope); linked != nil {
 			linkedDepth, err := model.Depth(linked)
 			if err != nil {
@@ -32,7 +32,12 @@ func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
 	}
 
 	// Create a model from the model's root elements
-	return CreateSubmodel(model, elements)
+	view, err := CreateSubmodel(model, elements)
+	// We shouldn't error (we've pulled elements out sensibly)
+	if err != nil {
+		panic(err)
+	}
+	return view
 }
 
 // Get the linked element, if the specified element is in the relationship

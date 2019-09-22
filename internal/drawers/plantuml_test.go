@@ -21,12 +21,12 @@ func TestDraw(t *testing.T) {
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)
-	one.AddChild(&oneChild)
+	m.AddElement(&oneChild, &one)
 	m.AddRootElement(&two)
-	two.AddChild(&twoChild)
+	m.AddElement(&twoChild, &two)
 
 	// Link the children together
-	m.AddRelationship(&oneChild, &twoChild)
+	m.AddAssociation(&oneChild, &twoChild)
 
 	// Create the landscape view
 	l := views.NewLandscapeView(&m)

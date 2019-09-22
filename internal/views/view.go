@@ -5,42 +5,52 @@ import (
 )
 
 // CreateSubmodel creates a sub-model from the full model
-func CreateSubmodel(model *types.Model, elements []*types.Element) types.Model {
+func CreateSubmodel(model *types.Model, elements []*types.Element) (types.Model, error) {
 	// Copy the model
-	new, elMap := model.Copy()
-	// Convert the elements from the old model to the new
-	newElements := make([]*types.Element, len(elements))
-	for i, el := range elements {
-		newElements[i] = elMap[el]
+	new := *model
+	// Overwrite elements with relevant ones
+	element, err := getRelevantElements(&new, elements)
+	if err != nil {
+		return types.Model{}, err
 	}
-	// Get a list of relevant elements
-	relevantEls := getRelevantElements(new, newElements)
+	new.Elements = element
 	// Overwrite relationships with relevant ones
-	new.Relationships = getRelevantRelationships(new, newElements)
-	// Remove irrelevant elements
-	checkChildren(new, relevantEls, &new.Root)
-	return *new
+	new.Associations = getRelevantRelationships(&new, elements)
+	// Fixup the composition relationships
+	for child := range new.Composition {
+		if !contains(new.Elements, child) {
+			delete(new.Composition, child)
+		}
+	}
+	return new, nil
 }
 
-func checkChildren(model *types.Model, relevant map[*types.Element]bool, element *types.Element) {
-	// Make a copy of the children array (we want to modify!)
-	newSlice := make([]*types.Element, len(element.Children))
-	copy(newSlice, element.Children)
-	// Iterate
-	for i, child := range newSlice {
-		// Remove if irrelevant
-		if !relevant[child] {
-			remove(element.Children, i)
+// Select the elements that are relevant, including the implicit ones
+func getRelevantElements(model *types.Model, elements []*types.Element) ([]*types.Element, error) {
+	// Prepare an empty index of relevant elements
+	// Note: We use a map just so elements are not duplicated
+	relevant := make(map[*types.Element]bool)
+	for _, el := range elements {
+		// Add the relevant element, and all its ancenstors
+		err := addAllAncestors(model, relevant, el)
+		if err != nil {
+			return nil, err
 		}
-		// Otherwise recurse
-		checkChildren(model, relevant, child)
 	}
+	// Create a slice from the map keys
+	keys := make([]*types.Element, len(relevant))
+	i := 0
+	for k := range relevant {
+		keys[i] = k
+		i++
+	}
+	return keys, nil
 }
 
 // Select the relationships that are relevant, including implicit ones
 func getRelevantRelationships(model *types.Model, elements []*types.Element) []types.Relationship {
 	var relationships []types.Relationship
-	for _, rel := range model.ImplicitRelationships() {
+	for _, rel := range model.ImplicitAssociations() {
 		// Add relationships that link relevant elements
 		if contains(elements, rel.Source) && contains(elements, rel.Destination) {
 			relationships = append(relationships, rel)
@@ -49,33 +59,30 @@ func getRelevantRelationships(model *types.Model, elements []*types.Element) []t
 	return relationships
 }
 
-// Select the elements that are relevant, including the implicit ones
-func getRelevantElements(model *types.Model, elements []*types.Element) map[*types.Element]bool {
-	// Prepare an empty index of relevant elements
-	relevant := make(map[*types.Element]bool)
-	for _, el := range elements {
-		// Add the relevant element, and all its ancenstors
-		addAllAncestors(model, relevant, el)
-	}
-	return relevant
-}
-
 // Add the specified element to the map, and all its ancestors
-func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *types.Element) {
+func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *types.Element) error {
 	for {
 		// Add the current element
 		elements[el] = true
+		// Find the parent
+		parent, err := model.Parent(el)
+		if err != nil {
+			return err
+		}
 		// Try add parent
-		if parent := el.Parent; model.IsRoot(parent) {
+		if parent == nil {
 			// Parent is root, we're done here
-			return
+			return nil
 		} else if _, ok := elements[parent]; ok {
 			// Parent is already in map, someone got there first
 			// Return early
-			return
+			return nil
 		} else {
 			// Now recurse up through all the parents
-			addAllAncestors(model, elements, parent)
+			err := addAllAncestors(model, elements, parent)
+			if err != nil {
+				return err
+			}
 		}
 	}
 }

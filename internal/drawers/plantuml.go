@@ -23,11 +23,11 @@ func (p *PlantUmlDrawer) Draw(model types.Model) string {
 	// Add the header
 	p.writeLine("@startuml")
 	// Draw the elements, recursively
-	for _, el := range model.Elements() {
-		p.drawComponent(el)
+	for _, el := range model.Children(nil) {
+		p.drawComponent(&model, el)
 	}
 	// Now draw the relationships
-	for _, rel := range model.Relationships {
+	for _, rel := range model.Associations {
 		p.writeLine("[%s] --> [%s]", rel.Source.Name, rel.Destination.Name)
 	}
 	// Write footer
@@ -36,17 +36,18 @@ func (p *PlantUmlDrawer) Draw(model types.Model) string {
 	return p.builder.String()
 }
 
-func (p *PlantUmlDrawer) drawComponent(el *types.Element) {
-	if len(el.Children) == 0 {
+func (p *PlantUmlDrawer) drawComponent(model *types.Model, el *types.Element) {
+	children := model.Children(el)
+	if len(children) == 0 {
 		// Write a simple component
 		p.writeLine("[%s]", el.Name)
 	} else {
 		// Start a new package
 		p.writeLine("package \"%s\" {", el.Name)
 		p.indent++
-		for _, child := range el.Children {
+		for _, child := range children {
 			// Recurse through children
-			p.drawComponent(child)
+			p.drawComponent(model, child)
 		}
 		p.indent--
 		p.writeLine("}")

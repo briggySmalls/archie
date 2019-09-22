@@ -20,25 +20,26 @@ func TestItemContextElements(t *testing.T) {
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)
-	one.AddChild(&oneChild)
+	m.AddElement(&oneChild, &one)
 	m.AddRootElement(&two)
-	two.AddChild(&twoChild)
+	m.AddElement(&twoChild, &two)
 
 	// Link the children together
-	m.AddRelationship(&oneChild, &twoChild)
+	m.AddAssociation(&oneChild, &twoChild)
 
 	// Create the landscape view
 	l := NewItemContextView(&m, &one)
 
 	// Check elements are correct
-	assert.Assert(t, is.Contains(l.Elements(), &one))
-	assert.Assert(t, is.Contains(l.Elements(), &oneChild))
-	assert.Assert(t, is.Contains(l.Elements(), &two))
-	assert.Assert(t, is.Len(l.Elements(), 3))
+	assert.Assert(t, is.Contains(l.Elements, &one))
+	assert.Assert(t, is.Contains(l.Elements, &oneChild))
+	assert.Assert(t, is.Contains(l.Elements, &two))
+	assert.Assert(t, is.Len(l.Elements, 3))
+	assert.Assert(t, is.Len(l.Children(&two), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Len(l.Relationships, 1))
-	rel := l.Relationships[0]
+	assert.Assert(t, is.Len(l.Associations, 1))
+	rel := l.Associations[0]
 	assert.Equal(t, rel.Source, &oneChild)
 	assert.Equal(t, rel.Destination, &two)
 }
