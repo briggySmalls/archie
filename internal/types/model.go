@@ -4,10 +4,6 @@ import (
 	"fmt"
 )
 
-const (
-	ROOT_INDEX = 0
-)
-
 type Relationship struct {
 	Source      *Element
 	Destination *Element
@@ -25,9 +21,6 @@ func NewModel() Model {
 	model := Model{
 		Composition: make(map[*Element]*Element),
 	}
-	// Create a root elment and add it
-	root := newModelRoot()
-	model.Elements = append(model.Elements, &root)
 	return model
 }
 
@@ -41,13 +34,18 @@ func (m *Model) AddElement(new, parent *Element) {
 // Add an element to the root of the model
 func (m *Model) AddRootElement(new *Element) {
 	// Add element as a child of the root
-	m.AddElement(new, m.root())
+	m.AddElement(new, nil)
 }
 
 // Add an association between Elements
 func (m *Model) AddAssociation(source, destination *Element) {
 	// Append to relationships
 	m.Associations = append(m.Associations, Relationship{source, destination})
+}
+
+func (m *Model) RootElements() []*Element {
+	// Root is 'nil'
+	return m.Children(nil)
 }
 
 // Get a slice of all relationships, including implicit parent relationships
@@ -64,7 +62,7 @@ func (m *Model) ImplicitAssociations() []Relationship {
 			// Link all source's anscestors to destination
 			m.bubbleUpSource(relsMap, rel.Source, dest)
 			// Iterate destination
-			if parent := m.parent(dest); m.IsRoot(parent) {
+			if parent := m.parent(dest); parent == nil {
 				// This is a root element, so bail
 				break
 			} else {
@@ -95,7 +93,7 @@ func (m *Model) Depth(el *Element) (uint, error) {
 			// Failed to find parent
 			return 0, err
 		}
-		if m.IsRoot(parent) {
+		if parent == nil {
 			// We're done!
 			return depth, nil
 		}
@@ -134,24 +132,12 @@ func (m *Model) Children(element *Element) []*Element {
 	return children
 }
 
-func (m *Model) IsRoot(el *Element) bool {
-	// First, check if the element itself is a root
-	if !el.isRoot() {
-		return false
-	}
-	if el != m.root() {
-		// Element is the root of a different model!?
-		panic(fmt.Errorf("Unexpected root found"))
-	}
-	return true
-}
-
 func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
 	for {
 		// Create the relationship
 		relationships[Relationship{Source: source, Destination: dest}] = true
 		// Iterate
-		if parent := m.parent(source); m.IsRoot(parent) {
+		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!
 			break
 		} else {
@@ -160,8 +146,4 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Elem
 		}
 
 	}
-}
-
-func (m *Model) root() *Element {
-	return m.Elements[ROOT_INDEX]
 }

@@ -28,10 +28,10 @@ func TestComposition(t *testing.T) {
 	m, elMap := createModel()
 
 	// Test parent results
-	assertParent(t, m, elMap["One"], m.root())
+	assertParent(t, m, elMap["One"], nil)
 	assertParent(t, m, elMap["OneChild"], elMap["One"])
 	assertParent(t, m, elMap["OneChildChild"], elMap["OneChild"])
-	assertParent(t, m, elMap["Two"], m.root())
+	assertParent(t, m, elMap["Two"], nil)
 	assertParent(t, m, elMap["TwoChild"], elMap["Two"])
 	assertParent(t, m, elMap["TwoChildChild"], elMap["TwoChild"])
 
