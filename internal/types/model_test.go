@@ -20,6 +20,8 @@ func TestElements(t *testing.T) {
 	// Assert
 	assert.Assert(t, &one != nil)
 	assert.Assert(t, &two != nil)
+	assertName(t, &m, &one, "One")
+	assertName(t, &m, &two, "Two")
 }
 
 // Test composition relationships
@@ -40,6 +42,14 @@ func TestComposition(t *testing.T) {
 	assertChildren(t, m, elMap["OneChild"], []*Element{elMap["OneChildChild"]})
 	assertChildren(t, m, elMap["Two"], []*Element{elMap["TwoChild"]})
 	assertChildren(t, m, elMap["TwoChild"], []*Element{elMap["TwoChildChild"]})
+
+	// Test lookups too
+	assertName(t, m, elMap["One"], "One")
+	assertName(t, m, elMap["OneChild"], "One/OneChild")
+	assertName(t, m, elMap["OneChildChild"], "One/OneChild/OneChildChild")
+	assertName(t, m, elMap["Two"], "Two")
+	assertName(t, m, elMap["TwoChild"], "Two/TwoChild")
+	assertName(t, m, elMap["TwoChildChild"], "Two/TwoChild/TwoChildChild")
 }
 
 // Test trivial implicit relationships
@@ -94,6 +104,14 @@ func assertParent(t *testing.T, m *Model, child *Element, parent *Element) {
 	assert.NilError(t, err)
 	// Assert parent is as expected
 	assert.Equal(t, parent, result)
+}
+
+func assertName(t *testing.T, m *Model, el *Element, name string) {
+	// Try to look up the name
+	result, err := m.LookupName(name)
+	assert.NilError(t, err)
+	// Now check they match
+	assert.Equal(t, el, result)
 }
 
 func assertChildren(t *testing.T, m *Model, parent *Element, children []*Element) {

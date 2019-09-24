@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Relationship struct {
@@ -130,6 +131,36 @@ func (m *Model) Children(element *Element) []*Element {
 		}
 	}
 	return children
+}
+
+func (m *Model) LookupName(name string) (*Element, error) {
+	// Split the string by slashes
+	parts := strings.Split(name, "/")
+	// Search down the tree
+	var parent *Element
+	parent = nil
+NameLoop:
+	for i, name := range parts {
+		// Look for a child with the given name
+		for _, el := range m.Children(parent) {
+			if el.Name == name {
+				// We've found the right child
+				if i == len(parts) - 1 {
+					// We've found our element
+					return el, nil
+				}
+				// Move on to the next name
+				parent = el
+				continue NameLoop
+			}
+		}
+		// We didn't find a child matching that name
+		if parent != nil {
+			return nil, fmt.Errorf("Couldn't find child with name '%s' in '%s'", name, parent.Name)
+		}
+		return nil, fmt.Errorf("Couldn't find child with name '%s' in root", name)
+	}
+	panic(fmt.Errorf("It should be impossible to reach this code..."))
 }
 
 func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
