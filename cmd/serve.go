@@ -21,30 +21,17 @@ import (
 	"github.com/briggysmalls/archie/internal/readers"
 	"github.com/briggysmalls/archie/internal/types"
 	"github.com/briggysmalls/archie/internal/views"
+	"github.com/briggysmalls/archie/internal/server"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"
 )
 
-var view string
-var scope string
-
-// drawCmd represents the draw command
-var drawCmd = &cobra.Command{
-	Use:   "draw",
-	Short: "Draw a diagram from the model",
+// serveCmd represents the draw command
+var serveCmd = &cobra.Command{
+	Use:   "serve",
+	Short: "Serves an architecture viewer",
 	Long:  ``,
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		// Ensure a view is provided
-		if view == "" {
-			return fmt.Errorf("View must be provided")
-		}
-		// Ensure a scope is provided if required
-		if view != "landscape" && scope == "" {
-			return fmt.Errorf("Scope must be provided for view: %s", view)
-		}
-		return nil
-	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var err error
 
@@ -62,33 +49,13 @@ var drawCmd = &cobra.Command{
 			panic(err)
 		}
 
-		// Create a view from the model
-		var viewModel types.Model
-		switch view {
-		case "landscape":
-			viewModel = views.NewLandscapeView(m)
-		case "context":
-			// First get the scope
-			var scopeItem *types.Element
-			scopeItem, err = m.LookupName(scope)
-			if err != nil {
-				panic(err)
-			}
-			viewModel = views.NewItemContextView(m, scopeItem)
-		}
-
-		// Draw the view
-		d := drawers.NewPlantUmlDrawer()
-		fmt.Print(d.Draw(viewModel))
+		// Create a server
+		s := server.NewServer()
+		s.Serve(":8080")
 	},
 }
 
 func init() {
 	// Add as a subcommand
-	rootCmd.AddCommand(drawCmd)
-	// Add flags
-	drawCmd.PersistentFlags().StringVar(&view, "view", "", "view to create")
-	drawCmd.PersistentFlags().StringVar(&scope, "scope", "", "scope for the view")
-	// Mark some as required
-	drawCmd.MarkFlagRequired("view")
+	rootCmd.AddCommand(serveCmd)
 }
