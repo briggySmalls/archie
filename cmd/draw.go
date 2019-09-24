@@ -17,36 +17,94 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/briggysmalls/archie/internal/drawers"
+	"github.com/briggysmalls/archie/internal/readers"
+	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/internal/views"
+	"io/ioutil"
+	"os"
 
 	"github.com/spf13/cobra"
 )
+
+var model string
+var view string
+var scope string
 
 // drawCmd represents the draw command
 var drawCmd = &cobra.Command{
 	Use:   "draw",
 	Short: "Draw a diagram from the model",
 	Long:  ``,
+	PreRunE: func(cmd *cobra.Command, args []string) error {
+		// Ensure a model is provided
+		if model == "" {
+			return fmt.Errorf("Model must be provided")
+		}
+		// Ensure a view is provided
+		if view == "" {
+			return fmt.Errorf("View must be provided")
+		}
+		// Ensure a scope is provided if required
+		if view != "landscape" && scope == "" {
+			return fmt.Errorf("Scope must be provided for view: %s", view)
+		}
+		return nil
+	},
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("draw called")
+		var err error
 
-		// Create the model
-		// m := internal.GetModel()
+		// Read in the yaml file
+		var dat []byte
+		dat, err = ioutil.ReadFile(model)
+		if err != nil {
+			panic(err)
+		}
+
+		// Parse the yaml into a model
+		var m *types.Model
+		m, err = readers.ParseYaml(string(dat))
+		if err != nil {
+			panic(err)
+		}
 
 		// Create a view from the model
+		var viewModel types.Model
+		switch view {
+		case "landscape":
+			viewModel = views.NewLandscapeView(m)
+		case "context":
+			// First get the scope
+			var scopeItem *types.Element
+			scopeItem, err = m.LookupName(scope)
+			if err != nil {
+				panic(err)
+			}
+			viewModel = views.NewItemContextView(m, scopeItem)
+		}
 
+		// Draw the view
+		d := drawers.PlantUmlDrawer{}
+		fmt.Print(d.Draw(viewModel))
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(drawCmd)
+	// Add flags
+	drawCmd.PersistentFlags().StringVar(&model, "model", "", "model file (yaml)")
+	drawCmd.PersistentFlags().StringVar(&view, "view", "", "view to create")
+	drawCmd.PersistentFlags().StringVar(&scope, "scope", "", "scope for the view")
+	// Mark some as required
+	drawCmd.MarkFlagRequired("model")
+	drawCmd.MarkFlagFilename("model")
+	drawCmd.MarkFlagRequired("view")
+}
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// drawCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// drawCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	if err := drawCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
