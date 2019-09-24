@@ -81,11 +81,14 @@ func TestDeepImplicitRelationships(t *testing.T) {
 
 	// Link the children together
 	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"])
+	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"])
 
 	// Assert implicit relationships
 	assert.Assert(t, is.Contains(m.Associations, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Len(m.Associations, 1))
+	assert.Assert(t, is.Contains(m.Associations, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
+	assert.Assert(t, is.Len(m.Associations, 2))
 	implicitRels := m.ImplicitAssociations()
+	// TODO: Check we never link a child to it's parent
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["One"], Destination: elMap["Two"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["One"], Destination: elMap["TwoChild"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["One"], Destination: elMap["TwoChildChild"]}))
