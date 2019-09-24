@@ -28,7 +28,7 @@ func (p *PlantUmlDrawer) Draw(model types.Model) string {
 	}
 	// Now draw the relationships
 	for _, rel := range model.Associations {
-		p.writeLine("[%s] --> [%s]", rel.Source.Name, rel.Destination.Name)
+		p.writeLine("[%s] -- [%s]", rel.Source.Name, rel.Destination.Name)
 	}
 	// Write footer
 	p.writeLine("@enduml")

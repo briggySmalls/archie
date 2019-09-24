@@ -48,3 +48,5 @@ associations:
     destination: sound-system/amplifier/ac-dc converter
   - source: user
     destination: sound-system/speaker/driver
+  - source: user
+    destination: sound-system/amplifier/power button

@@ -25,7 +25,7 @@ func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
 			if err != nil {
 				panic(err)
 			}
-			if linkedDepth == scopeDepth {
+			if linkedDepth <= scopeDepth {
 				elements = append(elements, linked)
 			}
 		}
