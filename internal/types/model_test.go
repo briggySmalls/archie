@@ -32,21 +32,23 @@ func TestComposition(t *testing.T) {
 	// Test parent results
 	assertParent(t, m, elMap["One"], nil)
 	assertParent(t, m, elMap["OneChild"], elMap["One"])
-	assertParent(t, m, elMap["OneChildChild"], elMap["OneChild"])
+	assertParent(t, m, elMap["OneChildChilda"], elMap["OneChild"])
+	assertParent(t, m, elMap["OneChildChildb"], elMap["OneChild"])
 	assertParent(t, m, elMap["Two"], nil)
 	assertParent(t, m, elMap["TwoChild"], elMap["Two"])
 	assertParent(t, m, elMap["TwoChildChild"], elMap["TwoChild"])
 
 	// Test children
 	assertChildren(t, m, elMap["One"], []*Element{elMap["OneChild"]})
-	assertChildren(t, m, elMap["OneChild"], []*Element{elMap["OneChildChild"]})
+	assertChildren(t, m, elMap["OneChild"], []*Element{elMap["OneChildChilda"], elMap["OneChildChildb"]})
 	assertChildren(t, m, elMap["Two"], []*Element{elMap["TwoChild"]})
 	assertChildren(t, m, elMap["TwoChild"], []*Element{elMap["TwoChildChild"]})
 
 	// Test lookups too
 	assertName(t, m, elMap["One"], "One")
 	assertName(t, m, elMap["OneChild"], "One/OneChild")
-	assertName(t, m, elMap["OneChildChild"], "One/OneChild/OneChildChild")
+	assertName(t, m, elMap["OneChildChilda"], "One/OneChild/OneChildChilda")
+	assertName(t, m, elMap["OneChildChildb"], "One/OneChild/OneChildChildb")
 	assertName(t, m, elMap["Two"], "Two")
 	assertName(t, m, elMap["TwoChild"], "Two/TwoChild")
 	assertName(t, m, elMap["TwoChildChild"], "Two/TwoChild/TwoChildChild")
@@ -78,10 +80,10 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	m, elMap := createModel()
 
 	// Link the children together
-	m.AddAssociation(elMap["OneChildChild"], elMap["TwoChildChild"])
+	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"])
 
 	// Assert implicit relationships
-	assert.Assert(t, is.Contains(m.Associations, Relationship{Source: elMap["OneChildChild"], Destination: elMap["TwoChildChild"]}))
+	assert.Assert(t, is.Contains(m.Associations, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["TwoChildChild"]}))
 	assert.Assert(t, is.Len(m.Associations, 1))
 	implicitRels := m.ImplicitAssociations()
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["One"], Destination: elMap["Two"]}))
@@ -90,9 +92,9 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChild"], Destination: elMap["Two"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChild"], Destination: elMap["TwoChild"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChild"], Destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChild"], Destination: elMap["Two"]}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChild"], Destination: elMap["TwoChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChild"], Destination: elMap["TwoChildChild"]}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["TwoChild"]}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["TwoChildChild"]}))
 	assert.Assert(t, is.Len(implicitRels, 9))
 }
 
@@ -131,7 +133,7 @@ func createModel() (*Model, map[string]*Element) {
 	elMap := make(map[string]*Element)
 
 	// Create the items we'll be testing
-	for _, name := range []string{"One", "OneChild", "OneChildChild", "Two", "TwoChild", "TwoChildChild"} {
+	for _, name := range []string{"One", "OneChild", "OneChildChilda", "OneChildChildb", "Two", "TwoChild", "TwoChildChild"} {
 		// Create the element
 		el := NewItem(name)
 		// Record it
@@ -142,7 +144,8 @@ func createModel() (*Model, map[string]*Element) {
 	m.AddRootElement(elMap["One"])
 	m.AddRootElement(elMap["Two"])
 	m.AddElement(elMap["OneChild"], elMap["One"])
-	m.AddElement(elMap["OneChildChild"], elMap["OneChild"])
+	m.AddElement(elMap["OneChildChilda"], elMap["OneChild"])
+	m.AddElement(elMap["OneChildChildb"], elMap["OneChild"])
 	m.AddElement(elMap["TwoChild"], elMap["Two"])
 	m.AddElement(elMap["TwoChildChild"], elMap["TwoChild"])
 

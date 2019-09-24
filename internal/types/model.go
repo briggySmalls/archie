@@ -145,7 +145,7 @@ NameLoop:
 		for _, el := range m.Children(parent) {
 			if el.Name == name {
 				// We've found the right child
-				if i == len(parts) - 1 {
+				if i == len(parts)-1 {
 					// We've found our element
 					return el, nil
 				}
@@ -165,12 +165,16 @@ NameLoop:
 
 func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
 	for {
+		if source == dest {
+			// We don't link elements to themselves
+			return
+		}
 		// Create the relationship
 		relationships[Relationship{Source: source, Destination: dest}] = true
 		// Iterate
 		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!
-			break
+			return
 		} else {
 			// Iterate for the source's parent
 			source = parent
