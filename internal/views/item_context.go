@@ -14,17 +14,24 @@ func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
 
 	// We also want to add elements:
 	// - related to these children
-	// - same depth as scope
+	// - no deeper than scope
+	// - only root element for independent systems
 	scopeDepth, err := model.Depth(scope)
 	if err != nil {
 		panic(err)
 	}
 	for _, rel := range model.ImplicitAssociations() {
 		if linked := getLinked(rel, scope); linked != nil {
+			// Association links an element of interest...
 			linkedDepth, err := model.Depth(linked)
 			if err != nil {
 				panic(err)
 			}
+			// If there is no common ancestor, we only want the root
+			if !model.ShareAncestor(scope, linked) && linkedDepth != 0 {
+				continue
+			}
+			// Ensure the element is not more specific than scope
 			if linkedDepth <= scopeDepth {
 				elements = append(elements, linked)
 			}

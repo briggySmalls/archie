@@ -148,6 +148,24 @@ func (m *Model) IsAncestor(descendant, ancestor *Element) bool {
 	}
 }
 
+func (m *Model) ShareAncestor(a, b *Element) bool {
+	// Find the respective root elements
+	return m.getRoot(a) == m.getRoot(b)
+}
+
+func (m *Model) getRoot(element *Element) *Element {
+	for {
+		parent := m.parent(element)
+		// Check if we've found the root
+		if parent == nil {
+			// We've found the root
+			return element
+		}
+		// Iterate
+		element = parent
+	}
+}
+
 func (m *Model) LookupName(name string) (*Element, error) {
 	// Split the string by slashes
 	parts := strings.Split(name, "/")

@@ -15,6 +15,7 @@ elements:
         children:
           - audio in connector
           - audio out connector
+          - bluetooth receiver
           - ac-dc converter
           - mixer
           - amplifier circuit
@@ -22,14 +23,23 @@ elements:
             technology: electro-mechanical
           - name: input select
             technology: electro-mechanical
+  - name: app
+    children:
+    - bluetooth driver
+    - spotify client
+    - ui
+
 
 associations:
+  # Sound system
   - source: user
     destination: sound-system/amplifier/input select
   - source: sound-system/amplifier/input select
     destination: sound-system/amplifier/mixer
   - source: sound-system/amplifier/mixer
     destination: sound-system/amplifier/audio in connector
+  - source: sound-system/amplifier/mixer
+    destination: sound-system/amplifier/bluetooth receiver
   - source: sound-system/amplifier/ac-dc converter
     destination: sound-system/amplifier/mixer
   - source: sound-system/amplifier/ac-dc converter
@@ -50,3 +60,12 @@ associations:
     destination: sound-system/speaker/driver
   - source: user
     destination: sound-system/amplifier/power button
+  # App
+  - source: user
+    destination: app/ui
+  - source: app/ui
+    destination: app/spotify client
+  - source: app/spotify client
+    destination: app/bluetooth driver
+  - source: app/bluetooth driver
+    destination: sound-system/amplifier/bluetooth receiver

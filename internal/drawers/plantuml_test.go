@@ -1,6 +1,7 @@
 package drawers
 
 import (
+	"fmt"
 	"github.com/briggysmalls/archie/internal/types"
 	"github.com/briggysmalls/archie/internal/views"
 	"gotest.tools/assert"
@@ -42,6 +43,6 @@ func TestDraw(t *testing.T) {
 	assert.Equal(t, lines[1], "package \"One\" {")
 	assert.Equal(t, lines[3], "}")
 	assert.Assert(t, is.Contains(lines, "[Two]"))
-	assert.Assert(t, is.Contains(lines, "[OneChild] --> [Two]"))
+	assert.Assert(t, is.Contains(lines, "[OneChild] -- [Two]"))
 	assert.Equal(t, lines[len(lines)-2], "@enduml")
 }

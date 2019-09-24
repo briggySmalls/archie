@@ -25,7 +25,7 @@ func TestElements(t *testing.T) {
 }
 
 // Test composition relationships
-func TestComposition(t *testing.T) {
+func TestParent(t *testing.T) {
 	// Create a simple model
 	m, elMap := createModel()
 
@@ -37,12 +37,39 @@ func TestComposition(t *testing.T) {
 	assertParent(t, m, elMap["Two"], nil)
 	assertParent(t, m, elMap["TwoChild"], elMap["Two"])
 	assertParent(t, m, elMap["TwoChildChild"], elMap["TwoChild"])
+}
+
+// Test composition relationships
+func TestDepth(t *testing.T) {
+	// Create a simple model
+	m, elMap := createModel()
+
+	// Test parent results
+	assertDepth(t, m, elMap["One"], 0)
+	assertDepth(t, m, elMap["OneChild"], 1)
+	assertDepth(t, m, elMap["OneChildChilda"], 2)
+	assertDepth(t, m, elMap["OneChildChildb"], 2)
+	assertDepth(t, m, elMap["Two"], 0)
+	assertDepth(t, m, elMap["TwoChild"], 1)
+	assertDepth(t, m, elMap["TwoChildChild"], 2)
+}
+
+func TestChildren(t *testing.T) {
+	// Create a simple model
+	m, elMap := createModel()
 
 	// Test children
 	assertChildren(t, m, elMap["One"], []*Element{elMap["OneChild"]})
 	assertChildren(t, m, elMap["OneChild"], []*Element{elMap["OneChildChilda"], elMap["OneChildChildb"]})
+	assertChildren(t, m, elMap["OneChildChilda"], []*Element{})
+	assertChildren(t, m, elMap["OneChildChildb"], []*Element{})
 	assertChildren(t, m, elMap["Two"], []*Element{elMap["TwoChild"]})
 	assertChildren(t, m, elMap["TwoChild"], []*Element{elMap["TwoChildChild"]})
+}
+
+func TestLookupName(t *testing.T) {
+	// Create a simple model
+	m, elMap := createModel()
 
 	// Test lookups too
 	assertName(t, m, elMap["One"], "One")
@@ -151,6 +178,12 @@ func assertChildren(t *testing.T, m *Model, parent *Element, children []*Element
 	for _, expected := range children {
 		assert.Assert(t, is.Contains(result, expected))
 	}
+}
+
+func assertDepth(t *testing.T, m *Model, element *Element, depth uint) {
+	result, err := m.Depth(element)
+	assert.NilError(t, err)
+	assert.Equal(t, depth, result)
 }
 
 // Helper function to create a model
