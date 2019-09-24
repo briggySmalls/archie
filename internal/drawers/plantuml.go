@@ -1,59 +1,41 @@
 package drawers
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/briggysmalls/archie/internal/types"
 )
 
-const (
-	SPACES_IN_TAB = 4
-)
-
-type PlantUmlDrawer struct {
-	indent  uint
-	builder strings.Builder
+func NewPlantUmlDrawer() Drawer {
+	// Create an instance of the config
+	config := PlantUmlConfig{}
+	// Bundle it up into a drawer
+	return &drawer{config: config}
 }
 
-func (p *PlantUmlDrawer) Draw(model types.Model) string {
-	// Reset the drawer
-	p.indent = 0
-	p.builder.Reset()
-	// Add the header
-	p.writeLine("@startuml")
-	// Draw the elements, recursively
-	for _, el := range model.Children(nil) {
-		p.drawComponent(&model, el)
-	}
-	// Now draw the relationships
-	for _, rel := range model.Associations {
-		p.writeLine("[%s] -- [%s]", rel.Source.Name, rel.Destination.Name)
-	}
-	// Write footer
-	p.writeLine("@enduml")
-	// Return result
-	return p.builder.String()
+type PlantUmlConfig struct {
 }
 
-func (p *PlantUmlDrawer) drawComponent(model *types.Model, el *types.Element) {
-	children := model.Children(el)
-	if len(children) == 0 {
-		// Write a simple component
-		p.writeLine("[%s]", el.Name)
-	} else {
-		// Start a new package
-		p.writeLine("package \"%s\" {", el.Name)
-		p.indent++
-		for _, child := range children {
-			// Recurse through children
-			p.drawComponent(model, child)
-		}
-		p.indent--
-		p.writeLine("}")
-	}
+func (p PlantUmlConfig) Header(writer Writer) {
+	writer.Write("@startuml")
 }
 
-func (p *PlantUmlDrawer) writeLine(format string, args ...interface{}) {
-	p.builder.WriteString(fmt.Sprintf("%*s%s\n", p.indent*SPACES_IN_TAB, "", fmt.Sprintf(format, args...)))
+func (p PlantUmlConfig) Footer(writer Writer, ) {
+	writer.Write("@enduml")
+}
+
+func (p PlantUmlConfig) Element(writer Writer, element *types.Element) {
+	writer.Write("[%s]", element.Name)
+}
+
+func (p PlantUmlConfig) StartParentElement(writer Writer, element *types.Element) {
+	writer.Write("package \"%s\" {", element.Name)
+	writer.UpdateIndent(1)
+}
+
+func (p PlantUmlConfig) EndParentElement(writer Writer, element *types.Element) {
+	writer.UpdateIndent(-1)
+	writer.Write("}")
+}
+
+func (p PlantUmlConfig) Association(writer Writer, association types.Relationship) {
+	writer.Write("[%s] -- [%s]", association.Source.Name, association.Destination.Name)
 }

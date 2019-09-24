@@ -1,7 +1,6 @@
 package drawers
 
 import (
-	"fmt"
 	"github.com/briggysmalls/archie/internal/types"
 	"github.com/briggysmalls/archie/internal/views"
 	"gotest.tools/assert"
@@ -33,8 +32,9 @@ func TestDraw(t *testing.T) {
 	l := views.NewItemContextView(&m, &one)
 
 	// Drawer
-	d := PlantUmlDrawer{}
-	output := d.Draw(l)
+	d := NewPlantUmlDrawer()
+	output, err := d.Draw(l)
+	assert.NilError(t, err)
 
 	// Assert result
 	lines := strings.Split(output, "\n")
