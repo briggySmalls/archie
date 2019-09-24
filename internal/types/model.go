@@ -58,9 +58,9 @@ func (m *Model) ImplicitAssociations() []Relationship {
 	// Now add implicit relationships
 	for _, rel := range rels {
 		dest := rel.Destination
-		// Now link each of source's anscestors to destination
+		// Now link each of source's ancestors to destination
 		for {
-			// Link all source's anscestors to destination
+			// Link all source's ancestors to destination
 			m.bubbleUpSource(relsMap, rel.Source, dest)
 			// Iterate destination
 			if parent := m.parent(dest); parent == nil {
@@ -133,6 +133,21 @@ func (m *Model) Children(element *Element) []*Element {
 	return children
 }
 
+func (m *Model) IsAncestor(descendant, ancestor *Element) bool {
+	for {
+		// Check for a match
+		if descendant == ancestor {
+			return true
+		}
+		// Check if we're at the root
+		if descendant == nil {
+			return false
+		}
+		// Otherwise iterate
+		descendant = m.parent(descendant)
+	}
+}
+
 func (m *Model) LookupName(name string) (*Element, error) {
 	// Split the string by slashes
 	parts := strings.Split(name, "/")
@@ -165,8 +180,8 @@ NameLoop:
 
 func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
 	for {
-		if source == dest {
-			// We don't link elements to themselves
+		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
+			// We never link sub-items to their parents
 			return
 		}
 		// Create the relationship
@@ -179,6 +194,5 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Elem
 			// Iterate for the source's parent
 			source = parent
 		}
-
 	}
 }

@@ -54,6 +54,31 @@ func TestComposition(t *testing.T) {
 	assertName(t, m, elMap["TwoChildChild"], "Two/TwoChild/TwoChildChild")
 }
 
+func TestIsAnscestor(t *testing.T) {
+	// Create a simple model
+	m, elMap := createModel()
+
+	// Test valid anscestors
+	assert.Assert(t, m.IsAncestor(elMap["OneChild"], elMap["One"]))
+	assert.Assert(t, m.IsAncestor(elMap["OneChildChilda"], elMap["OneChild"]))
+	assert.Assert(t, m.IsAncestor(elMap["OneChildChilda"], elMap["One"]))
+	assert.Assert(t, m.IsAncestor(elMap["OneChildChildb"], elMap["OneChild"]))
+	assert.Assert(t, m.IsAncestor(elMap["OneChildChildb"], elMap["One"]))
+	assert.Assert(t, m.IsAncestor(elMap["TwoChild"], elMap["Two"]))
+	assert.Assert(t, m.IsAncestor(elMap["TwoChildChild"], elMap["Two"]))
+	assert.Assert(t, m.IsAncestor(elMap["TwoChildChild"], elMap["TwoChild"]))
+
+	// Test invalid anscestors
+	assert.Assert(t, !m.IsAncestor(elMap["OneChild"], elMap["Two"]))
+	assert.Assert(t, !m.IsAncestor(elMap["OneChildChilda"], elMap["TwoChild"]))
+	assert.Assert(t, !m.IsAncestor(elMap["OneChildChilda"], elMap["Two"]))
+	assert.Assert(t, !m.IsAncestor(elMap["OneChildChildb"], elMap["TwoChild"]))
+	assert.Assert(t, !m.IsAncestor(elMap["OneChildChildb"], elMap["Two"]))
+	assert.Assert(t, !m.IsAncestor(elMap["TwoChild"], elMap["One"]))
+	assert.Assert(t, !m.IsAncestor(elMap["TwoChildChild"], elMap["One"]))
+	assert.Assert(t, !m.IsAncestor(elMap["TwoChildChild"], elMap["OneChild"]))
+}
+
 // Test trivial implicit relationships
 func TestTrivialImplicitAssociations(t *testing.T) {
 	// Create a simple model
@@ -98,7 +123,8 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["TwoChild"]}))
 	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Len(implicitRels, 9))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
+	assert.Assert(t, is.Len(implicitRels, 10))
 }
 
 // Helper function to assert expected parent
