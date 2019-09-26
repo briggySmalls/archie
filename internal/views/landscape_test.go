@@ -29,6 +29,7 @@ func TestLandscapeElements(t *testing.T) {
 
 	// Create the landscape view
 	l := NewLandscapeView(&m)
+	l = NewLandscapeView(&m)
 
 	// Check elements are correct
 	assert.Assert(t, is.Contains(l.Elements, &one))

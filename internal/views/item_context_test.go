@@ -36,6 +36,7 @@ func TestItemContextElements(t *testing.T) {
 
 	// Create the view
 	l := NewItemContextView(&m, &oneChild)
+	l = NewItemContextView(&m, &oneChild)
 
 	// Check elements are correct
 	assert.Assert(t, is.Contains(l.Elements, &one))
