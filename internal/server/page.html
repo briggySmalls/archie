@@ -9,7 +9,7 @@
     <body>
         <h1>{{.Title}}</h1>
         {{if .ViewName}}<h2>View: {{.ViewName}}</h2>{{end}}
-        {{if .Context}}<h3>Context: {{.Context}}</h3>{{end}}
+        {{if .Context}}<h3>Context: {{.Context}} <a href=".">⬆️</a></h3>{{end}}
         <div class="mermaid">
             {{.Chart}}
         </div>

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/briggysmalls/archie/internal/types"
 	"net/url"
+	"strings"
 )
 
 func NewMermaidDrawer(linkAddress string) Drawer {
@@ -33,7 +34,9 @@ func (p MermaidConfig) Element(writer Writer, element *types.Element) {
 		if err != nil {
 			panic(err)
 		}
-		url := fmt.Sprintf("%s%s", p.linkAddress, url.PathEscape(fullName))
+		escapedName := url.PathEscape(fullName)
+		escapedName = strings.Replace(escapedName, "%2F", "/", -1)
+		url := fmt.Sprintf("%s%s", p.linkAddress, escapedName)
 		writer.Write("click %s \"%s\"", element.Id(), url)
 	}
 }

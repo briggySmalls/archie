@@ -38,11 +38,6 @@ func TestContextHandler(t *testing.T) {
 	// Create the server
 	s := newServer(t)
 
-	mytest(t, s)
-	mytest(t, s)
-}
-
-func mytest(t *testing.T, s *server) {
 	// Create a request to pass to our handler. We don't have any query parameters for now, so we'll
 	// pass 'nil' as the third parameter.
 	req, err := http.NewRequest("GET", "/One", nil)

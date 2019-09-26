@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
@@ -50,7 +51,7 @@ func (s *server) Serve(address string) error {
 	// Create a router
 	r := mux.NewRouter()
 	r.HandleFunc("/", s.homeHandler)
-	r.HandleFunc("/{item:.*}", s.contextHandler)
+	r.PathPrefix("/").HandlerFunc(s.contextHandler)
 
 	// Serve
 	return http.ListenAndServe(address, r)
@@ -78,7 +79,9 @@ func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) contextHandler(w http.ResponseWriter, r *http.Request) {
 	// Determine the item
-	itemName, err := url.PathUnescape(mux.Vars(r)["item"])
+	itemName, err := url.PathUnescape(strings.TrimFunc(r.URL.Path, func(r rune) bool {
+		return r == '/'
+	}))
 	if err != nil {
 		s.Error(w, err.Error(), http.StatusBadRequest)
 	}
