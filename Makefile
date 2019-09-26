@@ -51,11 +51,9 @@ check:
 test:
 	@go test $(TEST_FLAGS) ./...
 
-$(COVERAGE_RESULTS): test
-	$(TEST_FLAGS) += -coverprofile=$(COVERAGE_RESULTS)
-
-coverage: $(COVERAGE_RESULTS)
-	@go tool cover -html=$(COVERAGE_RESULTS)
+coverage: TEST_FLAGS+= -coverprofile=$(COVERAGE_RESULTS)
+coverage: test
+	@go tool cover -html=coverage.out
 
 run: install
 	@$(TARGET)
