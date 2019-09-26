@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/briggysmalls/archie/internal/readers"
 	"github.com/briggysmalls/archie/internal/server"
 	"github.com/briggysmalls/archie/internal/types"
@@ -53,7 +54,7 @@ var serveCmd = &cobra.Command{
 			panic(err)
 		}
 		// Open browser in goroutine
-		go open("http://localhost:8080")
+		go openBrowser("http://localhost:8080")
 		// Serve (blocking call)
 		s.Serve(":8080")
 	},
@@ -64,20 +65,20 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 }
 
-// open opens the specified URL in the default browser of the user.
-func open(url string) error {
-	var cmd string
-	var args []string
+func openBrowser(url string) {
+	var err error
 
 	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
 	case "windows":
-		cmd = "cmd"
-		args = []string{"/c", "start"}
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
 	case "darwin":
-		cmd = "open"
-	default: // "linux", "freebsd", "openbsd", "netbsd"
-		cmd = "xdg-open"
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
 	}
-	args = append(args, url)
-	return exec.Command(cmd, args...).Start()
+	if err != nil {
+		panic(err)
+	}
 }
