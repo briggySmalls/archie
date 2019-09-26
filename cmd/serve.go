@@ -16,15 +16,13 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-	"github.com/briggysmalls/archie/internal/drawers"
 	"github.com/briggysmalls/archie/internal/readers"
-	"github.com/briggysmalls/archie/internal/types"
-	"github.com/briggysmalls/archie/internal/views"
 	"github.com/briggysmalls/archie/internal/server"
-	"io/ioutil"
-
+	"github.com/briggysmalls/archie/internal/types"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"os/exec"
+	"runtime"
 )
 
 // serveCmd represents the draw command
@@ -50,7 +48,13 @@ var serveCmd = &cobra.Command{
 		}
 
 		// Create a server
-		s := server.NewServer()
+		s, err := server.NewServer(m)
+		if err != nil {
+			panic(err)
+		}
+		// Open browser in goroutine
+		go open("http://localhost:8080")
+		// Serve (blocking call)
 		s.Serve(":8080")
 	},
 }
@@ -58,4 +62,22 @@ var serveCmd = &cobra.Command{
 func init() {
 	// Add as a subcommand
 	rootCmd.AddCommand(serveCmd)
+}
+
+// open opens the specified URL in the default browser of the user.
+func open(url string) error {
+	var cmd string
+	var args []string
+
+	switch runtime.GOOS {
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start"}
+	case "darwin":
+		cmd = "open"
+	default: // "linux", "freebsd", "openbsd", "netbsd"
+		cmd = "xdg-open"
+	}
+	args = append(args, url)
+	return exec.Command(cmd, args...).Start()
 }
