@@ -11,7 +11,7 @@ const (
 
 type Element struct {
 	Name string
-	Kind uint
+	kind uint
 }
 
 // Create a new item
@@ -31,7 +31,7 @@ func NewActor(name string) Element {
 // Create an element
 func newElement(kind uint) Element {
 	return Element{
-		Kind: kind,
+		kind: kind,
 	}
 }
 
