@@ -87,11 +87,6 @@ func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *t
 	}
 }
 
-func remove(s []*types.Element, i int) []*types.Element {
-	s[len(s)-1], s[i] = s[i], s[len(s)-1]
-	return s[:len(s)-1]
-}
-
 // Check if an element is in the slice
 func contains(haystack []*types.Element, needle *types.Element) bool {
 	for _, el := range haystack {
