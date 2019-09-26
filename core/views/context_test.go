@@ -9,7 +9,7 @@ import (
 )
 
 // Test creating view for a scope with no children
-func TestItemContextElements(t *testing.T) {
+func TestContextElements(t *testing.T) {
 	// Create a simple model
 	m, elMap := createModel()
 
@@ -18,7 +18,7 @@ func TestItemContextElements(t *testing.T) {
 	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"])
 
 	// Create the view
-	l := NewItemContextView(m, elMap["OneChildChilda"])
+	l := NewContextView(m, elMap["OneChildChilda"])
 
 	// Check elements are correct
 	assert.Assert(t, is.Contains(l.Elements, elMap["One"]))
@@ -36,7 +36,7 @@ func TestItemContextElements(t *testing.T) {
 }
 
 // Test creating view for a scope with children
-func TestItemContextChildElements(t *testing.T) {
+func TestContextChildElements(t *testing.T) {
 	// Create a simple model
 	m, elMap := createModel()
 
@@ -45,7 +45,7 @@ func TestItemContextChildElements(t *testing.T) {
 	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"])
 
 	// Create the view
-	l := NewItemContextView(m, elMap["OneChild"])
+	l := NewContextView(m, elMap["OneChild"])
 
 	// Check elements are correct
 	assert.Assert(t, is.Contains(l.Elements, elMap["One"]))

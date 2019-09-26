@@ -2,7 +2,6 @@ package drawers
 
 import (
 	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/core/views"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 	"strings"
@@ -17,23 +16,18 @@ func TestDraw(t *testing.T) {
 	one := mdl.NewItem("One")
 	oneChild := mdl.NewItem("OneChild")
 	two := mdl.NewItem("Two")
-	twoChild := mdl.NewItem("TwoChild")
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)
 	m.AddElement(&oneChild, &one)
 	m.AddRootElement(&two)
-	m.AddElement(&twoChild, &two)
 
 	// Link the children together
-	m.AddAssociation(&oneChild, &twoChild)
-
-	// Create the landscape view
-	l := views.NewItemContextView(&m, &one)
+	m.AddAssociation(&oneChild, &two)
 
 	// Drawer
 	d := NewPlantUmlDrawer()
-	output, err := d.Draw(l)
+	output, err := d.Draw(m)
 	assert.NilError(t, err)
 
 	// Assert result

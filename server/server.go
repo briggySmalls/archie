@@ -92,7 +92,7 @@ func (s *server) contextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Create the view
-	viewModel := views.NewItemContextView(s.model, item)
+	viewModel := views.NewContextView(s.model, item)
 	// Write plantuml
 	output, err := s.drawer.Draw(viewModel)
 	if err != nil {

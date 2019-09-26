@@ -74,7 +74,7 @@ var drawCmd = &cobra.Command{
 			if err != nil {
 				panic(err)
 			}
-			viewModel = views.NewItemContextView(m, scopeItem)
+			viewModel = views.NewContextView(m, scopeItem)
 		}
 
 		// Draw the view

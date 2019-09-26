@@ -4,8 +4,8 @@ import (
 	mdl "github.com/briggysmalls/archie/core/model"
 )
 
-// Create a system landscape view
-func NewItemContextView(model *mdl.Model, scope *mdl.Element) mdl.Model {
+// Create a context view
+func NewContextView(model *mdl.Model, scope *mdl.Element) mdl.Model {
 	// Find relevant elements
 	var elements []*mdl.Element
 
