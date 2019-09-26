@@ -34,7 +34,7 @@ func (p MermaidConfig) Element(writer Writer, element *types.Element) {
 			panic(err)
 		}
 		url := fmt.Sprintf("%s%s", p.linkAddress, url.PathEscape(fullName))
-		writer.Write("click %p \"%s\"", element, url)
+		writer.Write("click %s \"%s\"", element.Id(), url)
 	}
 }
 
@@ -47,5 +47,5 @@ func (p MermaidConfig) EndParentElement(writer Writer, element *types.Element) {
 }
 
 func (p MermaidConfig) Association(writer Writer, association types.Relationship) {
-	writer.Write("%p-->%p", association.Source, association.Destination)
+	writer.Write("%s-->%s", association.Source.Id(), association.Destination.Id())
 }

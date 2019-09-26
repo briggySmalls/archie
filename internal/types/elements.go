@@ -1,5 +1,9 @@
 package types
 
+import (
+	"fmt"
+)
+
 const (
 	ACTOR = iota
 	ITEM
@@ -29,4 +33,8 @@ func newElement(kind uint) Element {
 	return Element{
 		Kind: kind,
 	}
+}
+
+func (e *Element) Id() string {
+	return fmt.Sprintf("%p", e)
 }
