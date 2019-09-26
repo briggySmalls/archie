@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	ACTOR = iota
-	ITEM
+	actor = iota
+	item
 )
 
 type Element struct {
@@ -16,14 +16,14 @@ type Element struct {
 
 // Create a new item
 func NewItem(name string) Element {
-	el := newElement(ITEM)
+	el := newElement(item)
 	el.Name = name
 	return el
 }
 
 // Create a new actor
 func NewActor(name string) Element {
-	el := newElement(ACTOR)
+	el := newElement(actor)
 	el.Name = name
 	return el
 }
