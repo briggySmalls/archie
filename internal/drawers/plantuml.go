@@ -5,10 +5,9 @@ import (
 )
 
 func NewPlantUmlDrawer() Drawer {
-	// Create an instance of the config
-	config := PlantUmlConfig{}
-	// Bundle it up into a drawer
-	return &drawer{config: config}
+	// Create a new drawer with correct config
+	d := newDrawer(PlantUmlConfig{})
+	return &d
 }
 
 type PlantUmlConfig struct {
@@ -18,7 +17,7 @@ func (p PlantUmlConfig) Header(writer Writer) {
 	writer.Write("@startuml")
 }
 
-func (p PlantUmlConfig) Footer(writer Writer, ) {
+func (p PlantUmlConfig) Footer(writer Writer) {
 	writer.Write("@enduml")
 }
 

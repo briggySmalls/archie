@@ -1,9 +1,9 @@
 package drawers
 
 import (
+	"fmt"
 	"github.com/briggysmalls/archie/internal/types"
 	"strings"
-	"fmt"
 )
 
 const (
@@ -29,10 +29,14 @@ type Writer interface {
 }
 
 type drawer struct {
-	config DrawConfig
-	writer Writer
+	config  DrawConfig
+	writer  Writer
 	indent  uint
 	builder strings.Builder
+}
+
+func newDrawer(config DrawConfig) drawer {
+	return drawer{config: config}
 }
 
 // Entrypoint for the drawer
@@ -82,7 +86,7 @@ func (d *drawer) drawElement(model *types.Model, el *types.Element) error {
 	return nil
 }
 
-func (d *drawer) Write(format string, args...interface{}) {
+func (d *drawer) Write(format string, args ...interface{}) {
 	// Write the string
 	d.builder.WriteString(fmt.Sprintf("%*s%s\n", d.indent*SPACES_IN_TAB, "", fmt.Sprintf(format, args...)))
 }
