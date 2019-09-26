@@ -44,9 +44,12 @@ simplify:
 	@gofmt -s -l -w $(SRC)
 
 check:
+	@echo "[Formatting]"
 	@test -z $(shell gofmt -l main.go | tee /dev/stderr) || echo "[WARN] Fix formatting issues with 'make fmt'"
+	@echo "[Vetting]"
+	@for d in $$(go list ./... | grep -v /vendor/); do go vet $${d}; done
+	@echo "[Linting]"
 	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
-	@go vet ${SRC}
 
 test:
 	@go test $(TEST_FLAGS) ./...
@@ -57,3 +60,5 @@ coverage: test
 
 run: install
 	@$(TARGET)
+
+print-%  : ; @echo $* = $($*)
