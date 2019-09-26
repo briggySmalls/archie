@@ -24,6 +24,7 @@ type DrawConfig interface {
 }
 
 type Writer interface {
+	FullName(*types.Element) (string, error)
 	Write(string, ...interface{})
 	UpdateIndent(int)
 }
@@ -33,6 +34,7 @@ type drawer struct {
 	writer  Writer
 	indent  uint
 	builder strings.Builder
+	model   *types.Model
 }
 
 func newDrawer(config DrawConfig) drawer {
@@ -44,6 +46,7 @@ func (d *drawer) Draw(model types.Model) (string, error) {
 	// Reset the drawer
 	d.indent = 0
 	d.builder.Reset()
+	d.model = &model
 	// Add the header
 	d.config.Header(d)
 	// Draw the elements, recursively
@@ -62,6 +65,11 @@ func (d *drawer) Draw(model types.Model) (string, error) {
 	d.config.Footer(d)
 	// Return result
 	return d.builder.String(), nil
+}
+
+func (d *drawer) FullName(element *types.Element) (string, error) {
+	name, err := d.model.Name(element)
+	return name, err
 }
 
 // Recursive function for drawing elements

@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
+	"net/url"
 )
 
 const (
@@ -77,7 +78,10 @@ func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) contextHandler(w http.ResponseWriter, r *http.Request) {
 	// Determine the item
-	itemName := mux.Vars(r)["item"]
+	itemName, err := url.PathUnescape(mux.Vars(r)["item"])
+	if err != nil {
+		s.Error(w, err.Error(), http.StatusBadRequest)
+	}
 	item, err := s.model.LookupName(itemName)
 	if err != nil {
 		// Failed to find the supplied item (user error)
