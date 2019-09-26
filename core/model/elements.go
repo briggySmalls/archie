@@ -35,6 +35,6 @@ func newElement(kind uint) Element {
 	}
 }
 
-func (e *Element) Id() string {
+func (e *Element) ID() string {
 	return fmt.Sprintf("%p", e)
 }

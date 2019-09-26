@@ -37,7 +37,7 @@ func (p MermaidConfig) Element(writer Writer, element *mdl.Element) {
 		escapedName := url.PathEscape(fullName)
 		escapedName = strings.Replace(escapedName, "%2F", "/", -1)
 		url := fmt.Sprintf("%s%s", p.linkAddress, escapedName)
-		writer.Write("click %s \"%s\"", element.Id(), url)
+		writer.Write("click %s \"%s\"", element.ID(), url)
 	}
 }
 
@@ -50,5 +50,5 @@ func (p MermaidConfig) EndParentElement(writer Writer, element *mdl.Element) {
 }
 
 func (p MermaidConfig) Association(writer Writer, association mdl.Relationship) {
-	writer.Write("%s-->%s", association.Source.Id(), association.Destination.Id())
+	writer.Write("%s-->%s", association.Source.ID(), association.Destination.ID())
 }
