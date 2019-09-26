@@ -49,6 +49,24 @@ func (m *Model) RootElements() []*Element {
 	return m.Children(nil)
 }
 
+func (m *Model) Copy() Model {
+	// Initially copy the struct
+	new := *m
+	// Deep copy the reference fields
+	// Elements
+	new.Elements = make([]*Element, len(m.Elements))
+	copy(new.Elements, m.Elements)
+	// Associations
+	new.Associations = make([]Relationship, len(m.Associations))
+	copy(new.Associations, m.Associations)
+	// Composition
+	new.Composition = make(map[*Element]*Element)
+	for k, v := range m.Composition {
+		new.Composition[k] = v
+	}
+	return new
+}
+
 // Get a slice of all relationships, including implicit parent relationships
 func (m *Model) ImplicitAssociations() []Relationship {
 	// Get all the relationships

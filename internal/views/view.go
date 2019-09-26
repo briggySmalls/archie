@@ -7,12 +7,7 @@ import (
 // CreateSubmodel creates a sub-model from the full model
 func CreateSubmodel(model *types.Model, elements []*types.Element) (types.Model, error) {
 	// Copy the model
-	new := *model
-	new.Composition = make(map[*types.Element]*types.Element, len(model.Composition))
-	// Copy from the original map to the target map
-	for key, value := range model.Composition {
-		new.Composition[key] = value
-	}
+	new := model.Copy()
 	// Overwrite elements with relevant ones
 	element, err := getRelevantElements(&new, elements)
 	if err != nil {
