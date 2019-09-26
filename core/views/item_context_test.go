@@ -3,7 +3,7 @@ package views
 import (
 	"testing"
 
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 )
@@ -30,8 +30,8 @@ func TestItemContextElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Children(elMap["Two"]), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
-	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
+	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
+	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
 	assert.Assert(t, is.Len(l.Associations, 2))
 }
 
@@ -57,23 +57,23 @@ func TestItemContextChildElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Children(elMap["Two"]), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
-	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
+	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
+	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
 	assert.Assert(t, is.Len(l.Associations, 2))
 }
 
 // Helper function to create a model
-func createModel() (*types.Model, map[string]*types.Element) {
+func createModel() (*mdl.Model, map[string]*mdl.Element) {
 	// Create a simple model
-	m := types.NewModel()
+	m := mdl.NewModel()
 
 	// Create the map
-	elMap := make(map[string]*types.Element)
+	elMap := make(map[string]*mdl.Element)
 
 	// Create the items we'll be testing
 	for _, name := range []string{"One", "OneChild", "OneChildChilda", "OneChildChildb", "Two", "TwoChild", "TwoChildChild"} {
 		// Create the element
-		el := types.NewItem(name)
+		el := mdl.NewItem(name)
 		// Record it
 		elMap[name] = &el
 	}

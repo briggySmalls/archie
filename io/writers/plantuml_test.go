@@ -1,7 +1,7 @@
 package drawers
 
 import (
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/briggysmalls/archie/core/views"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
@@ -11,13 +11,13 @@ import (
 
 func TestDraw(t *testing.T) {
 	// Create a simple model
-	m := types.NewModel()
+	m := mdl.NewModel()
 
 	// Create the items we'll be testing
-	one := types.NewItem("One")
-	oneChild := types.NewItem("OneChild")
-	two := types.NewItem("Two")
-	twoChild := types.NewItem("TwoChild")
+	one := mdl.NewItem("One")
+	oneChild := mdl.NewItem("OneChild")
+	two := mdl.NewItem("Two")
+	twoChild := mdl.NewItem("TwoChild")
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)

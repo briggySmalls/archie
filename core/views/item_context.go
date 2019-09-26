@@ -1,20 +1,20 @@
 package views
 
 import (
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 )
 
 // Create a system landscape view
-func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
+func NewItemContextView(model *mdl.Model, scope *mdl.Element) mdl.Model {
 	// Find relevant elements
-	var elements []*types.Element
+	var elements []*mdl.Element
 
 	if len(model.Children(scope)) > 0 {
 		// The main elements of interest are the children of the scope
 		elements = append(elements, model.Children(scope)...)
 	} else {
 		// The scope has no children, so add it
-		elements = []*types.Element{scope}
+		elements = []*mdl.Element{scope}
 	}
 
 	// We also want to add elements:
@@ -53,7 +53,7 @@ func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
 }
 
 // Get the linked element, if the specified element is in the relationship
-func getLinked(relationship types.Relationship, element *types.Element) *types.Element {
+func getLinked(relationship mdl.Relationship, element *mdl.Element) *mdl.Element {
 	if relationship.Source == element {
 		return relationship.Destination
 	}

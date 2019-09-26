@@ -2,7 +2,7 @@ package readers
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )
@@ -24,7 +24,7 @@ type Association struct {
 	Destination string
 }
 
-func ParseYaml(data string) (*types.Model, error) {
+func ParseYaml(data string) (*mdl.Model, error) {
 	// Parse the yaml using the package
 	var yamlModel Model
 	err := yaml.Unmarshal([]byte(data), &yamlModel)
@@ -32,14 +32,14 @@ func ParseYaml(data string) (*types.Model, error) {
 		return nil, err
 	}
 	// Copy the parsed elements into the new model
-	m := types.NewModel()
+	m := mdl.NewModel()
 	for _, rootEl := range yamlModel.Elements {
 		// Add these first elements to the root
-		var el types.Element
+		var el mdl.Element
 		if rootEl.Type == "actor" {
-			el = types.NewActor(rootEl.Name)
+			el = mdl.NewActor(rootEl.Name)
 		} else {
-			el = types.NewItem(rootEl.Name)
+			el = mdl.NewItem(rootEl.Name)
 		}
 		m.AddRootElement(&el)
 		// Now recursively add children
@@ -51,7 +51,7 @@ func ParseYaml(data string) (*types.Model, error) {
 	// Copy the parsed relationships into the new model
 	for _, ass := range yamlModel.Associations {
 		// Get the elements
-		var src, dest *types.Element
+		var src, dest *mdl.Element
 		var err error
 		src, err = m.LookupName(ass.Source)
 		if err != nil {
@@ -67,14 +67,14 @@ func ParseYaml(data string) (*types.Model, error) {
 	return &m, err
 }
 
-func addChildren(model *types.Model, parent *types.Element, children []interface{}) error {
+func addChildren(model *mdl.Model, parent *mdl.Element, children []interface{}) error {
 	// Iterate through children
 	for _, child := range children {
 		// Check whether it is a brief entry or not
 		switch i := child.(type) {
 		case string:
 			// This is a shorthand
-			new := types.NewItem(i)
+			new := mdl.NewItem(i)
 			// Add to the model
 			model.AddElement(&new, parent)
 		case map[string]interface{}:
@@ -102,9 +102,9 @@ func addChildren(model *types.Model, parent *types.Element, children []interface
 	return nil
 }
 
-func updateModelAndRecurse(model *types.Model, parent *types.Element, el Element) error {
+func updateModelAndRecurse(model *mdl.Model, parent *mdl.Element, el Element) error {
 	// This is a fully-specified element
-	new := types.NewItem(el.Name)
+	new := mdl.NewItem(el.Name)
 	// Add to the model
 	model.AddElement(&new, parent)
 	// Add children

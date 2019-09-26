@@ -1,11 +1,11 @@
 package views
 
 import (
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 )
 
 // Create a system landscape view
-func NewLandscapeView(model *types.Model) types.Model {
+func NewLandscapeView(model *mdl.Model) mdl.Model {
 	// Create a model from the model's root elements
 	view, err := CreateSubmodel(model, model.RootElements())
 	// We shouldn't error (we've pulled elements out sensibly)

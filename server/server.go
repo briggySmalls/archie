@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/briggysmalls/archie/core/views"
 	"github.com/briggysmalls/archie/io/writers"
 	"github.com/gorilla/mux"
@@ -16,7 +16,7 @@ const (
 	TEMPLATE_FILE = "/Users/sambriggs/Code/go/archie/server/page.html"
 )
 
-func NewServer(model *types.Model) (Server, error) {
+func NewServer(model *mdl.Model) (Server, error) {
 	// Load the template
 	t, err := template.ParseFiles(TEMPLATE_FILE)
 	if err != nil {
@@ -35,7 +35,7 @@ type Server interface {
 }
 
 type server struct {
-	model    *types.Model
+	model    *mdl.Model
 	drawer   drawers.Drawer
 	template *template.Template
 }

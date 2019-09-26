@@ -2,7 +2,7 @@ package drawers
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"strings"
 )
 
@@ -11,20 +11,20 @@ const (
 )
 
 type Drawer interface {
-	Draw(types.Model) (string, error)
+	Draw(mdl.Model) (string, error)
 }
 
 type DrawConfig interface {
 	Header(writer Writer)
 	Footer(writer Writer)
-	Element(writer Writer, element *types.Element)
-	StartParentElement(writer Writer, element *types.Element)
-	EndParentElement(writer Writer, element *types.Element)
-	Association(writer Writer, association types.Relationship)
+	Element(writer Writer, element *mdl.Element)
+	StartParentElement(writer Writer, element *mdl.Element)
+	EndParentElement(writer Writer, element *mdl.Element)
+	Association(writer Writer, association mdl.Relationship)
 }
 
 type Writer interface {
-	FullName(*types.Element) (string, error)
+	FullName(*mdl.Element) (string, error)
 	Write(string, ...interface{})
 	UpdateIndent(int)
 }
@@ -34,7 +34,7 @@ type drawer struct {
 	writer  Writer
 	indent  uint
 	builder strings.Builder
-	model   *types.Model
+	model   *mdl.Model
 }
 
 func newDrawer(config DrawConfig) drawer {
@@ -42,7 +42,7 @@ func newDrawer(config DrawConfig) drawer {
 }
 
 // Entrypoint for the drawer
-func (d *drawer) Draw(model types.Model) (string, error) {
+func (d *drawer) Draw(model mdl.Model) (string, error) {
 	// Reset the drawer
 	d.indent = 0
 	d.builder.Reset()
@@ -67,13 +67,13 @@ func (d *drawer) Draw(model types.Model) (string, error) {
 	return d.builder.String(), nil
 }
 
-func (d *drawer) FullName(element *types.Element) (string, error) {
+func (d *drawer) FullName(element *mdl.Element) (string, error) {
 	name, err := d.model.Name(element)
 	return name, err
 }
 
 // Recursive function for drawing elements
-func (d *drawer) drawElement(model *types.Model, el *types.Element) error {
+func (d *drawer) drawElement(model *mdl.Model, el *mdl.Element) error {
 	var err error
 	children := model.Children(el)
 	if len(children) == 0 {

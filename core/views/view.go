@@ -1,17 +1,17 @@
 package views
 
 import (
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 )
 
 // CreateSubmodel creates a sub-model from the full model
-func CreateSubmodel(model *types.Model, elements []*types.Element) (types.Model, error) {
+func CreateSubmodel(model *mdl.Model, elements []*mdl.Element) (mdl.Model, error) {
 	// Copy the model
 	new := model.Copy()
 	// Overwrite elements with relevant ones
 	element, err := getRelevantElements(&new, elements)
 	if err != nil {
-		return types.Model{}, err
+		return mdl.Model{}, err
 	}
 	new.Elements = element
 	// Overwrite relationships with relevant ones
@@ -26,10 +26,10 @@ func CreateSubmodel(model *types.Model, elements []*types.Element) (types.Model,
 }
 
 // Select the elements that are relevant, including the implicit ones
-func getRelevantElements(model *types.Model, elements []*types.Element) ([]*types.Element, error) {
+func getRelevantElements(model *mdl.Model, elements []*mdl.Element) ([]*mdl.Element, error) {
 	// Prepare an empty index of relevant elements
 	// Note: We use a map just so elements are not duplicated
-	relevant := make(map[*types.Element]bool)
+	relevant := make(map[*mdl.Element]bool)
 	for _, el := range elements {
 		// Add the relevant element, and all its ancenstors
 		err := addAllAncestors(model, relevant, el)
@@ -38,7 +38,7 @@ func getRelevantElements(model *types.Model, elements []*types.Element) ([]*type
 		}
 	}
 	// Create a slice from the map keys
-	keys := make([]*types.Element, len(relevant))
+	keys := make([]*mdl.Element, len(relevant))
 	i := 0
 	for k := range relevant {
 		keys[i] = k
@@ -48,8 +48,8 @@ func getRelevantElements(model *types.Model, elements []*types.Element) ([]*type
 }
 
 // Select the relationships that are relevant, including implicit ones
-func getRelevantRelationships(model *types.Model, elements []*types.Element) []types.Relationship {
-	var relationships []types.Relationship
+func getRelevantRelationships(model *mdl.Model, elements []*mdl.Element) []mdl.Relationship {
+	var relationships []mdl.Relationship
 	for _, rel := range model.ImplicitAssociations() {
 		// Add relationships that link relevant elements
 		if contains(elements, rel.Source) && contains(elements, rel.Destination) {
@@ -60,7 +60,7 @@ func getRelevantRelationships(model *types.Model, elements []*types.Element) []t
 }
 
 // Add the specified element to the map, and all its ancestors
-func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *types.Element) error {
+func addAllAncestors(model *mdl.Model, elements map[*mdl.Element]bool, el *mdl.Element) error {
 	for {
 		// Add the current element
 		elements[el] = true
@@ -88,7 +88,7 @@ func addAllAncestors(model *types.Model, elements map[*types.Element]bool, el *t
 }
 
 // Check if an element is in the slice
-func contains(haystack []*types.Element, needle *types.Element) bool {
+func contains(haystack []*mdl.Element, needle *mdl.Element) bool {
 	for _, el := range haystack {
 		if el == needle {
 			return true

@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/briggysmalls/archie/core/views"
 	"github.com/briggysmalls/archie/io/readers"
 	"github.com/briggysmalls/archie/io/writers"
@@ -56,20 +56,20 @@ var drawCmd = &cobra.Command{
 		}
 
 		// Parse the yaml into a model
-		var m *types.Model
+		var m *mdl.Model
 		m, err = readers.ParseYaml(string(dat))
 		if err != nil {
 			panic(err)
 		}
 
 		// Create a view from the model
-		var viewModel types.Model
+		var viewModel mdl.Model
 		switch view {
 		case "landscape":
 			viewModel = views.NewLandscapeView(m)
 		case "context":
 			// First get the scope
-			var scopeItem *types.Element
+			var scopeItem *mdl.Element
 			scopeItem, err = m.LookupName(scope)
 			if err != nil {
 				panic(err)

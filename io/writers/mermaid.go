@@ -2,7 +2,7 @@ package drawers
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"net/url"
 	"strings"
 )
@@ -26,7 +26,7 @@ func (p MermaidConfig) Footer(writer Writer) {
 	// Do nothing
 }
 
-func (p MermaidConfig) Element(writer Writer, element *types.Element) {
+func (p MermaidConfig) Element(writer Writer, element *mdl.Element) {
 	writer.Write("%p(%s)", element, element.Name)
 	// Add a link if necessary
 	if p.linkAddress != "" {
@@ -41,14 +41,14 @@ func (p MermaidConfig) Element(writer Writer, element *types.Element) {
 	}
 }
 
-func (p MermaidConfig) StartParentElement(writer Writer, element *types.Element) {
+func (p MermaidConfig) StartParentElement(writer Writer, element *mdl.Element) {
 	writer.Write("subgraph %s", element.Name)
 }
 
-func (p MermaidConfig) EndParentElement(writer Writer, element *types.Element) {
+func (p MermaidConfig) EndParentElement(writer Writer, element *mdl.Element) {
 	writer.Write("end")
 }
 
-func (p MermaidConfig) Association(writer Writer, association types.Relationship) {
+func (p MermaidConfig) Association(writer Writer, association mdl.Relationship) {
 	writer.Write("%s-->%s", association.Source.Id(), association.Destination.Id())
 }

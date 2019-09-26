@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/briggysmalls/archie/core/types"
+	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/gorilla/mux"
 	"net/http"
 	"net/http/httptest"
@@ -63,9 +63,9 @@ func TestContextHandler(t *testing.T) {
 
 func newServer(t *testing.T) *server {
 	// Create a simple model
-	m := types.NewModel()
-	one := types.NewItem("One")
-	two := types.NewItem("Two")
+	m := mdl.NewModel()
+	one := mdl.NewItem("One")
+	two := mdl.NewItem("Two")
 	m.AddRootElement(&one)
 	m.AddRootElement(&two)
 
