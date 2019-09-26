@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/core/types"
 	"github.com/gorilla/mux"
 	"net/http"
 	"net/http/httptest"

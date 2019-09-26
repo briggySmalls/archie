@@ -1,8 +1,8 @@
 package drawers
 
 import (
-	"github.com/briggysmalls/archie/internal/types"
-	"github.com/briggysmalls/archie/internal/views"
+	"github.com/briggysmalls/archie/core/types"
+	"github.com/briggysmalls/archie/core/views"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 	"strings"

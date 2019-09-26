@@ -1,7 +1,7 @@
 package views
 
 import (
-	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/core/types"
 )
 
 // Create a system landscape view

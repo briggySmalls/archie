@@ -2,7 +2,7 @@ package drawers
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/core/types"
 	"net/url"
 	"strings"
 )

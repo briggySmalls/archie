@@ -3,7 +3,7 @@ package views
 import (
 	"testing"
 
-	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/core/types"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 )

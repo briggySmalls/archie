@@ -1,7 +1,7 @@
 package views
 
 import (
-	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/core/types"
 )
 
 // CreateSubmodel creates a sub-model from the full model

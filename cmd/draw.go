@@ -17,10 +17,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/internal/drawers"
-	"github.com/briggysmalls/archie/internal/readers"
-	"github.com/briggysmalls/archie/internal/types"
-	"github.com/briggysmalls/archie/internal/views"
+	"github.com/briggysmalls/archie/core/types"
+	"github.com/briggysmalls/archie/core/views"
+	"github.com/briggysmalls/archie/io/readers"
+	"github.com/briggysmalls/archie/io/writers"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"

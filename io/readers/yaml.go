@@ -2,7 +2,7 @@ package readers
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/core/types"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/yaml.v3"
 )

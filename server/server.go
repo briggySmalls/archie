@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/internal/drawers"
-	"github.com/briggysmalls/archie/internal/types"
-	"github.com/briggysmalls/archie/internal/views"
+	"github.com/briggysmalls/archie/core/types"
+	"github.com/briggysmalls/archie/core/views"
+	"github.com/briggysmalls/archie/io/writers"
 	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	TEMPLATE_FILE = "/Users/sambriggs/Code/go/archie/internal/server/page.html"
+	TEMPLATE_FILE = "/Users/sambriggs/Code/go/archie/server/page.html"
 )
 
 func NewServer(model *types.Model) (Server, error) {

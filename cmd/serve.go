@@ -17,9 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/internal/readers"
-	"github.com/briggysmalls/archie/internal/server"
-	"github.com/briggysmalls/archie/internal/types"
+	"github.com/briggysmalls/archie/core/types"
+	"github.com/briggysmalls/archie/io/readers"
+	"github.com/briggysmalls/archie/server"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os/exec"
