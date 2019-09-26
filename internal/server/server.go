@@ -23,7 +23,7 @@ func NewServer(model *types.Model) (Server, error) {
 	// Create the server
 	return &server{
 		model:    model,
-		drawer:   drawers.NewMermaidDrawer(),
+		drawer:   drawers.NewMermaidDrawer("http://localhost:8080/"),
 		template: t,
 	}, nil
 }
@@ -49,7 +49,7 @@ func (s *server) Serve(address string) error {
 	// Create a router
 	r := mux.NewRouter()
 	r.HandleFunc("/", s.homeHandler)
-	r.HandleFunc("/context/{item:.*}", s.contextHandler)
+	r.HandleFunc("/{item:.*}", s.contextHandler)
 
 	// Serve
 	return http.ListenAndServe(address, r)

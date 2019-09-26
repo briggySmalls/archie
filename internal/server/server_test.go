@@ -45,7 +45,7 @@ func TestContextHandler(t *testing.T) {
 func mytest(t *testing.T, s *server) {
 	// Create a request to pass to our handler. We don't have any query parameters for now, so we'll
 	// pass 'nil' as the third parameter.
-	req, err := http.NewRequest("GET", "/context/One", nil)
+	req, err := http.NewRequest("GET", "/One", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -56,7 +56,7 @@ func mytest(t *testing.T, s *server) {
 	// Need to create a router that we can pass the request through
 	// so that the vars will be added to the context
 	router := mux.NewRouter()
-	router.HandleFunc("/context/{item}", s.contextHandler)
+	router.HandleFunc("/{item}", s.contextHandler)
 	router.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.
