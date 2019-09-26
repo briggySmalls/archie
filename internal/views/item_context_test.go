@@ -8,47 +8,84 @@ import (
 	is "gotest.tools/assert/cmp"
 )
 
+// Test creating view for a scope with no children
 func TestItemContextElements(t *testing.T) {
+	// Create a simple model
+	m, elMap := createModel()
+
+	// Link the children together
+	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"])
+	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"])
+
+	// Create the view
+	l := NewItemContextView(m, elMap["OneChildChilda"])
+
+	// Check elements are correct
+	assert.Assert(t, is.Contains(l.Elements, elMap["One"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["OneChild"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["OneChildChilda"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["OneChildChildb"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["Two"]))
+	assert.Assert(t, is.Len(l.Elements, 5))
+	assert.Assert(t, is.Len(l.Children(elMap["Two"]), 0))
+
+	// Check relationships are correct
+	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
+	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
+	assert.Assert(t, is.Len(l.Associations, 2))
+}
+
+// Test creating view for a scope with children
+func TestItemContextChildElements(t *testing.T) {
+	// Create a simple model
+	m, elMap := createModel()
+
+	// Link the children together
+	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"])
+	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"])
+
+	// Create the view
+	l := NewItemContextView(m, elMap["OneChild"])
+
+	// Check elements are correct
+	assert.Assert(t, is.Contains(l.Elements, elMap["One"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["OneChild"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["OneChildChilda"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["OneChildChildb"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["Two"]))
+	assert.Assert(t, is.Len(l.Elements, 5))
+	assert.Assert(t, is.Len(l.Children(elMap["Two"]), 0))
+
+	// Check relationships are correct
+	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
+	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
+	assert.Assert(t, is.Len(l.Associations, 2))
+}
+
+// Helper function to create a model
+func createModel() (*types.Model, map[string]*types.Element) {
 	// Create a simple model
 	m := types.NewModel()
 
+	// Create the map
+	elMap := make(map[string]*types.Element)
+
 	// Create the items we'll be testing
-	one := types.NewItem("One")
-	oneChild := types.NewItem("OneChild")
-	oneChildChilda := types.NewItem("OneChildChilda")
-	oneChildChildb := types.NewItem("OneChildChildb")
-	two := types.NewItem("Two")
-	twoChild := types.NewItem("TwoChild")
-	twoChildChild := types.NewItem("TwoChildChild")
+	for _, name := range []string{"One", "OneChild", "OneChildChilda", "OneChildChildb", "Two", "TwoChild", "TwoChildChild"} {
+		// Create the element
+		el := types.NewItem(name)
+		// Record it
+		elMap[name] = &el
+	}
 
-	// Add the items, and their relationships to the model
-	m.AddRootElement(&one)
-	m.AddElement(&oneChild, &one)
-	m.AddElement(&oneChildChilda, &oneChild)
-	m.AddElement(&oneChildChildb, &oneChild)
-	m.AddRootElement(&two)
-	m.AddElement(&twoChild, &two)
-	m.AddElement(&twoChildChild, &twoChild)
+	// Add the items to the model
+	m.AddRootElement(elMap["One"])
+	m.AddRootElement(elMap["Two"])
+	m.AddElement(elMap["OneChild"], elMap["One"])
+	m.AddElement(elMap["OneChildChilda"], elMap["OneChild"])
+	m.AddElement(elMap["OneChildChildb"], elMap["OneChild"])
+	m.AddElement(elMap["TwoChild"], elMap["Two"])
+	m.AddElement(elMap["TwoChildChild"], elMap["TwoChild"])
 
-	// Link the children together
-	m.AddAssociation(&oneChildChilda, &twoChildChild)
-	m.AddAssociation(&oneChildChilda, &oneChildChildb)
-
-	// Create the view
-	l := NewItemContextView(&m, &oneChild)
-	l = NewItemContextView(&m, &oneChild)
-
-	// Check elements are correct
-	assert.Assert(t, is.Contains(l.Elements, &one))
-	assert.Assert(t, is.Contains(l.Elements, &oneChild))
-	assert.Assert(t, is.Contains(l.Elements, &oneChildChilda))
-	assert.Assert(t, is.Contains(l.Elements, &oneChildChildb))
-	assert.Assert(t, is.Contains(l.Elements, &two))
-	assert.Assert(t, is.Len(l.Elements, 5))
-	assert.Assert(t, is.Len(l.Children(&two), 0))
-
-	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: &oneChildChilda, Destination: &oneChildChildb}))
-	assert.Assert(t, is.Contains(l.Associations, types.Relationship{Source: &oneChildChilda, Destination: &two}))
-	assert.Assert(t, is.Len(l.Associations, 2))
+	return &m, elMap
 }

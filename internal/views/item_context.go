@@ -9,8 +9,13 @@ func NewItemContextView(model *types.Model, scope *types.Element) types.Model {
 	// Find relevant elements
 	var elements []*types.Element
 
-	// The main elements of interest are the children of the scope
-	elements = append(elements, model.Children(scope)...)
+	if len(model.Children(scope)) > 0 {
+		// The main elements of interest are the children of the scope
+		elements = append(elements, model.Children(scope)...)
+	} else {
+		// The scope has no children, so add it
+		elements = []*types.Element{scope}
+	}
 
 	// We also want to add elements:
 	// - related to these children
