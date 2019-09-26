@@ -166,6 +166,26 @@ func (m *Model) IsAncestor(descendant, ancestor *Element) bool {
 	}
 }
 
+func (m *Model) Name(element *Element) (string, error) {
+	// Build full name for element
+	parts := []string{}
+	for {
+		// Check if we're at the root
+		if element == nil {
+			break
+		}
+		// Prepend the name
+		parts = append([]string{element.Name}, parts...)
+		// Iterate
+		var err error
+		element, err = m.Parent(element)
+		if err != nil {
+			return "", err
+		}
+	}
+	return strings.Join(parts, "/"), nil
+}
+
 func (m *Model) ShareAncestor(a, b *Element) bool {
 	// Find the respective root elements
 	return m.getRoot(a) == m.getRoot(b)

@@ -170,6 +170,10 @@ func assertName(t *testing.T, m *Model, el *Element, name string) {
 	assert.NilError(t, err)
 	// Now check they match
 	assert.Equal(t, el, result)
+	// Also check name function works too
+	builtName, err := m.Name(el)
+	assert.NilError(t, err)
+	assert.Equal(t, builtName, name)
 }
 
 func assertChildren(t *testing.T, m *Model, parent *Element, children []*Element) {
