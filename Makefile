@@ -14,7 +14,11 @@ LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 # go source files, ignore vendor directory
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
-.PHONY: all build clean install uninstall fmt simplify check run lint test
+# Testing flags
+TEST_FLAGS=-v
+COVERAGE_RESULTS=coverage.out
+
+.PHONY: all build clean install uninstall fmt simplify check run lint test coverage
 
 all: check install
 
@@ -45,7 +49,13 @@ check:
 	@go vet ${SRC}
 
 test:
-	@go test -v ./...
+	@go test $(TEST_FLAGS) ./...
+
+$(COVERAGE_RESULTS): test
+	$(TEST_FLAGS) += -coverprofile=$(COVERAGE_RESULTS)
+
+coverage: $(COVERAGE_RESULTS)
+	@go tool cover -html=$(COVERAGE_RESULTS)
 
 run: install
 	@$(TARGET)
