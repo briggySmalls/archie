@@ -33,8 +33,9 @@ func ToYaml(model *mdl.Model) (string, error) {
 }
 
 func (e Element) MarshalYAML() (interface{}, error) {
+	// Check if we are an actor
 	// Check if all we need to write is the name
-	if e.Type == "" && e.Technology == "" && len(e.Children) == 0 {
+	if e.Kind == "" && e.Technology == "" && len(e.Children) == 0 {
 		return e.Name, nil
 	}
 	return ElementWithChildren(e), nil
@@ -43,12 +44,12 @@ func (e Element) MarshalYAML() (interface{}, error) {
 func copyElementToYamlModel(model *mdl.Model, modelElement *mdl.Element) Element {
 	// Create an yaml element from the model element
 	el := Element{
-		Name: modelElement.Name,
-		// TODO: Add technology
+		Name:       modelElement.Name,
+		Technology: modelElement.Technology,
 	}
 	// Update with type if relevant
 	if modelElement.IsActor() {
-		el.Type = "actor"
+		el.Kind = "actor"
 	}
 	// Now copy children
 	for _, child := range model.Children(modelElement) {

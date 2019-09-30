@@ -7,16 +7,16 @@ type Model struct {
 
 type Element struct {
 	Name       string
-	Type       string        `yaml:",omitempty"`
+	Kind       string        `yaml:",omitempty"`
 	Technology string        `yaml:",omitempty"`
 	Children   []interface{} `yaml:",omitempty"`
 }
 
 type ElementWithChildren struct {
 	Name       string
-	Type       string `yaml:",omitempty"`
-	Technology string `yaml:",omitempty"`
-	Children   []interface{}
+	Kind       string        `yaml:",omitempty"`
+	Technology string        `yaml:",omitempty"`
+	Children   []interface{} `yaml:",omitempty"`
 }
 
 type Association struct {

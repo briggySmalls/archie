@@ -14,6 +14,7 @@ func TestNewItem(t *testing.T) {
 	assert.Assert(t, el.kind == item)
 	assert.Equal(t, el.Name, "MyItem")
 	assert.Equal(t, el.Technology, "electronics")
+	assert.Assert(t, !el.IsActor())
 }
 
 // Test creating an actor
@@ -24,4 +25,5 @@ func TestNewActor(t *testing.T) {
 	assert.Assert(t, el.kind == actor)
 	assert.Equal(t, el.Name, "MyActor")
 	assert.Equal(t, el.Technology, "")
+	assert.Assert(t, el.IsActor())
 }

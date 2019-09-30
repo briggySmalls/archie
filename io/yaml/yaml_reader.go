@@ -20,7 +20,7 @@ func ParseYaml(data string) (*mdl.Model, error) {
 	for _, rootEl := range yamlModel.Elements {
 		// Add these first elements to the root
 		var el mdl.Element
-		if rootEl.Type == "actor" {
+		if rootEl.Kind == "actor" {
 			el = mdl.NewActor(rootEl.Name)
 		} else {
 			el = mdl.NewItem(rootEl.Name, rootEl.Technology)
