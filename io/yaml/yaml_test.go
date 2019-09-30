@@ -1,6 +1,7 @@
 package yaml
 
 import (
+  "fmt"
   mdl "github.com/briggysmalls/archie/core/model"
   "testing"
 
@@ -82,6 +83,8 @@ func TestRoundTrip(t *testing.T) {
   assert.NilError(t, err)
   // Now write the model back out as yaml
   yaml, err := ToYaml(m)
+  assert.NilError(t, err)
+  fmt.Print(yaml)
   assert.Equal(t, data, yaml)
 }
 

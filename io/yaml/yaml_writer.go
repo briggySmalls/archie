@@ -37,7 +37,7 @@ func (e Element) MarshalYAML() (interface{}, error) {
 	if e.Type == "" && e.Technology == "" && len(e.Children) == 0 {
 		return e.Name, nil
 	}
-	return e, nil
+	return ElementWithChildren(e), nil
 }
 
 func copyElementToYamlModel(model *mdl.Model, modelElement *mdl.Element) Element {
