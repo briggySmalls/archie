@@ -1,4 +1,4 @@
-package readers
+package yaml
 
 import (
 	"fmt"
@@ -7,23 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Model struct {
-	Elements     []Element
-	Associations []Association
-}
-
-type Element struct {
-	Name       string
-	Type       string        `yaml:",omitempty"`
-	Technology string        `yaml:",omitempty"`
-	Children   []interface{} `yaml:",omitempty"`
-}
-
-type Association struct {
-	Source      string
-	Destination string
-}
-
+// Parse a model from a yaml file
 func ParseYaml(data string) (*mdl.Model, error) {
 	// Parse the yaml using the package
 	var yamlModel Model

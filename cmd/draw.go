@@ -4,8 +4,8 @@ import (
 	"fmt"
 	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/briggysmalls/archie/core/views"
-	"github.com/briggysmalls/archie/io/readers"
 	"github.com/briggysmalls/archie/io/writers"
+	"github.com/briggysmalls/archie/io/yaml"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"
@@ -42,7 +42,7 @@ var drawCmd = &cobra.Command{
 
 		// Parse the yaml into a model
 		var m *mdl.Model
-		m, err = readers.ParseYaml(string(dat))
+		m, err = yaml.ParseYaml(string(dat))
 		if err != nil {
 			panic(err)
 		}

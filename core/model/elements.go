@@ -38,3 +38,7 @@ func newElement(kind uint) Element {
 func (e *Element) ID() string {
 	return fmt.Sprintf("%p", e)
 }
+
+func (e *Element) IsActor() bool {
+	return e.Kind == ACTOR
+}
