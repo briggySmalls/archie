@@ -23,7 +23,7 @@ func ParseYaml(data string) (*mdl.Model, error) {
 		if rootEl.Type == "actor" {
 			el = mdl.NewActor(rootEl.Name)
 		} else {
-			el = mdl.NewItem(rootEl.Name)
+			el = mdl.NewItem(rootEl.Name, rootEl.Technology)
 		}
 		m.AddRootElement(&el)
 		// Now recursively add children
@@ -58,7 +58,7 @@ func addChildren(model *mdl.Model, parent *mdl.Element, children []interface{}) 
 		switch i := child.(type) {
 		case string:
 			// This is a shorthand
-			new := mdl.NewItem(i)
+			new := mdl.NewItem(i, "")
 			// Add to the model
 			model.AddElement(&new, parent)
 		case map[string]interface{}:
@@ -88,7 +88,7 @@ func addChildren(model *mdl.Model, parent *mdl.Element, children []interface{}) 
 
 func updateModelAndRecurse(model *mdl.Model, parent *mdl.Element, el Element) error {
 	// This is a fully-specified element
-	new := mdl.NewItem(el.Name)
+	new := mdl.NewItem(el.Name, el.Technology)
 	// Add to the model
 	model.AddElement(&new, parent)
 	// Add children

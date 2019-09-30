@@ -13,10 +13,10 @@ func TestLandscapeElements(t *testing.T) {
 	m := mdl.NewModel()
 
 	// Create the items we'll be testing
-	one := mdl.NewItem("One")
-	oneChild := mdl.NewItem("OneChild")
-	two := mdl.NewItem("Two")
-	twoChild := mdl.NewItem("TwoChild")
+	one := mdl.NewItem("One", "")
+	oneChild := mdl.NewItem("OneChild", "")
+	two := mdl.NewItem("Two", "")
+	twoChild := mdl.NewItem("TwoChild", "")
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)
