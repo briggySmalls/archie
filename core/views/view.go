@@ -9,11 +9,11 @@ func CreateSubmodel(model *mdl.Model, elements []*mdl.Element) (mdl.Model, error
 	// Copy the model
 	new := model.Copy()
 	// Overwrite elements with relevant ones
-	element, err := getRelevantElements(&new, elements)
+	relevant, err := getRelevantElements(&new, elements)
 	if err != nil {
 		return mdl.Model{}, err
 	}
-	new.Elements = element
+	new.Elements = relevant
 	// Overwrite relationships with relevant ones
 	new.Associations = getRelevantRelationships(&new, elements)
 	// Fixup the composition relationships
