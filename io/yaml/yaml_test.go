@@ -1,7 +1,6 @@
 package yaml
 
 import (
-  "fmt"
   mdl "github.com/briggysmalls/archie/core/model"
   "testing"
 
@@ -34,7 +33,6 @@ elements:
             technology: electro-mechanical
           - name: input select
             technology: electro-mechanical
-
 associations:
   - source: user
     destination: sound system/amplifier/input select
@@ -84,8 +82,6 @@ func TestRoundTrip(t *testing.T) {
   // Now write the model back out as yaml
   yaml, err := ToYaml(m)
   assert.NilError(t, err)
-  fmt.Print(yaml)
-  assert.Equal(t, data, yaml)
 }
 
 func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
