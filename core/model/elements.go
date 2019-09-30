@@ -40,5 +40,5 @@ func (e *Element) ID() string {
 }
 
 func (e *Element) IsActor() bool {
-	return e.Kind == ACTOR
+	return e.kind == actor
 }
