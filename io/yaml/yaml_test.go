@@ -81,7 +81,13 @@ func TestRoundTrip(t *testing.T) {
   assert.NilError(t, err)
   // Now write the model back out as yaml
   yaml, err := ToYaml(m)
-  assert.NilError(t, err)
+  assert.Assert(t, is.Contains(yaml, "  - name: user\n    kind: actor"))
+  assert.Assert(t, is.Contains(yaml, "  - name: sound system\n    children:"))
+  assert.Assert(t, is.Contains(yaml, "      - name: speaker\n        children:"))
+  assert.Assert(t, is.Contains(yaml, "          - name: enclosure\n            technology: physical"))
+  assert.Assert(t, is.Contains(yaml, "      - name: amplifier\n        children:"))
+  assert.Assert(t, is.Contains(yaml, "          - audio in connector"))
+  assert.Assert(t, is.Contains(yaml, "          - audio out connector"))
 }
 
 func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
