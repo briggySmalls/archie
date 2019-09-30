@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/briggysmalls/archie/core/io/yaml"
 	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/io/yaml"
 	"github.com/briggysmalls/archie/server"
 	"github.com/spf13/cobra"
 	"io/ioutil"
