@@ -64,8 +64,8 @@ func TestContextHandler(t *testing.T) {
 func newServer(t *testing.T) *server {
 	// Create a simple model
 	m := mdl.NewModel()
-	one := mdl.NewItem("One")
-	two := mdl.NewItem("Two")
+	one := mdl.NewItem("One", "")
+	two := mdl.NewItem("Two", "")
 	m.AddRootElement(&one)
 	m.AddRootElement(&two)
 

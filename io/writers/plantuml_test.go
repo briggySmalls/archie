@@ -13,9 +13,9 @@ func TestDraw(t *testing.T) {
 	m := mdl.NewModel()
 
 	// Create the items we'll be testing
-	one := mdl.NewItem("One")
-	oneChild := mdl.NewItem("OneChild")
-	two := mdl.NewItem("Two")
+	one := mdl.NewItem("One", "")
+	oneChild := mdl.NewItem("OneChild", "")
+	two := mdl.NewItem("Two", "")
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)

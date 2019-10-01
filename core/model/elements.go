@@ -10,14 +10,16 @@ const (
 )
 
 type Element struct {
-	Name string
-	kind uint
+	Name       string
+	Technology string
+	kind       uint
 }
 
 // Create a new item
-func NewItem(name string) Element {
+func NewItem(name, technology string) Element {
 	el := newElement(item)
 	el.Name = name
+	el.Technology = technology
 	return el
 }
 
@@ -37,4 +39,8 @@ func newElement(kind uint) Element {
 
 func (e *Element) ID() string {
 	return fmt.Sprintf("%p", e)
+}
+
+func (e *Element) IsActor() bool {
+	return e.kind == actor
 }

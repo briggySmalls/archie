@@ -1,4 +1,4 @@
-package readers
+package yaml
 
 import (
 	"fmt"
@@ -7,23 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Model struct {
-	Elements     []Element
-	Associations []Association
-}
-
-type Element struct {
-	Name       string
-	Type       string        `yaml:",omitempty"`
-	Technology string        `yaml:",omitempty"`
-	Children   []interface{} `yaml:",omitempty"`
-}
-
-type Association struct {
-	Source      string
-	Destination string
-}
-
+// Parse a model from a yaml file
 func ParseYaml(data string) (*mdl.Model, error) {
 	// Parse the yaml using the package
 	var yamlModel Model
@@ -36,10 +20,10 @@ func ParseYaml(data string) (*mdl.Model, error) {
 	for _, rootEl := range yamlModel.Elements {
 		// Add these first elements to the root
 		var el mdl.Element
-		if rootEl.Type == "actor" {
+		if rootEl.Kind == "actor" {
 			el = mdl.NewActor(rootEl.Name)
 		} else {
-			el = mdl.NewItem(rootEl.Name)
+			el = mdl.NewItem(rootEl.Name, rootEl.Technology)
 		}
 		m.AddRootElement(&el)
 		// Now recursively add children
@@ -74,7 +58,7 @@ func addChildren(model *mdl.Model, parent *mdl.Element, children []interface{}) 
 		switch i := child.(type) {
 		case string:
 			// This is a shorthand
-			new := mdl.NewItem(i)
+			new := mdl.NewItem(i, "")
 			// Add to the model
 			model.AddElement(&new, parent)
 		case map[string]interface{}:
@@ -104,7 +88,7 @@ func addChildren(model *mdl.Model, parent *mdl.Element, children []interface{}) 
 
 func updateModelAndRecurse(model *mdl.Model, parent *mdl.Element, el Element) error {
 	// This is a fully-specified element
-	new := mdl.NewItem(el.Name)
+	new := mdl.NewItem(el.Name, el.Technology)
 	// Add to the model
 	model.AddElement(&new, parent)
 	// Add children

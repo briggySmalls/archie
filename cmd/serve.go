@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/briggysmalls/archie/core/io/yaml"
 	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/io/readers"
 	"github.com/briggysmalls/archie/server"
 	"github.com/spf13/cobra"
 	"io/ioutil"
@@ -28,7 +28,7 @@ var serveCmd = &cobra.Command{
 
 		// Parse the yaml into a model
 		var m *mdl.Model
-		m, err = readers.ParseYaml(string(dat))
+		m, err = yaml.ParseYaml(string(dat))
 		if err != nil {
 			panic(err)
 		}

@@ -73,7 +73,7 @@ func createModel() (*mdl.Model, map[string]*mdl.Element) {
 	// Create the items we'll be testing
 	for _, name := range []string{"One", "OneChild", "OneChildChilda", "OneChildChildb", "Two", "TwoChild", "TwoChildChild"} {
 		// Create the element
-		el := mdl.NewItem(name)
+		el := mdl.NewItem(name, "")
 		// Record it
 		elMap[name] = &el
 	}
