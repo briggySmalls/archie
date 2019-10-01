@@ -4,6 +4,9 @@ SHELL := /bin/bash
 TARGET := $(shell echo $${PWD\#\#*/})
 .DEFAULT_GOAL: $(TARGET)
 
+WASM_MAIN := wasm/main.go
+WASM := $(TARGET).wasm
+
 # These will be provided to the target
 VERSION := 1.0.0
 BUILD := `git rev-parse HEAD`
@@ -24,6 +27,9 @@ all: check install
 
 $(TARGET): $(SRC)
 	@go build $(LDFLAGS) -o $(TARGET)
+
+wasm: $(SRC)
+	@GOOS=js GOARCH=wasm go build $(LDFLAGS) -o $(WASM) $(WASM_MAIN)
 
 build: $(TARGET)
 	@true
