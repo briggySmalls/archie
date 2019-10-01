@@ -1,11 +1,11 @@
-package yaml
+package api
 
 import (
 	mdl "github.com/briggysmalls/archie/core/model"
-	"gopkg.in/yaml.v3"
 )
 
-func ToYaml(model *mdl.Model) (string, error) {
+// Convert an internal model into the API form (serializable)
+func toApiModel(model *mdl.Model) (Model) {
 	m := Model{}
 
 	// Copy elements into yaml model
@@ -27,18 +27,7 @@ func ToYaml(model *mdl.Model) (string, error) {
 		m.Associations = append(m.Associations, yamlRel)
 	}
 
-	// Now marshall this into yaml
-	data, err := yaml.Marshal(m)
-	return string(data), err
-}
-
-func (e Element) MarshalYAML() (interface{}, error) {
-	// Check if we are an actor
-	// Check if all we need to write is the name
-	if e.Kind == "" && e.Technology == "" && len(e.Children) == 0 {
-		return e.Name, nil
-	}
-	return ElementWithChildren(e), nil
+	return m
 }
 
 func copyElementToYamlModel(model *mdl.Model, modelElement *mdl.Element) Element {
@@ -64,6 +53,7 @@ func copyElementToYamlModel(model *mdl.Model, modelElement *mdl.Element) Element
 func name(model *mdl.Model, element *mdl.Element) string {
 	name, err := model.Name(element)
 	if err != nil {
+		// We are converting an internal model, which should be consistent
 		panic(err)
 	}
 	return name

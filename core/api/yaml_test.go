@@ -1,4 +1,4 @@
-package yaml
+package api
 
 import (
   mdl "github.com/briggysmalls/archie/core/model"

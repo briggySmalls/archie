@@ -1,23 +1,15 @@
-package yaml
+package api
 
 import (
-	"fmt"
 	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/mitchellh/mapstructure"
-	"gopkg.in/yaml.v3"
+	"fmt"
 )
 
-// Parse a model from a yaml file
-func ParseYaml(data string) (*mdl.Model, error) {
-	// Parse the yaml using the package
-	var yamlModel Model
-	err := yaml.Unmarshal([]byte(data), &yamlModel)
-	if err != nil {
-		return nil, err
-	}
+func toInternalModel(apiModel Model) (*mdl.Model, error) {
 	// Copy the parsed elements into the new model
 	m := mdl.NewModel()
-	for _, rootEl := range yamlModel.Elements {
+	for _, rootEl := range apiModel.Elements {
 		// Add these first elements to the root
 		var el mdl.Element
 		if rootEl.Kind == "actor" {
@@ -27,13 +19,13 @@ func ParseYaml(data string) (*mdl.Model, error) {
 		}
 		m.AddRootElement(&el)
 		// Now recursively add children
-		err = addChildren(&m, &el, rootEl.Children)
+		err := addChildren(&m, &el, rootEl.Children)
 		if err != nil {
 			return nil, err
 		}
 	}
 	// Copy the parsed relationships into the new model
-	for _, ass := range yamlModel.Associations {
+	for _, ass := range apiModel.Associations {
 		// Get the elements
 		var src, dest *mdl.Element
 		var err error
@@ -48,7 +40,7 @@ func ParseYaml(data string) (*mdl.Model, error) {
 		// Add a new relationship
 		m.AddAssociation(src, dest)
 	}
-	return &m, err
+	return &m, nil
 }
 
 func addChildren(model *mdl.Model, parent *mdl.Element, children []interface{}) error {

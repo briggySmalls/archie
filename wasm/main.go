@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/briggysmalls/archie/core/io/yaml"
+	"github.com/briggysmalls/archie/core/api"
 	"github.com/briggysmalls/archie/core/views"
 	"syscall/js"
 )
@@ -11,7 +11,7 @@ func newLandscapeView(this js.Value, inputs []js.Value) interface{} {
 	model := inputs[0].String()
 
 	// Read the model in
-	m, err := yaml.ParseYaml(model)
+	m, err := api.ParseYaml(model)
 	if err != nil {
 		return err
 	}
@@ -22,13 +22,12 @@ func newLandscapeView(this js.Value, inputs []js.Value) interface{} {
 		return err
 	}
 
-	// Return the view as yaml
-	// TODO: This is ridiculous in WASM. We should return as a Javascript Object
-	view, err := yaml.ToYaml(&v)
+	// Return the view as json
+	json, err := api.ToJson(&v)
 	if err != nil {
 		return err
 	}
-	return view
+	return json
 }
 
 func main() {
