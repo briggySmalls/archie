@@ -1,9 +1,9 @@
-package api
+package io
 
 import (
+	"fmt"
 	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/mitchellh/mapstructure"
-	"fmt"
 )
 
 func toInternalModel(apiModel Model) (*mdl.Model, error) {

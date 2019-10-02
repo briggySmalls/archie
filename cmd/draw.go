@@ -34,37 +34,32 @@ var drawCmd = &cobra.Command{
 		var err error
 
 		// Read in the yaml file
-		var dat []byte
-		dat, err = ioutil.ReadFile(model)
+		yaml, err := ioutil.ReadFile(model)
 		if err != nil {
 			panic(err)
 		}
 
 		// Parse the yaml into a model
-		var m *mdl.Model
-		m, err = api.ParseYaml(string(dat))
+		m, err := api.NewArchieFromYaml(string(yaml))
 		if err != nil {
 			panic(err)
 		}
 
 		// Create a view from the model
-		var viewModel mdl.Model
+		var viewModel string
+		var err error
 		switch view {
 		case "landscape":
-			viewModel = views.NewLandscapeView(m)
+			viewModel, err = m.LandscapeView()
 		case "context":
-			// First get the scope
-			var scopeItem *mdl.Element
-			scopeItem, err = m.LookupName(scope)
-			if err != nil {
-				panic(err)
-			}
-			viewModel = views.NewContextView(m, scopeItem)
+			viewModel, err = views.NewContextView(m, scopeItem)
+		}
+		if err != nil {
+			panic(err)
 		}
 
-		// Draw the view
-		d := drawers.NewPlantUmlDrawer()
-		fmt.Print(d.Draw(viewModel))
+		// Draw the view (print json for now)
+		fmt.Print(viewModel)
 	},
 }
 

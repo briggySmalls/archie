@@ -1,11 +1,11 @@
-package api
+package io
 
 import (
 	mdl "github.com/briggysmalls/archie/core/model"
 )
 
-// Convert an internal model into the API form (serializable)
-func toApiModel(model *mdl.Model) (Model) {
+// Convert an internal model into the serialisable form
+func toSerialisable(model *mdl.Model) Model {
 	m := Model{}
 
 	// Copy elements into yaml model

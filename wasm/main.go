@@ -22,12 +22,12 @@ func newLandscapeView(this js.Value, inputs []js.Value) interface{} {
 		return err
 	}
 
-	// Return the view as json
+	// Return the
 	json, err := api.ToJson(&v)
 	if err != nil {
 		return err
 	}
-	return json
+	return string(json)
 }
 
 func main() {

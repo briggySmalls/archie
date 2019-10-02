@@ -1,32 +1,32 @@
-package api
+package io
 
 import (
+	"encoding/json"
 	mdl "github.com/briggysmalls/archie/core/model"
-	"gopkg.in/yaml.v3"
 )
 
 // Parse an API model from a yaml string
-func ParseYaml(data string) (*mdl.Model, error) {
+func ParseJson(data string) (*mdl.Model, error) {
 	// Parse the yaml using the package
-	var apiModel Model
-	err := yaml.Unmarshal([]byte(data), &apiModel)
+	var sModel Model
+	err := json.Unmarshal([]byte(data), &sModel)
 	if err != nil {
 		return nil, err
 	}
 	// Convert to an internal model
-	return toInternalModel(apiModel)
+	return toInternalModel(sModel)
 }
 
 // Convert an API model to yaml
-func ToYaml(model *mdl.Model) (string, error) {
+func ToJson(model *mdl.Model) (string, error) {
 	// Convert to serializable model
-	apiModel := toApiModel(model)
-	// Now marshal this into yaml
-	data, err := yaml.Marshal(apiModel)
+	sModel := toSerialisable(model)
+	// Now marshall this into yaml
+	data, err := json.Marshal(sModel)
 	return string(data), err
 }
 
-func (e Element) MarshalYAML() (interface{}, error) {
+func (e Element) MarshalJSON() (interface{}, error) {
 	// Check if we are an actor
 	// Check if all we need to write is the name
 	if e.Kind == "" && e.Technology == "" && len(e.Children) == 0 {

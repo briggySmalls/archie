@@ -1,14 +1,11 @@
 package api
 
 import (
-  mdl "github.com/briggysmalls/archie/core/model"
-  "testing"
-
-  "gotest.tools/assert"
-  is "gotest.tools/assert/cmp"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
-var data = `
+var yaml = `
 elements:
   - name: user
     kind: actor
@@ -58,42 +55,59 @@ associations:
     destination: sound system/amplifier/ac-dc converter
 `
 
-// Test creating an item
-func TestRead(t *testing.T) {
-  // Read the model
-  m, err := ParseYaml(data)
-  // Assert some stuff
-  assert.NilError(t, err)
-  assert.Assert(t, is.Len(m.Elements, 15))
-  assert.Assert(t, is.Len(m.Composition, 15))
-  assert.Assert(t, is.Len(m.Associations, 11))
-  // Be a bit more in-depth
-  assert.Assert(t, is.Len(m.RootElements(), 2))
-  assertChildrenCount(t, m, "sound system", 2)
-  assertChildrenCount(t, m, "sound system/speaker", 4)
-  assertChildrenCount(t, m, "sound system/amplifier", 7)
+func TestLandscape(t *testing.T) {
+	// Create an archie
+	a, err := NewArchieFromYaml(yaml)
+	assert.NotNil(t, err)
+
+	// Create a landscape view
+	view, err := a.LandscapeView()
+	assert.NotNil(t, err)
+
+	// Assert
+	expected := `
+{
+	"elements": [
+		{"name": "user", "kind": "actor"},
+		{"name": "sound system"}
+	],
+	"associations": [
+		{"source": "user", "destination": "sound system"},
+		{"source": "sound system", "destination": "user"}
+	]
+}
+`
+	assert.JSONEq(t, expected, view)
 }
 
-// Now test round-tripping the model
-func TestRoundTrip(t *testing.T) {
-  // Read the model
-  m, err := ParseYaml(data)
-  assert.NilError(t, err)
-  // Now write the model back out as yaml
-  yaml, err := ToYaml(m)
-  assert.Assert(t, is.Contains(yaml, "  - name: user\n    kind: actor"))
-  assert.Assert(t, is.Contains(yaml, "  - name: sound system\n    children:"))
-  assert.Assert(t, is.Contains(yaml, "      - name: speaker\n        children:"))
-  assert.Assert(t, is.Contains(yaml, "          - name: enclosure\n            technology: physical"))
-  assert.Assert(t, is.Contains(yaml, "      - name: amplifier\n        children:"))
-  assert.Assert(t, is.Contains(yaml, "          - audio in connector"))
-  assert.Assert(t, is.Contains(yaml, "          - audio out connector"))
-}
+func TestContext(t *testing.T) {
+	// Create an archie
+	a, err := NewArchieFromYaml(yaml)
+	assert.NotNil(t, err)
 
-func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
-  // Lookup the name
-  el, err := m.LookupName(name)
-  assert.NilError(t, err)
-  // Now assert the number of children is as expected
-  assert.Assert(t, is.Len(m.Children(el), length))
+	// Create a landscape view
+	view, err := a.ContextView("sound system")
+	assert.NotNil(t, err)
+
+	// Assert
+	expected := `
+{
+	"elements": [
+		{"name": "user", "kind": "actor"},
+		{
+			"name": "sound system",
+			"children": [
+				{"name": "speaker"},
+				{"name": "amplifier"}
+			]
+		}
+	],
+	"associations": [
+		{"source": "sound system/speaker", "destination": "user"},
+		{"source": "sound system/amplifier", "destination": "sound system/speaker"},
+		{"source": "user", "destination": "sound system/amplifier"},
+	]
+}
+`
+	assert.JSONEq(t, expected, view)
 }
