@@ -6,7 +6,7 @@ import (
 
 func NewPlantUmlDrawer() Writer {
 	// Create a new drawer with correct config
-	d := newWriter(PlantUmlStrategy{})
+	d := New(PlantUmlStrategy{})
 	return &d
 }
 

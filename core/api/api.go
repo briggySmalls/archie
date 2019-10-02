@@ -4,6 +4,7 @@ import (
 	"github.com/briggysmalls/archie/core/io"
 	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/briggysmalls/archie/core/views"
+	"github.com/briggysmalls/archie/core/writers"
 )
 
 type Archie interface {
@@ -12,38 +13,34 @@ type Archie interface {
 }
 
 type archie struct {
-	model *mdl.Model
+	model  *mdl.Model
+	writer writers.Writer
 }
 
-func NewArchieFromJson(json string) (Archie, error) {
-	// Convert the JSON to a model
-	model, err := io.ParseJson(json)
-	if err != nil {
-		return nil, err
-	}
-	// Return a new archie
-	return &archie{model: model}, nil
-}
-
-func NewArchieFromYaml(yaml string) (Archie, error) {
-	// Convert the JSON to a model
+func New(strategy writers.WriterStrategy, yaml string) (Archie, error) {
+	// Convert the yaml to a model
 	model, err := io.ParseYaml(yaml)
 	if err != nil {
 		return nil, err
 	}
+	// Create a new writer
+	w := writers.New(strategy)
 	// Return a new archie
-	return &archie{model: model}, nil
+	return &archie{
+		model:  model,
+		writer: &w,
+	}, nil
 }
 
-func (a *archie) LandscapeView() (json string, err error) {
+func (a *archie) LandscapeView() (diagram string, err error) {
 	// Create the view
 	view := views.NewLandscapeView(a.model)
-	// Convert to json
-	json, err = io.ToJson(&view)
+	// Convert to diagram
+	diagram, err = a.writer.Write(view)
 	return
 }
 
-func (a *archie) ContextView(scope string) (json string, err error) {
+func (a *archie) ContextView(scope string) (diagram string, err error) {
 	// Lookup the element
 	element, err := a.model.LookupName(scope)
 	if err != nil {
@@ -51,7 +48,7 @@ func (a *archie) ContextView(scope string) (json string, err error) {
 	}
 	// Create the view
 	view := views.NewContextView(a.model, element)
-	// Convert to json
-	json, err = io.ToJson(&view)
+	// Convert to diagram
+	diagram, err = a.writer.Write(view)
 	return
 }

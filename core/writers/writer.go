@@ -37,7 +37,7 @@ type writer struct {
 	model    *mdl.Model
 }
 
-func newWriter(strategy WriterStrategy) writer {
+func New(strategy WriterStrategy) writer {
 	return writer{strategy: strategy}
 }
 

@@ -56,8 +56,9 @@ associations:
 `
 
 func TestLandscape(t *testing.T) {
+	// Decide on a writer strategy
 	// Create an archie
-	a, err := NewArchieFromYaml(yaml)
+	a, err := New(yaml)
 	assert.NotNil(t, err)
 
 	// Create a landscape view
@@ -82,7 +83,7 @@ func TestLandscape(t *testing.T) {
 
 func TestContext(t *testing.T) {
 	// Create an archie
-	a, err := NewArchieFromYaml(yaml)
+	a, err := New(yaml)
 	assert.NotNil(t, err)
 
 	// Create a landscape view

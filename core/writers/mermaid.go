@@ -9,7 +9,7 @@ import (
 
 func NewMermaidDrawer(linkAddress string) Writer {
 	// Create a new drawer with correct config
-	d := newWriter(MermaidStrategy{linkAddress: linkAddress})
+	d := New(MermaidStrategy{linkAddress: linkAddress})
 	return &d
 }
 
