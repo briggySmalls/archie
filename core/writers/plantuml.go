@@ -4,12 +4,6 @@ import (
 	mdl "github.com/briggysmalls/archie/core/model"
 )
 
-func NewPlantUmlDrawer() Writer {
-	// Create a new drawer with correct config
-	d := New(PlantUmlStrategy{})
-	return &d
-}
-
 type PlantUmlStrategy struct {
 }
 

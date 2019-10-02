@@ -17,7 +17,7 @@ type archie struct {
 	writer writers.Writer
 }
 
-func New(strategy writers.WriterStrategy, yaml string) (Archie, error) {
+func New(strategy writers.Strategy, yaml string) (Archie, error) {
 	// Convert the yaml to a model
 	model, err := io.ParseYaml(yaml)
 	if err != nil {

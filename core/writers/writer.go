@@ -14,7 +14,7 @@ type Writer interface {
 	Write(mdl.Model) (string, error)
 }
 
-type WriterStrategy interface {
+type Strategy interface {
 	Header(writer Scribe)
 	Footer(writer Scribe)
 	Element(writer Scribe, element *mdl.Element)
@@ -30,14 +30,14 @@ type Scribe interface {
 }
 
 type writer struct {
-	strategy WriterStrategy
+	strategy Strategy
 	writer   Writer
 	indent   uint
 	builder  strings.Builder
 	model    *mdl.Model
 }
 
-func New(strategy WriterStrategy) writer {
+func New(strategy Strategy) writer {
 	return writer{strategy: strategy}
 }
 

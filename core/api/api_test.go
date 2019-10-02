@@ -1,7 +1,8 @@
 package api
 
 import (
-	"github.com/stretchr/testify/assert"
+	"github.com/briggysmalls/archie/core/writers"
+	"gotest.tools/assert"
 	"testing"
 )
 
@@ -56,59 +57,21 @@ associations:
 `
 
 func TestLandscape(t *testing.T) {
-	// Decide on a writer strategy
 	// Create an archie
-	a, err := New(yaml)
-	assert.NotNil(t, err)
+	a, err := New(writers.MermaidStrategy{}, yaml)
+	assert.NilError(t, err)
 
 	// Create a landscape view
-	view, err := a.LandscapeView()
-	assert.NotNil(t, err)
-
-	// Assert
-	expected := `
-{
-	"elements": [
-		{"name": "user", "kind": "actor"},
-		{"name": "sound system"}
-	],
-	"associations": [
-		{"source": "user", "destination": "sound system"},
-		{"source": "sound system", "destination": "user"}
-	]
-}
-`
-	assert.JSONEq(t, expected, view)
+	_, err = a.LandscapeView()
+	assert.NilError(t, err)
 }
 
 func TestContext(t *testing.T) {
 	// Create an archie
-	a, err := New(yaml)
-	assert.NotNil(t, err)
+	a, err := New(writers.MermaidStrategy{}, yaml)
+	assert.NilError(t, err)
 
 	// Create a landscape view
-	view, err := a.ContextView("sound system")
-	assert.NotNil(t, err)
-
-	// Assert
-	expected := `
-{
-	"elements": [
-		{"name": "user", "kind": "actor"},
-		{
-			"name": "sound system",
-			"children": [
-				{"name": "speaker"},
-				{"name": "amplifier"}
-			]
-		}
-	],
-	"associations": [
-		{"source": "sound system/speaker", "destination": "user"},
-		{"source": "sound system/amplifier", "destination": "sound system/speaker"},
-		{"source": "user", "destination": "sound system/amplifier"},
-	]
-}
-`
-	assert.JSONEq(t, expected, view)
+	_, err = a.ContextView("sound system")
+	assert.NilError(t, err)
 }

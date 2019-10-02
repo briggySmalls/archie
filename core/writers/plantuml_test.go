@@ -26,7 +26,7 @@ func TestDraw(t *testing.T) {
 	m.AddAssociation(&oneChild, &two)
 
 	// Drawer
-	d := NewPlantUmlDrawer()
+	d := New(PlantUmlStrategy{})
 	output, err := d.Write(m)
 	assert.NilError(t, err)
 
