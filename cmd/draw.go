@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/core/api"
-	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/core/views"
+	"github.com/briggysmalls/archie/core"
 	"github.com/briggysmalls/archie/core/writers"
 	"io/ioutil"
 
@@ -40,19 +38,18 @@ var drawCmd = &cobra.Command{
 		}
 
 		// Parse the yaml into a model
-		m, err := api.NewArchieFromYaml(string(yaml))
+		m, err := core.New(writers.PlantUmlStrategy{}, string(yaml))
 		if err != nil {
 			panic(err)
 		}
 
 		// Create a view from the model
 		var viewModel string
-		var err error
 		switch view {
 		case "landscape":
 			viewModel, err = m.LandscapeView()
 		case "context":
-			viewModel, err = views.NewContextView(m, scopeItem)
+			viewModel, err = m.ContextView(scope)
 		}
 		if err != nil {
 			panic(err)

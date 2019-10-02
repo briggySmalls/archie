@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie/core/api"
-	mdl "github.com/briggysmalls/archie/core/model"
+	"github.com/briggysmalls/archie/core"
+	"github.com/briggysmalls/archie/core/writers"
 	"github.com/briggysmalls/archie/server"
 	"github.com/spf13/cobra"
 	"io/ioutil"
@@ -17,18 +17,14 @@ var serveCmd = &cobra.Command{
 	Short: "Serves an architecture viewer",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		var err error
-
 		// Read in the yaml file
-		var dat []byte
-		dat, err = ioutil.ReadFile(model)
+		yaml, err := ioutil.ReadFile(model)
 		if err != nil {
 			panic(err)
 		}
 
-		// Parse the yaml into a model
-		var m *mdl.Model
-		m, err = api.ParseYaml(string(dat))
+		// Create an archie
+		m, err := core.New(writers.MermaidStrategy{}, string(yaml))
 		if err != nil {
 			panic(err)
 		}

@@ -1,12 +1,32 @@
 package server
 
 import (
-	mdl "github.com/briggysmalls/archie/core/model"
+	"github.com/briggysmalls/archie/core"
+	"github.com/briggysmalls/archie/core/writers"
 	"github.com/gorilla/mux"
+	"gotest.tools/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
+
+var model = `
+elements:
+  - name: user
+    kind: actor
+  - name: sound system
+    children:
+      - one
+      - two
+      - three
+associations:
+  - source: user
+    destination: sound system/one
+  - source: sound system/two
+    destination: sound system/three
+  - source: sound system/three
+    destination: user
+`
 
 func TestHomeHandler(t *testing.T) {
 	// Create the server
@@ -63,17 +83,13 @@ func TestContextHandler(t *testing.T) {
 
 func newServer(t *testing.T) *server {
 	// Create a simple model
-	m := mdl.NewModel()
-	one := mdl.NewItem("One", "")
-	two := mdl.NewItem("Two", "")
-	m.AddRootElement(&one)
-	m.AddRootElement(&two)
+	// Create the api
+	a, err := core.New(writers.MermaidStrategy{}, model)
+	assert.NilError(t, err)
 
 	// Create the server
-	s, err := NewServer(&m)
-	if err != nil {
-		t.Fatal(err)
-	}
+	s, err := NewServer(a)
+	assert.NilError(t, err)
 
 	return s.(*server)
 }
