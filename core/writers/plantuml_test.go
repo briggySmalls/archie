@@ -1,4 +1,4 @@
-package drawers
+package writers
 
 import (
 	mdl "github.com/briggysmalls/archie/core/model"
@@ -27,7 +27,7 @@ func TestDraw(t *testing.T) {
 
 	// Drawer
 	d := NewPlantUmlDrawer()
-	output, err := d.Draw(m)
+	output, err := d.Write(m)
 	assert.NilError(t, err)
 
 	// Assert result

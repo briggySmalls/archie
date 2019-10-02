@@ -5,7 +5,7 @@ import (
 	"github.com/briggysmalls/archie/core/api"
 	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/briggysmalls/archie/core/views"
-	"github.com/briggysmalls/archie/io/writers"
+	"github.com/briggysmalls/archie/core/writers"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	mdl "github.com/briggysmalls/archie/core/model"
 	"github.com/briggysmalls/archie/core/views"
-	"github.com/briggysmalls/archie/io/writers"
+	"github.com/briggysmalls/archie/core/writers"
 	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
@@ -50,7 +50,7 @@ func NewServer(model *mdl.Model) (Server, error) {
 	// Create the server
 	return &server{
 		model:    model,
-		drawer:   drawers.NewMermaidDrawer("http://localhost:8080/"),
+		writer:   writers.NewMermaidDrawer("http://localhost:8080/"),
 		template: t,
 	}, nil
 }
@@ -61,7 +61,7 @@ type Server interface {
 
 type server struct {
 	model    *mdl.Model
-	drawer   drawers.Drawer
+	writer   writers.Writer
 	template *template.Template
 }
 
@@ -86,7 +86,7 @@ func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a landscape view
 	viewModel := views.NewLandscapeView(s.model)
 	// Write plantuml
-	output, err := s.drawer.Draw(viewModel)
+	output, err := s.writer.Write(viewModel)
 	if err != nil {
 		s.Error(w, err.Error(), 500)
 		return
@@ -119,7 +119,7 @@ func (s *server) contextHandler(w http.ResponseWriter, r *http.Request) {
 	// Create the view
 	viewModel := views.NewContextView(s.model, item)
 	// Write plantuml
-	output, err := s.drawer.Draw(viewModel)
+	output, err := s.writer.Write(viewModel)
 	if err != nil {
 		// Server error
 		s.Error(w, err.Error(), http.StatusInternalServerError)
