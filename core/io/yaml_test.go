@@ -74,22 +74,6 @@ func TestRead(t *testing.T) {
   assertChildrenCount(t, m, "sound system/amplifier", 7)
 }
 
-// Now test round-tripping the model
-func TestRoundTrip(t *testing.T) {
-  // Read the model
-  m, err := ParseYaml(data)
-  assert.NilError(t, err)
-  // Now write the model back out as yaml
-  yaml, err := ToYaml(m)
-  assert.Assert(t, is.Contains(yaml, "  - name: user\n    kind: actor"))
-  assert.Assert(t, is.Contains(yaml, "  - name: sound system\n    children:"))
-  assert.Assert(t, is.Contains(yaml, "      - name: speaker\n        children:"))
-  assert.Assert(t, is.Contains(yaml, "          - name: enclosure\n            technology: physical"))
-  assert.Assert(t, is.Contains(yaml, "      - name: amplifier\n        children:"))
-  assert.Assert(t, is.Contains(yaml, "          - audio in connector"))
-  assert.Assert(t, is.Contains(yaml, "          - audio out connector"))
-}
-
 func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
   // Lookup the name
   el, err := m.LookupName(name)

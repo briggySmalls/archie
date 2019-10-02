@@ -15,12 +15,3 @@ func ParseYaml(data string) (*mdl.Model, error) {
 	// Run usual json parsing
 	return ParseJson(string(json))
 }
-
-// Convert an API model to yaml
-func ToYaml(model *mdl.Model) (string, error) {
-	// Convert to serializable model
-	sModel := toSerialisable(model)
-	// Now marshal this into yaml
-	data, err := yaml.Marshal(sModel)
-	return string(data), err
-}
