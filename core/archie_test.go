@@ -1,9 +1,9 @@
-package api
+package core
 
 import (
-	"github.com/briggysmalls/archie/core/writers"
-	"gotest.tools/assert"
-	"testing"
+  "github.com/briggysmalls/archie/core/writers"
+  "gotest.tools/assert"
+  "testing"
 )
 
 var yaml = `
@@ -57,21 +57,21 @@ associations:
 `
 
 func TestLandscape(t *testing.T) {
-	// Create an archie
-	a, err := New(writers.MermaidStrategy{}, yaml)
-	assert.NilError(t, err)
+  // Create an archie
+  a, err := New(writers.MermaidStrategy{}, yaml)
+  assert.NilError(t, err)
 
-	// Create a landscape view
-	_, err = a.LandscapeView()
-	assert.NilError(t, err)
+  // Create a landscape view
+  _, err = a.LandscapeView()
+  assert.NilError(t, err)
 }
 
 func TestContext(t *testing.T) {
-	// Create an archie
-	a, err := New(writers.MermaidStrategy{}, yaml)
-	assert.NilError(t, err)
+  // Create an archie
+  a, err := New(writers.MermaidStrategy{}, yaml)
+  assert.NilError(t, err)
 
-	// Create a landscape view
-	_, err = a.ContextView("sound system")
-	assert.NilError(t, err)
+  // Create a landscape view
+  _, err = a.ContextView("sound system")
+  assert.NilError(t, err)
 }
