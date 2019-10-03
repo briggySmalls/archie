@@ -52,3 +52,21 @@ func (a *archie) ContextView(scope string) (diagram string, err error) {
 	diagram, err = a.writer.Write(view)
 	return
 }
+
+func (a *archie) Elements() []string {
+	// Prepare a slice
+	elementNames := make([]string, len(a.model.Elements))
+	// Copy element names in
+	for i, el := range a.model.Elements {
+		// Get the full name of the element
+		name, err := a.model.Name(el)
+		if err != nil {
+			// We are iterating through the model elements, so we should definitely find their name
+			panic(err)
+		}
+		// Add to the slice
+		elementNames[i] = name
+	}
+	// Return the names
+	return elementNames
+}
