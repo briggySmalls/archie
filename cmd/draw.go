@@ -1,26 +1,9 @@
-/*
-Copyright © 2019 NAME HERE <EMAIL ADDRESS>
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package cmd
 
 import (
 	"fmt"
-	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/core/views"
-	"github.com/briggysmalls/archie/io/readers"
-	"github.com/briggysmalls/archie/io/writers"
+	"github.com/briggysmalls/archie/core"
+	"github.com/briggysmalls/archie/core/writers"
 	"io/ioutil"
 
 	"github.com/spf13/cobra"
@@ -49,37 +32,31 @@ var drawCmd = &cobra.Command{
 		var err error
 
 		// Read in the yaml file
-		var dat []byte
-		dat, err = ioutil.ReadFile(model)
+		yaml, err := ioutil.ReadFile(model)
 		if err != nil {
 			panic(err)
 		}
 
 		// Parse the yaml into a model
-		var m *mdl.Model
-		m, err = readers.ParseYaml(string(dat))
+		m, err := core.New(writers.PlantUmlStrategy{}, string(yaml))
 		if err != nil {
 			panic(err)
 		}
 
 		// Create a view from the model
-		var viewModel mdl.Model
+		var viewModel string
 		switch view {
 		case "landscape":
-			viewModel = views.NewLandscapeView(m)
+			viewModel, err = m.LandscapeView()
 		case "context":
-			// First get the scope
-			var scopeItem *mdl.Element
-			scopeItem, err = m.LookupName(scope)
-			if err != nil {
-				panic(err)
-			}
-			viewModel = views.NewContextView(m, scopeItem)
+			viewModel, err = m.ContextView(scope)
+		}
+		if err != nil {
+			panic(err)
 		}
 
-		// Draw the view
-		d := drawers.NewPlantUmlDrawer()
-		fmt.Print(d.Draw(viewModel))
+		// Draw the view (print json for now)
+		fmt.Print(viewModel)
 	},
 }
 

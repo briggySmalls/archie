@@ -1,10 +1,11 @@
-package readers
+package io
 
 import (
-	"testing"
+  mdl "github.com/briggysmalls/archie/core/model"
+  "testing"
 
-	"gotest.tools/assert"
-	is "gotest.tools/assert/cmp"
+  "gotest.tools/assert"
+  is "gotest.tools/assert/cmp"
 )
 
 var data = `
@@ -32,7 +33,6 @@ elements:
             technology: electro-mechanical
           - name: input select
             technology: electro-mechanical
-
 associations:
   - source: user
     destination: sound system/amplifier/input select
@@ -60,11 +60,24 @@ associations:
 
 // Test creating an item
 func TestRead(t *testing.T) {
-	// Read the model
-	m, err := ParseYaml(data)
-	// Assert some stuff
-	assert.NilError(t, err)
-	assert.Assert(t, is.Len(m.Elements, 15))
-	assert.Assert(t, is.Len(m.Composition, 15))
-	assert.Assert(t, is.Len(m.Associations, 11))
+  // Read the model
+  m, err := ParseYaml(data)
+  // Assert some stuff
+  assert.NilError(t, err)
+  assert.Assert(t, is.Len(m.Elements, 15))
+  assert.Assert(t, is.Len(m.Composition, 15))
+  assert.Assert(t, is.Len(m.Associations, 11))
+  // Be a bit more in-depth
+  assert.Assert(t, is.Len(m.RootElements(), 2))
+  assertChildrenCount(t, m, "sound system", 2)
+  assertChildrenCount(t, m, "sound system/speaker", 4)
+  assertChildrenCount(t, m, "sound system/amplifier", 7)
+}
+
+func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
+  // Lookup the name
+  el, err := m.LookupName(name)
+  assert.NilError(t, err)
+  // Now assert the number of children is as expected
+  assert.Assert(t, is.Len(m.Children(el), length))
 }

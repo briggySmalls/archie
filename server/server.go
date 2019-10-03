@@ -2,9 +2,7 @@ package server
 
 import (
 	"fmt"
-	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/core/views"
-	"github.com/briggysmalls/archie/io/writers"
+	"github.com/briggysmalls/archie/core"
 	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
@@ -41,7 +39,7 @@ const page = `
 </html>
 `
 
-func NewServer(model *mdl.Model) (Server, error) {
+func NewServer(archie core.Archie) (Server, error) {
 	// Load the template
 	t, err := template.New("page").Parse(page)
 	if err != nil {
@@ -49,8 +47,7 @@ func NewServer(model *mdl.Model) (Server, error) {
 	}
 	// Create the server
 	return &server{
-		model:    model,
-		drawer:   drawers.NewMermaidDrawer("http://localhost:8080/"),
+		archie:   archie,
 		template: t,
 	}, nil
 }
@@ -60,8 +57,7 @@ type Server interface {
 }
 
 type server struct {
-	model    *mdl.Model
-	drawer   drawers.Drawer
+	archie   core.Archie
 	template *template.Template
 }
 
@@ -84,19 +80,16 @@ func (s *server) Serve(address string) error {
 
 func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a landscape view
-	viewModel := views.NewLandscapeView(s.model)
-	// Write plantuml
-	output, err := s.drawer.Draw(viewModel)
+	chart, err := s.archie.LandscapeView()
 	if err != nil {
-		s.Error(w, err.Error(), 500)
-		return
+		s.Error(w, err.Error(), http.StatusBadRequest)
 	}
 	// Create template data, including the graph
 	data := templateData{
 		Title:    "Architecture explorer",
 		ViewName: "landscape",
 		Context:  "",
-		Chart:    output,
+		Chart:    chart,
 	}
 	// Send populated template as response
 	s.template.Execute(w, data)
@@ -104,33 +97,23 @@ func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *server) contextHandler(w http.ResponseWriter, r *http.Request) {
 	// Determine the item
-	itemName, err := url.PathUnescape(strings.TrimFunc(r.URL.Path, func(r rune) bool {
+	item, err := url.PathUnescape(strings.TrimFunc(r.URL.Path, func(r rune) bool {
 		return r == '/'
 	}))
 	if err != nil {
 		s.Error(w, err.Error(), http.StatusBadRequest)
 	}
-	item, err := s.model.LookupName(itemName)
-	if err != nil {
-		// Failed to find the supplied item (user error)
-		s.NotFound(w, r)
-		return
-	}
 	// Create the view
-	viewModel := views.NewContextView(s.model, item)
-	// Write plantuml
-	output, err := s.drawer.Draw(viewModel)
+	chart, err := s.archie.ContextView(item)
 	if err != nil {
-		// Server error
-		s.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		s.Error(w, err.Error(), http.StatusBadRequest)
 	}
 	// Create template data, including the graph
 	data := templateData{
 		Title:    "Architecture explorer",
 		ViewName: "context",
-		Context:  itemName,
-		Chart:    output,
+		Context:  item,
+		Chart:    chart,
 	}
 	// Send populated template as response
 	s.template.Execute(w, data)

@@ -231,7 +231,7 @@ NameLoop:
 		}
 		return nil, fmt.Errorf("Couldn't find child with name '%s' in root", name)
 	}
-	panic(fmt.Errorf("It should be impossible to reach this code..."))
+	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
 func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {

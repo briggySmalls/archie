@@ -5,25 +5,27 @@ import (
 )
 
 const (
-	ACTOR = iota
-	ITEM
+	actor = iota
+	item
 )
 
 type Element struct {
-	Name string
-	Kind uint
+	Name       string
+	Technology string
+	kind       uint
 }
 
 // Create a new item
-func NewItem(name string) Element {
-	el := newElement(ITEM)
+func NewItem(name, technology string) Element {
+	el := newElement(item)
 	el.Name = name
+	el.Technology = technology
 	return el
 }
 
 // Create a new actor
 func NewActor(name string) Element {
-	el := newElement(ACTOR)
+	el := newElement(actor)
 	el.Name = name
 	return el
 }
@@ -31,10 +33,14 @@ func NewActor(name string) Element {
 // Create an element
 func newElement(kind uint) Element {
 	return Element{
-		Kind: kind,
+		kind: kind,
 	}
 }
 
-func (e *Element) Id() string {
+func (e *Element) ID() string {
 	return fmt.Sprintf("%p", e)
+}
+
+func (e *Element) IsActor() bool {
+	return e.kind == actor
 }

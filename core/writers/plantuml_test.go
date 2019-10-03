@@ -1,4 +1,4 @@
-package drawers
+package writers
 
 import (
 	mdl "github.com/briggysmalls/archie/core/model"
@@ -13,9 +13,9 @@ func TestDraw(t *testing.T) {
 	m := mdl.NewModel()
 
 	// Create the items we'll be testing
-	one := mdl.NewItem("One")
-	oneChild := mdl.NewItem("OneChild")
-	two := mdl.NewItem("Two")
+	one := mdl.NewItem("One", "")
+	oneChild := mdl.NewItem("OneChild", "")
+	two := mdl.NewItem("Two", "")
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(&one)
@@ -26,8 +26,8 @@ func TestDraw(t *testing.T) {
 	m.AddAssociation(&oneChild, &two)
 
 	// Drawer
-	d := NewPlantUmlDrawer()
-	output, err := d.Draw(m)
+	d := New(PlantUmlStrategy{})
+	output, err := d.Write(m)
 	assert.NilError(t, err)
 
 	// Assert result

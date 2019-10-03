@@ -5,6 +5,7 @@ import (
 )
 
 // Create a context view
+// TODO: This should probably return an error
 func NewContextView(model *mdl.Model, scope *mdl.Element) mdl.Model {
 	// Find relevant elements
 	var elements []*mdl.Element
