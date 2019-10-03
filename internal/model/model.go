@@ -6,26 +6,26 @@ import (
 )
 
 type Relationship struct {
-	Source      *Element
-	Destination *Element
+	Source      Element
+	Destination Element
 }
 
 type Model struct {
 	Associations []Relationship
-	Composition  map[*Element]*Element
-	Elements     []*Element
+	Composition  map[Element]Element
+	Elements     []Element
 }
 
 // NewModel creates an initialises new model
 func NewModel() Model {
 	// Create a model
 	model := Model{
-		Composition: make(map[*Element]*Element),
+		Composition: make(map[Element]Element),
 	}
 	return model
 }
 
-func (m *Model) AddElement(new, parent *Element) {
+func (m *Model) AddElement(new, parent Element) {
 	// Add the new element
 	m.Elements = append(m.Elements, new)
 	// Associate the element with its parent
@@ -33,18 +33,18 @@ func (m *Model) AddElement(new, parent *Element) {
 }
 
 // Add an element to the root of the model
-func (m *Model) AddRootElement(new *Element) {
+func (m *Model) AddRootElement(new Element) {
 	// Add element as a child of the root
 	m.AddElement(new, nil)
 }
 
 // Add an association between Elements
-func (m *Model) AddAssociation(source, destination *Element) {
+func (m *Model) AddAssociation(source, destination Element) {
 	// Append to relationships
 	m.Associations = append(m.Associations, Relationship{source, destination})
 }
 
-func (m *Model) RootElements() []*Element {
+func (m *Model) RootElements() []Element {
 	// Root is 'nil'
 	return m.Children(nil)
 }
@@ -54,13 +54,13 @@ func (m *Model) Copy() Model {
 	new := *m
 	// Deep copy the reference fields
 	// Elements
-	new.Elements = make([]*Element, len(m.Elements))
+	new.Elements = make([]Element, len(m.Elements))
 	copy(new.Elements, m.Elements)
 	// Associations
 	new.Associations = make([]Relationship, len(m.Associations))
 	copy(new.Associations, m.Associations)
 	// Composition
-	new.Composition = make(map[*Element]*Element)
+	new.Composition = make(map[Element]Element)
 	for k, v := range m.Composition {
 		new.Composition[k] = v
 	}
@@ -102,7 +102,7 @@ func (m *Model) ImplicitAssociations() []Relationship {
 }
 
 // Get the depth of an element
-func (m *Model) Depth(el *Element) (uint, error) {
+func (m *Model) Depth(el Element) (uint, error) {
 	// Bubble up, while counting
 	depth := uint(0)
 	for {
@@ -122,7 +122,7 @@ func (m *Model) Depth(el *Element) (uint, error) {
 	}
 }
 
-func (m *Model) parent(element *Element) *Element {
+func (m *Model) parent(element Element) Element {
 	// Look up the element's parent
 	element, err := m.Parent(element)
 	// We use this function internally, so panic if we fail to find it
@@ -132,17 +132,17 @@ func (m *Model) parent(element *Element) *Element {
 	return element
 }
 
-func (m *Model) Parent(element *Element) (*Element, error) {
+func (m *Model) Parent(element Element) (Element, error) {
 	// Lookup
 	element, ok := m.Composition[element]
 	if !ok {
-		return nil, fmt.Errorf("Element '%s' not found in model", element.Name)
+		return nil, fmt.Errorf("Element '%s' not found in model", element.Name())
 	}
 	return element, nil
 }
 
-func (m *Model) Children(element *Element) []*Element {
-	var children []*Element
+func (m *Model) Children(element Element) []Element {
+	var children []Element
 	for child, parent := range m.Composition {
 		if parent == element {
 			children = append(children, child)
@@ -151,7 +151,7 @@ func (m *Model) Children(element *Element) []*Element {
 	return children
 }
 
-func (m *Model) IsAncestor(descendant, ancestor *Element) bool {
+func (m *Model) IsAncestor(descendant, ancestor Element) bool {
 	for {
 		// Check for a match
 		if descendant == ancestor {
@@ -166,7 +166,7 @@ func (m *Model) IsAncestor(descendant, ancestor *Element) bool {
 	}
 }
 
-func (m *Model) Name(element *Element) (string, error) {
+func (m *Model) Name(element Element) (string, error) {
 	// Build full name for element
 	parts := []string{}
 	for {
@@ -175,7 +175,7 @@ func (m *Model) Name(element *Element) (string, error) {
 			break
 		}
 		// Prepend the name
-		parts = append([]string{element.Name}, parts...)
+		parts = append([]string{element.Name()}, parts...)
 		// Iterate
 		var err error
 		element, err = m.Parent(element)
@@ -186,12 +186,12 @@ func (m *Model) Name(element *Element) (string, error) {
 	return strings.Join(parts, "/"), nil
 }
 
-func (m *Model) ShareAncestor(a, b *Element) bool {
+func (m *Model) ShareAncestor(a, b Element) bool {
 	// Find the respective root elements
 	return m.getRoot(a) == m.getRoot(b)
 }
 
-func (m *Model) getRoot(element *Element) *Element {
+func (m *Model) getRoot(element Element) Element {
 	for {
 		parent := m.parent(element)
 		// Check if we've found the root
@@ -204,17 +204,17 @@ func (m *Model) getRoot(element *Element) *Element {
 	}
 }
 
-func (m *Model) LookupName(name string) (*Element, error) {
+func (m *Model) LookupName(name string) (Element, error) {
 	// Split the string by slashes
 	parts := strings.Split(name, "/")
 	// Search down the tree
-	var parent *Element
+	var parent Element
 	parent = nil
 NameLoop:
 	for i, name := range parts {
 		// Look for a child with the given name
 		for _, el := range m.Children(parent) {
-			if el.Name == name {
+			if el.Name() == name {
 				// We've found the right child
 				if i == len(parts)-1 {
 					// We've found our element
@@ -227,14 +227,14 @@ NameLoop:
 		}
 		// We didn't find a child matching that name
 		if parent != nil {
-			return nil, fmt.Errorf("Couldn't find child with name '%s' in '%s'", name, parent.Name)
+			return nil, fmt.Errorf("Couldn't find child with name '%s' in '%s'", name, parent.Name())
 		}
 		return nil, fmt.Errorf("Couldn't find child with name '%s' in root", name)
 	}
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source *Element, dest *Element) {
+func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Element, dest Element) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents

@@ -1,7 +1,7 @@
 package writers
 
 import (
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 	"strings"
@@ -18,12 +18,12 @@ func TestDraw(t *testing.T) {
 	two := mdl.NewItem("Two", "")
 
 	// Add the items, and their relationships to the model
-	m.AddRootElement(&one)
-	m.AddElement(&oneChild, &one)
-	m.AddRootElement(&two)
+	m.AddRootElement(one)
+	m.AddElement(oneChild, one)
+	m.AddRootElement(two)
 
 	// Link the children together
-	m.AddAssociation(&oneChild, &two)
+	m.AddAssociation(oneChild, two)
 
 	// Drawer
 	d := New(PlantUmlStrategy{})

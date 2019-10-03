@@ -1,10 +1,10 @@
-package core
+package archie
 
 import (
-	"github.com/briggysmalls/archie/core/io"
-	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/core/views"
-	"github.com/briggysmalls/archie/core/writers"
+	"github.com/briggysmalls/archie/internal/io"
+	mdl "github.com/briggysmalls/archie/internal/model"
+	"github.com/briggysmalls/archie/internal/views"
+	"github.com/briggysmalls/archie/internal/writers"
 )
 
 type Archie interface {

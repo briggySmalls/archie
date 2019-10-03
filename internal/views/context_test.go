@@ -3,7 +3,7 @@ package views
 import (
 	"testing"
 
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 )
@@ -63,19 +63,19 @@ func TestContextChildElements(t *testing.T) {
 }
 
 // Helper function to create a model
-func createModel() (*mdl.Model, map[string]*mdl.Element) {
+func createModel() (*mdl.Model, map[string]mdl.Element) {
 	// Create a simple model
 	m := mdl.NewModel()
 
 	// Create the map
-	elMap := make(map[string]*mdl.Element)
+	elMap := make(map[string]mdl.Element)
 
 	// Create the items we'll be testing
 	for _, name := range []string{"One", "OneChild", "OneChildChilda", "OneChildChildb", "Two", "TwoChild", "TwoChildChild"} {
 		// Create the element
 		el := mdl.NewItem(name, "")
 		// Record it
-		elMap[name] = &el
+		elMap[name] = el
 	}
 
 	// Add the items to the model

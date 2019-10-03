@@ -1,7 +1,7 @@
 package writers
 
 import (
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 )
 
 type MermaidStrategy struct {
@@ -17,15 +17,15 @@ func (p MermaidStrategy) Footer(scribe Scribe) {
 	// Do nothing
 }
 
-func (p MermaidStrategy) Element(scribe Scribe, element *mdl.Element) {
-	scribe.WriteLine("%p(%s)", element, element.Name)
+func (p MermaidStrategy) Element(scribe Scribe, element mdl.Element) {
+	scribe.WriteLine("%p(%s)", element, element.Name())
 }
 
-func (p MermaidStrategy) StartParentElement(scribe Scribe, element *mdl.Element) {
-	scribe.WriteLine("subgraph %s", element.Name)
+func (p MermaidStrategy) StartParentElement(scribe Scribe, element mdl.Element) {
+	scribe.WriteLine("subgraph %s", element.Name())
 }
 
-func (p MermaidStrategy) EndParentElement(scribe Scribe, element *mdl.Element) {
+func (p MermaidStrategy) EndParentElement(scribe Scribe, element mdl.Element) {
 	scribe.WriteLine("end")
 }
 

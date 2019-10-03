@@ -2,7 +2,7 @@ package writers
 
 import (
 	"fmt"
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 	"strings"
 )
 
@@ -14,27 +14,27 @@ type Writer interface {
 	Write(mdl.Model) (string, error)
 }
 
-type Strategy interface {
-	Header(writer Scribe)
-	Footer(writer Scribe)
-	Element(writer Scribe, element *mdl.Element)
-	StartParentElement(writer Scribe, element *mdl.Element)
-	EndParentElement(writer Scribe, element *mdl.Element)
-	Association(writer Scribe, association mdl.Relationship)
-}
-
-type Scribe interface {
-	FullName(*mdl.Element) (string, error)
-	WriteLine(string, ...interface{})
-	UpdateIndent(int)
-}
-
 type writer struct {
 	strategy Strategy
 	writer   Writer
 	indent   uint
 	builder  strings.Builder
 	model    *mdl.Model
+}
+
+type Strategy interface {
+	Header(writer Scribe)
+	Footer(writer Scribe)
+	Element(writer Scribe, element mdl.Element)
+	StartParentElement(writer Scribe, element mdl.Element)
+	EndParentElement(writer Scribe, element mdl.Element)
+	Association(writer Scribe, association mdl.Relationship)
+}
+
+type Scribe interface {
+	FullName(mdl.Element) (string, error)
+	WriteLine(string, ...interface{})
+	UpdateIndent(int)
 }
 
 func New(strategy Strategy) writer {
@@ -67,13 +67,13 @@ func (d *writer) Write(model mdl.Model) (string, error) {
 	return d.builder.String(), nil
 }
 
-func (d *writer) FullName(element *mdl.Element) (string, error) {
+func (d *writer) FullName(element mdl.Element) (string, error) {
 	name, err := d.model.Name(element)
 	return name, err
 }
 
 // Recursive function for drawing elements
-func (d *writer) writeElement(model *mdl.Model, el *mdl.Element) error {
+func (d *writer) writeElement(model *mdl.Model, el mdl.Element) error {
 	var err error
 	children := model.Children(el)
 	if len(children) == 0 {

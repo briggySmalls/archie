@@ -1,21 +1,21 @@
 package views
 
 import (
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 )
 
 // Create a context view
 // TODO: This should probably return an error
-func NewContextView(model *mdl.Model, scope *mdl.Element) mdl.Model {
+func NewContextView(model *mdl.Model, scope mdl.Element) mdl.Model {
 	// Find relevant elements
-	var elements []*mdl.Element
+	var elements []mdl.Element
 
 	if len(model.Children(scope)) > 0 {
 		// The main elements of interest are the children of the scope
 		elements = append(elements, model.Children(scope)...)
 	} else {
 		// The scope has no children, so add it
-		elements = []*mdl.Element{scope}
+		elements = []mdl.Element{scope}
 	}
 
 	// We also want to add elements:
@@ -54,7 +54,7 @@ func NewContextView(model *mdl.Model, scope *mdl.Element) mdl.Model {
 }
 
 // Get the linked element, if the specified element is in the relationship
-func getLinked(relationship mdl.Relationship, element *mdl.Element) *mdl.Element {
+func getLinked(relationship mdl.Relationship, element mdl.Element) mdl.Element {
 	if relationship.Source == element {
 		return relationship.Destination
 	}
