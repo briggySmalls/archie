@@ -2,7 +2,7 @@ package io
 
 import (
 	"encoding/json"
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 )
 
 // Parse an API model from a yaml string

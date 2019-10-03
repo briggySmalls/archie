@@ -1,7 +1,7 @@
 package io
 
 import (
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 	"github.com/ghodss/yaml"
 )
 

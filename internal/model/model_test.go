@@ -14,14 +14,14 @@ func TestElements(t *testing.T) {
 	// Create two items and add them to the model
 	one := NewItem("One", "")
 	two := NewItem("Two", "")
-	m.AddRootElement(&one)
-	m.AddRootElement(&two)
+	m.AddRootElement(one)
+	m.AddRootElement(two)
 
 	// Assert
-	assert.Assert(t, &one != nil)
-	assert.Assert(t, &two != nil)
-	assertName(t, &m, &one, "One")
-	assertName(t, &m, &two, "Two")
+	assert.Assert(t, one != nil)
+	assert.Assert(t, two != nil)
+	assertName(t, &m, one, "One")
+	assertName(t, &m, two, "Two")
 }
 
 // Test composition relationships
@@ -59,12 +59,12 @@ func TestChildren(t *testing.T) {
 	m, elMap := createModel()
 
 	// Test children
-	assertChildren(t, m, elMap["One"], []*Element{elMap["OneChild"]})
-	assertChildren(t, m, elMap["OneChild"], []*Element{elMap["OneChildChilda"], elMap["OneChildChildb"]})
-	assertChildren(t, m, elMap["OneChildChilda"], []*Element{})
-	assertChildren(t, m, elMap["OneChildChildb"], []*Element{})
-	assertChildren(t, m, elMap["Two"], []*Element{elMap["TwoChild"]})
-	assertChildren(t, m, elMap["TwoChild"], []*Element{elMap["TwoChildChild"]})
+	assertChildren(t, m, elMap["One"], []Element{elMap["OneChild"]})
+	assertChildren(t, m, elMap["OneChild"], []Element{elMap["OneChildChilda"], elMap["OneChildChildb"]})
+	assertChildren(t, m, elMap["OneChildChilda"], []Element{})
+	assertChildren(t, m, elMap["OneChildChildb"], []Element{})
+	assertChildren(t, m, elMap["Two"], []Element{elMap["TwoChild"]})
+	assertChildren(t, m, elMap["TwoChild"], []Element{elMap["TwoChildChild"]})
 }
 
 func TestLookupName(t *testing.T) {
@@ -114,15 +114,15 @@ func TestTrivialImplicitAssociations(t *testing.T) {
 	// Create two items, each with one child
 	one := NewItem("One", "")
 	two := NewItem("Two", "")
-	m.AddRootElement(&one)
-	m.AddRootElement(&two)
+	m.AddRootElement(one)
+	m.AddRootElement(two)
 
 	// Create a single relationship
-	m.AddAssociation(&one, &two)
+	m.AddAssociation(one, two)
 
 	// Assert implicit relationships returns trivial solution
 	implicitRels := m.ImplicitAssociations()
-	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: &one, Destination: &two}))
+	assert.Assert(t, is.Contains(implicitRels, Relationship{Source: one, Destination: two}))
 	assert.Assert(t, is.Len(implicitRels, 1))
 }
 
@@ -155,7 +155,7 @@ func TestDeepImplicitRelationships(t *testing.T) {
 }
 
 // Helper function to assert expected parent
-func assertParent(t *testing.T, m *Model, child *Element, parent *Element) {
+func assertParent(t *testing.T, m *Model, child Element, parent Element) {
 	// Get the parent
 	result, err := m.Parent(child)
 	// Assert the lookup was successful
@@ -164,7 +164,7 @@ func assertParent(t *testing.T, m *Model, child *Element, parent *Element) {
 	assert.Equal(t, parent, result)
 }
 
-func assertName(t *testing.T, m *Model, el *Element, name string) {
+func assertName(t *testing.T, m *Model, el Element, name string) {
 	// Try to look up the name
 	result, err := m.LookupName(name)
 	assert.NilError(t, err)
@@ -176,7 +176,7 @@ func assertName(t *testing.T, m *Model, el *Element, name string) {
 	assert.Equal(t, builtName, name)
 }
 
-func assertChildren(t *testing.T, m *Model, parent *Element, children []*Element) {
+func assertChildren(t *testing.T, m *Model, parent Element, children []Element) {
 	result := m.Children(parent)
 	assert.Assert(t, is.Len(result, len(children)))
 	for _, expected := range children {
@@ -184,26 +184,26 @@ func assertChildren(t *testing.T, m *Model, parent *Element, children []*Element
 	}
 }
 
-func assertDepth(t *testing.T, m *Model, element *Element, depth uint) {
+func assertDepth(t *testing.T, m *Model, element Element, depth uint) {
 	result, err := m.Depth(element)
 	assert.NilError(t, err)
 	assert.Equal(t, depth, result)
 }
 
 // Helper function to create a model
-func createModel() (*Model, map[string]*Element) {
+func createModel() (*Model, map[string]Element) {
 	// Create a simple model
 	m := NewModel()
 
 	// Create the map
-	elMap := make(map[string]*Element)
+	elMap := make(map[string]Element)
 
 	// Create the items we'll be testing
 	for _, name := range []string{"One", "OneChild", "OneChildChilda", "OneChildChildb", "Two", "TwoChild", "TwoChildChild"} {
 		// Create the element
 		el := NewItem(name, "")
 		// Record it
-		elMap[name] = &el
+		elMap[name] = el
 	}
 
 	// Add the items to the model

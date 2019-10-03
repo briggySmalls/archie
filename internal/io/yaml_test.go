@@ -1,12 +1,14 @@
-package core
+package io
 
 import (
-  "github.com/briggysmalls/archie/core/writers"
-  "gotest.tools/assert"
+  mdl "github.com/briggysmalls/archie/internal/model"
   "testing"
+
+  "gotest.tools/assert"
+  is "gotest.tools/assert/cmp"
 )
 
-var yaml = `
+var data = `
 elements:
   - name: user
     kind: actor
@@ -56,22 +58,26 @@ associations:
     destination: sound system/amplifier/ac-dc converter
 `
 
-func TestLandscape(t *testing.T) {
-  // Create an archie
-  a, err := New(writers.MermaidStrategy{}, yaml)
+// Test creating an item
+func TestRead(t *testing.T) {
+  // Read the model
+  m, err := ParseYaml(data)
+  // Assert some stuff
   assert.NilError(t, err)
-
-  // Create a landscape view
-  _, err = a.LandscapeView()
-  assert.NilError(t, err)
+  assert.Assert(t, is.Len(m.Elements, 15))
+  assert.Assert(t, is.Len(m.Composition, 15))
+  assert.Assert(t, is.Len(m.Associations, 11))
+  // Be a bit more in-depth
+  assert.Assert(t, is.Len(m.RootElements(), 2))
+  assertChildrenCount(t, m, "sound system", 2)
+  assertChildrenCount(t, m, "sound system/speaker", 4)
+  assertChildrenCount(t, m, "sound system/amplifier", 7)
 }
 
-func TestContext(t *testing.T) {
-  // Create an archie
-  a, err := New(writers.MermaidStrategy{}, yaml)
+func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
+  // Lookup the name
+  el, err := m.LookupName(name)
   assert.NilError(t, err)
-
-  // Create a landscape view
-  _, err = a.ContextView("sound system")
-  assert.NilError(t, err)
+  // Now assert the number of children is as expected
+  assert.Assert(t, is.Len(m.Children(el), length))
 }

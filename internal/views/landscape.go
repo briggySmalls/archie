@@ -1,7 +1,7 @@
 package views
 
 import (
-	mdl "github.com/briggysmalls/archie/core/model"
+	mdl "github.com/briggysmalls/archie/internal/model"
 )
 
 // Create a system landscape view

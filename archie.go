@@ -1,10 +1,10 @@
-package core
+package archie
 
 import (
-	"github.com/briggysmalls/archie/core/io"
-	mdl "github.com/briggysmalls/archie/core/model"
-	"github.com/briggysmalls/archie/core/views"
-	"github.com/briggysmalls/archie/core/writers"
+	"github.com/briggysmalls/archie/internal/io"
+	mdl "github.com/briggysmalls/archie/internal/model"
+	"github.com/briggysmalls/archie/internal/views"
+	"github.com/briggysmalls/archie/internal/writers"
 )
 
 type Archie interface {
@@ -51,4 +51,22 @@ func (a *archie) ContextView(scope string) (diagram string, err error) {
 	// Convert to diagram
 	diagram, err = a.writer.Write(view)
 	return
+}
+
+func (a *archie) Elements() []string {
+	// Prepare a slice
+	elementNames := make([]string, len(a.model.Elements))
+	// Copy element names in
+	for i, el := range a.model.Elements {
+		// Get the full name of the element
+		name, err := a.model.Name(el)
+		if err != nil {
+			// We are iterating through the model elements, so we should definitely find their name
+			panic(err)
+		}
+		// Add to the slice
+		elementNames[i] = name
+	}
+	// Return the names
+	return elementNames
 }
