@@ -10,6 +10,7 @@ import (
 type Archie interface {
 	LandscapeView() (string, error)
 	ContextView(element string) (string, error)
+	Elements() map[string]string
 }
 
 type archie struct {
@@ -53,11 +54,11 @@ func (a *archie) ContextView(scope string) (diagram string, err error) {
 	return
 }
 
-func (a *archie) Elements() []string {
+func (a *archie) Elements() map[string]string {
 	// Prepare a slice
-	elementNames := make([]string, len(a.model.Elements))
+	elementLookup := make(map[string]string)
 	// Copy element names in
-	for i, el := range a.model.Elements {
+	for _, el := range a.model.Elements {
 		// Get the full name of the element
 		name, err := a.model.Name(el)
 		if err != nil {
@@ -65,8 +66,8 @@ func (a *archie) Elements() []string {
 			panic(err)
 		}
 		// Add to the slice
-		elementNames[i] = name
+		elementLookup[el.ID()] = name
 	}
 	// Return the names
-	return elementNames
+	return elementLookup
 }
