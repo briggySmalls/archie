@@ -29,7 +29,7 @@ type Element interface {
 	mdl.Element
 }
 
-type Relationship struct {
+type Relationship interface {
 	mdl.Relationship
 }
 

@@ -5,9 +5,22 @@ import (
 	"strings"
 )
 
-type Relationship struct {
-	Source      Element
-	Destination Element
+type relationship struct {
+	source      Element
+	destination Element
+}
+
+type Relationship interface {
+	Source() Element
+	Destination() Element
+}
+
+func (r *relationship) Source() {
+	return r.source
+}
+
+func (r *relationship) Destination() {
+	return r.destination
 }
 
 type Model struct {
@@ -75,11 +88,11 @@ func (m *Model) ImplicitAssociations() []Relationship {
 	relsMap := make(map[Relationship]bool)
 	// Now add implicit relationships
 	for _, rel := range rels {
-		dest := rel.Destination
+		dest := rel.Destination()
 		// Now link each of source's ancestors to destination
 		for {
 			// Link all source's ancestors to destination
-			m.bubbleUpSource(relsMap, rel.Source, dest)
+			m.bubbleUpSource(relsMap, rel.Source(), dest)
 			// Iterate destination
 			if parent := m.parent(dest); parent == nil {
 				// This is a root element, so bail
@@ -241,7 +254,7 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Eleme
 			return
 		}
 		// Create the relationship
-		relationships[Relationship{Source: source, Destination: dest}] = true
+		relationships[relationship{source: source, destination: dest}] = true
 		// Iterate
 		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!
