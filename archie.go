@@ -18,6 +18,18 @@ type archie struct {
 	writer writers.Writer
 }
 
+type Scribe interface {
+	writers.Scribe
+}
+
+type Element interface {
+	mdl.Element
+}
+
+type Relationship interface {
+	mdl.Relationship
+}
+
 func New(strategy writers.Strategy, yaml string) (Archie, error) {
 	// Convert the yaml to a model
 	model, err := io.ParseYaml(yaml)
