@@ -5,7 +5,6 @@ import (
 )
 
 type MermaidStrategy struct {
-	linkAddress string
 }
 
 func (p MermaidStrategy) Header(scribe Scribe) {
