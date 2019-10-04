@@ -22,11 +22,14 @@ type Scribe interface {
 	writers.Scribe
 }
 
+type MyScribe interface {
+}
+
 type Element interface {
 	mdl.Element
 }
 
-type Relationship interface {
+type Relationship struct {
 	mdl.Relationship
 }
 
