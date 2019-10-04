@@ -1,0 +1,20 @@
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <script src="wasm_exec.js"></script>
+        <script>
+            const go = new Go();
+            WebAssembly.instantiateStreaming(fetch("archie.wasm"), go.importObject).then((result) => {
+                go.run(result.instance);
+                start();
+            });
+        </script>
+        <script src="https://unpkg.com/mermaid@8.3.1/dist/mermaid.min.js"></script>
+    </head>
+    <body>
+        <h1>System architecture</h1>
+        <div id="diagram"></div>
+        <div id="options"></div>
+    </body>
+    <script src="archie.js"></script>
+</html>

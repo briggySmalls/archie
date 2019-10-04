@@ -4,8 +4,8 @@ SHELL := /bin/bash
 TARGET := $(shell echo $${PWD\#\#*/})
 .DEFAULT_GOAL: $(TARGET)
 
-WASM_MAIN := wasm/main.go
-WASM := $(TARGET).wasm
+WASM_MAIN := viewer/main.go
+WASM := viewer/$(TARGET).wasm
 
 # These will be provided to the target
 VERSION := 1.0.0
