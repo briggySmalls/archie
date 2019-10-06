@@ -30,8 +30,8 @@ func TestContextElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Children(elMap["Two"]), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
-	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["OneChildChilda"], elMap["OneChildChildb"])))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["OneChildChilda"], elMap["Two"])))
 	assert.Assert(t, is.Len(l.Associations, 2))
 }
 
@@ -57,8 +57,8 @@ func TestContextChildElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Children(elMap["Two"]), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["OneChildChildb"]}))
-	assert.Assert(t, is.Contains(l.Associations, mdl.Relationship{Source: elMap["OneChildChilda"], Destination: elMap["Two"]}))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["OneChildChilda"], elMap["OneChildChildb"])))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["OneChildChilda"], elMap["Two"])))
 	assert.Assert(t, is.Len(l.Associations, 2))
 }
 

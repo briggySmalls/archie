@@ -10,6 +10,10 @@ type Relationship interface {
 	Destination() Element
 }
 
+func NewRelationship(source, destination Element) Relationship {
+	return relationship{source: source, destination: destination}
+}
+
 func (r relationship) Source() Element {
 	return r.source
 }

@@ -36,7 +36,7 @@ func (m *Model) AddRootElement(new Element) {
 // Add an association between Elements
 func (m *Model) AddAssociation(source, destination Element) {
 	// Append to relationships
-	m.Associations = append(m.Associations, relationship{source, destination})
+	m.Associations = append(m.Associations, NewRelationship(source, destination))
 }
 
 func (m *Model) RootElements() []Element {
@@ -67,7 +67,7 @@ func (m *Model) ImplicitAssociations() []Relationship {
 	// Get all the relationships
 	rels := m.Associations
 	// Prepare a list of implicit relationships (we map to ensure no duplicates)
-	relsMap := make(map[relationship]bool)
+	relsMap := make(map[Relationship]bool)
 	// Now add implicit relationships
 	for _, rel := range rels {
 		dest := rel.Destination()
@@ -229,14 +229,14 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(relationships map[relationship]bool, source Element, dest Element) {
+func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Element, dest Element) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
 			return
 		}
 		// Create the relationship
-		relationships[relationship{source: source, destination: dest}] = true
+		relationships[NewRelationship(source, dest)] = true
 		// Iterate
 		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!
