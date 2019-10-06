@@ -5,24 +5,6 @@ import (
 	"strings"
 )
 
-type relationship struct {
-	source      Element
-	destination Element
-}
-
-type Relationship interface {
-	Source() Element
-	Destination() Element
-}
-
-func (r *relationship) Source() {
-	return r.source
-}
-
-func (r *relationship) Destination() {
-	return r.destination
-}
-
 type Model struct {
 	Associations []Relationship
 	Composition  map[Element]Element
@@ -54,7 +36,7 @@ func (m *Model) AddRootElement(new Element) {
 // Add an association between Elements
 func (m *Model) AddAssociation(source, destination Element) {
 	// Append to relationships
-	m.Associations = append(m.Associations, Relationship{source, destination})
+	m.Associations = append(m.Associations, relationship{source, destination})
 }
 
 func (m *Model) RootElements() []Element {
@@ -85,7 +67,7 @@ func (m *Model) ImplicitAssociations() []Relationship {
 	// Get all the relationships
 	rels := m.Associations
 	// Prepare a list of implicit relationships (we map to ensure no duplicates)
-	relsMap := make(map[Relationship]bool)
+	relsMap := make(map[relationship]bool)
 	// Now add implicit relationships
 	for _, rel := range rels {
 		dest := rel.Destination()
@@ -247,7 +229,7 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Element, dest Element) {
+func (m *Model) bubbleUpSource(relationships map[relationship]bool, source Element, dest Element) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
