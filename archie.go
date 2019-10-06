@@ -4,7 +4,7 @@ import (
 	"github.com/briggysmalls/archie/internal/io"
 	mdl "github.com/briggysmalls/archie/internal/model"
 	"github.com/briggysmalls/archie/internal/views"
-	"github.com/briggysmalls/archie/internal/writers"
+	"github.com/briggysmalls/archie/writers"
 )
 
 type Archie interface {
@@ -16,21 +16,6 @@ type Archie interface {
 type archie struct {
 	model  *mdl.Model
 	writer writers.Writer
-}
-
-type Scribe interface {
-	writers.Scribe
-}
-
-type MyScribe interface {
-}
-
-type Element interface {
-	mdl.Element
-}
-
-type Relationship interface {
-	mdl.Relationship
 }
 
 func New(strategy writers.Strategy, yaml string) (Archie, error) {

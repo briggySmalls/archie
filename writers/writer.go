@@ -10,6 +10,14 @@ const (
 	SPACES_IN_TAB = 4
 )
 
+type Element interface {
+	mdl.Element
+}
+
+type Relationship interface {
+	mdl.Relationship
+}
+
 type Writer interface {
 	Write(mdl.Model) (string, error)
 }
@@ -25,10 +33,10 @@ type writer struct {
 type Strategy interface {
 	Header(writer Scribe)
 	Footer(writer Scribe)
-	Element(writer Scribe, element mdl.Element)
-	StartParentElement(writer Scribe, element mdl.Element)
-	EndParentElement(writer Scribe, element mdl.Element)
-	Association(writer Scribe, association mdl.Relationship)
+	Element(writer Scribe, element Element)
+	StartParentElement(writer Scribe, element Element)
+	EndParentElement(writer Scribe, element Element)
+	Association(writer Scribe, association Relationship)
 }
 
 type Scribe interface {
@@ -59,7 +67,7 @@ func (d *writer) Write(model mdl.Model) (string, error) {
 	}
 	// Now draw the relationships
 	for _, rel := range model.Associations {
-		d.strategy.Association(d, rel)
+		d.strategy.Association(d, Relationship(rel))
 	}
 	// Write footer
 	d.strategy.Footer(d)
@@ -78,11 +86,11 @@ func (d *writer) writeElement(model *mdl.Model, el mdl.Element) error {
 	children := model.Children(el)
 	if len(children) == 0 {
 		// Write a simple component
-		d.strategy.Element(d, el)
+		d.strategy.Element(d, Element(el))
 		return nil
 	}
 	// Start a new package
-	d.strategy.StartParentElement(d, el)
+	d.strategy.StartParentElement(d, Element(el))
 	for _, child := range children {
 		// Recurse through children
 		err = d.writeElement(model, child)
@@ -90,7 +98,7 @@ func (d *writer) writeElement(model *mdl.Model, el mdl.Element) error {
 			return err
 		}
 	}
-	d.strategy.EndParentElement(d, el)
+	d.strategy.EndParentElement(d, Element(el))
 	return nil
 }
 

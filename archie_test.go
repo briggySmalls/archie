@@ -1,7 +1,7 @@
 package archie
 
 import (
-  "github.com/briggysmalls/archie/internal/writers"
+  "github.com/briggysmalls/archie/writers"
   "gotest.tools/assert"
   "testing"
 )
@@ -74,4 +74,40 @@ func TestContext(t *testing.T) {
   // Create a landscape view
   _, err = a.ContextView("sound system")
   assert.NilError(t, err)
+}
+
+func TestExternalStrategy(t *testing.T) {
+  // Create a custom strategy
+  _, err := New(strategy{}, yaml)
+  assert.NilError(t, err)
+}
+
+type strategy struct {
+}
+
+func (s strategy) Header(scribe writers.Scribe) {
+  scribe.WriteLine("graph TD")
+  scribe.UpdateIndent(1)
+}
+
+func (s strategy) Footer(scribe writers.Scribe) {
+  // Do nothing
+}
+
+func (s strategy) Element(scribe writers.Scribe, element writers.Element) {
+  scribe.WriteLine("%s(%s)", element.ID(), element.Name())
+  // Also add a hyperlink
+  scribe.WriteLine("click %s %s", element.ID(), "mermaidCallback")
+}
+
+func (s strategy) StartParentElement(scribe writers.Scribe, element writers.Element) {
+  scribe.WriteLine("subgraph %s", element.Name())
+}
+
+func (s strategy) EndParentElement(scribe writers.Scribe, element writers.Element) {
+  scribe.WriteLine("end")
+}
+
+func (s strategy) Association(scribe writers.Scribe, association writers.Relationship) {
+  scribe.WriteLine("%s-->%s", association.Source().ID(), association.Destination().ID())
 }
