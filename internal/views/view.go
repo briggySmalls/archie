@@ -52,7 +52,7 @@ func getRelevantRelationships(model *mdl.Model, elements []mdl.Element) []mdl.Re
 	var relationships []mdl.Relationship
 	for _, rel := range model.ImplicitAssociations() {
 		// Add relationships that link relevant elements
-		if contains(elements, rel.Source) && contains(elements, rel.Destination) {
+		if contains(elements, rel.Source()) && contains(elements, rel.Destination()) {
 			relationships = append(relationships, rel)
 		}
 	}

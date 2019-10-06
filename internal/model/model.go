@@ -5,11 +5,6 @@ import (
 	"strings"
 )
 
-type Relationship struct {
-	Source      Element
-	Destination Element
-}
-
 type Model struct {
 	Associations []Relationship
 	Composition  map[Element]Element
@@ -41,7 +36,7 @@ func (m *Model) AddRootElement(new Element) {
 // Add an association between Elements
 func (m *Model) AddAssociation(source, destination Element) {
 	// Append to relationships
-	m.Associations = append(m.Associations, Relationship{source, destination})
+	m.Associations = append(m.Associations, NewRelationship(source, destination))
 }
 
 func (m *Model) RootElements() []Element {
@@ -75,11 +70,11 @@ func (m *Model) ImplicitAssociations() []Relationship {
 	relsMap := make(map[Relationship]bool)
 	// Now add implicit relationships
 	for _, rel := range rels {
-		dest := rel.Destination
+		dest := rel.Destination()
 		// Now link each of source's ancestors to destination
 		for {
 			// Link all source's ancestors to destination
-			m.bubbleUpSource(relsMap, rel.Source, dest)
+			m.bubbleUpSource(relsMap, rel.Source(), dest)
 			// Iterate destination
 			if parent := m.parent(dest); parent == nil {
 				// This is a root element, so bail
@@ -241,7 +236,7 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Eleme
 			return
 		}
 		// Create the relationship
-		relationships[Relationship{Source: source, Destination: dest}] = true
+		relationships[NewRelationship(source, dest)] = true
 		// Iterate
 		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!

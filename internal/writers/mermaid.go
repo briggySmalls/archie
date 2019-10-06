@@ -5,7 +5,6 @@ import (
 )
 
 type MermaidStrategy struct {
-	linkAddress string
 }
 
 func (p MermaidStrategy) Header(scribe Scribe) {
@@ -30,5 +29,5 @@ func (p MermaidStrategy) EndParentElement(scribe Scribe, element mdl.Element) {
 }
 
 func (p MermaidStrategy) Association(scribe Scribe, association mdl.Relationship) {
-	scribe.WriteLine("%s-->%s", association.Source.ID(), association.Destination.ID())
+	scribe.WriteLine("%s-->%s", association.Source().ID(), association.Destination().ID())
 }

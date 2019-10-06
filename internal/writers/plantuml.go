@@ -30,5 +30,5 @@ func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element mdl.Element) {
 }
 
 func (p PlantUmlStrategy) Association(scribe Scribe, association mdl.Relationship) {
-	scribe.WriteLine("[%s] -- [%s]", association.Source.Name(), association.Destination.Name())
+	scribe.WriteLine("[%s] -- [%s]", association.Source().Name(), association.Destination().Name())
 }

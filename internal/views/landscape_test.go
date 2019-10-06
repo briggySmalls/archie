@@ -40,6 +40,6 @@ func TestLandscapeElements(t *testing.T) {
 	// Check relationships are correct
 	assert.Assert(t, is.Len(l.Associations, 1))
 	rel := l.Associations[0]
-	assert.Equal(t, rel.Source, one)
-	assert.Equal(t, rel.Destination, two)
+	assert.Equal(t, rel.Source(), one)
+	assert.Equal(t, rel.Destination(), two)
 }

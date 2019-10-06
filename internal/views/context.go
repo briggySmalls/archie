@@ -55,11 +55,11 @@ func NewContextView(model *mdl.Model, scope mdl.Element) mdl.Model {
 
 // Get the linked element, if the specified element is in the relationship
 func getLinked(relationship mdl.Relationship, element mdl.Element) mdl.Element {
-	if relationship.Source == element {
-		return relationship.Destination
+	if relationship.Source() == element {
+		return relationship.Destination()
 	}
-	if relationship.Destination == element {
-		return relationship.Source
+	if relationship.Destination() == element {
+		return relationship.Source()
 	}
 	return nil
 }
