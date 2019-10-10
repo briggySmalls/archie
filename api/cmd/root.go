@@ -23,7 +23,7 @@ package cmd
 
 import (
   "fmt"
-  "github.com/briggysmalls/archie/server"
+  "github.com/briggysmalls/archie/api/server"
   "github.com/spf13/cobra"
   "os"
 
@@ -46,7 +46,10 @@ var rootCmd = &cobra.Command{
   // Uncomment the following line if your bare application
   // has ean action associated with it:
   Run: func(cmd *cobra.Command, args []string) {
-    server.Serve("localhost:8080")
+    err := server.Serve("localhost:8080")
+    if err != nil {
+      panic(err)
+    }
   },
 }
 
