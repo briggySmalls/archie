@@ -16,6 +16,7 @@ func TestContextElements(t *testing.T) {
 	// Link the children together
 	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"])
 	m.AddAssociation(elMap["1/1/1"], elMap["1/1/2"])
+	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"])
 
 	// Create the view
 	l := NewContextView(m, elMap["1/1/1"])
@@ -23,16 +24,19 @@ func TestContextElements(t *testing.T) {
 	// Check elements are correct
 	assert.Assert(t, is.Contains(l.Elements, elMap["1"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["1/1"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["1/2"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/1"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/2"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["2"]))
-	assert.Assert(t, is.Len(l.Elements, 5))
+	assert.Assert(t, is.Len(l.Elements, 6))
 	assert.Assert(t, is.Len(l.Children(elMap["2"]), 0))
+	assert.Assert(t, is.Len(l.Children(elMap["1/2"]), 0))
 
 	// Check relationships are correct
 	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/1/2"])))
 	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["2"])))
-	assert.Assert(t, is.Len(l.Associations, 2))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/2"])))
+	assert.Assert(t, is.Len(l.Associations, 3))
 }
 
 // Test creating view for a scope with children
@@ -43,6 +47,7 @@ func TestContextChildElements(t *testing.T) {
 	// Link the children together
 	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"])
 	m.AddAssociation(elMap["1/1/1"], elMap["1/1/2"])
+	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"])
 
 	// Create the view
 	l := NewContextView(m, elMap["1/1"])
@@ -50,16 +55,19 @@ func TestContextChildElements(t *testing.T) {
 	// Check elements are correct
 	assert.Assert(t, is.Contains(l.Elements, elMap["1"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["1/1"]))
+	assert.Assert(t, is.Contains(l.Elements, elMap["1/2"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/1"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/2"]))
 	assert.Assert(t, is.Contains(l.Elements, elMap["2"]))
-	assert.Assert(t, is.Len(l.Elements, 5))
+	assert.Assert(t, is.Len(l.Elements, 6))
 	assert.Assert(t, is.Len(l.Children(elMap["2"]), 0))
+	assert.Assert(t, is.Len(l.Children(elMap["1/2"]), 0))
 
 	// Check relationships are correct
 	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/1/2"])))
 	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["2"])))
-	assert.Assert(t, is.Len(l.Associations, 2))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/2"])))
+	assert.Assert(t, is.Len(l.Associations, 3))
 }
 
 // Helper function to create a model
@@ -74,8 +82,10 @@ func createModel() (*mdl.Model, map[string]mdl.Element) {
 	elements := []string{
 		"1",
 		"1/1",
+		"1/2",
 		"1/1/1",
 		"1/1/2",
+		"1/2/1",
 		"2",
 		"2/1",
 		"2/1/1",
@@ -91,8 +101,10 @@ func createModel() (*mdl.Model, map[string]mdl.Element) {
 	m.AddRootElement(elMap["1"])
 	m.AddRootElement(elMap["2"])
 	m.AddElement(elMap["1/1"], elMap["1"])
+	m.AddElement(elMap["1/2"], elMap["1"])
 	m.AddElement(elMap["1/1/1"], elMap["1/1"])
 	m.AddElement(elMap["1/1/2"], elMap["1/1"])
+	m.AddElement(elMap["1/2/1"], elMap["1/2"])
 	m.AddElement(elMap["2/1"], elMap["2"])
 	m.AddElement(elMap["2/1/1"], elMap["2/1"])
 
