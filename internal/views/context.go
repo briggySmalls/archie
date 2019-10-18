@@ -9,7 +9,6 @@ import (
 func NewContextView(model *mdl.Model, scope mdl.Element) mdl.Model {
 	// Find relevant elements
 	var elements []mdl.Element
-
 	if len(model.Children(scope)) > 0 {
 		// The main elements of interest are the children of the scope
 		elements = append(elements, model.Children(scope)...)
@@ -18,27 +17,20 @@ func NewContextView(model *mdl.Model, scope mdl.Element) mdl.Model {
 		elements = []mdl.Element{scope}
 	}
 
-	// We also want to add elements:
-	// - related to these children
-	// - no deeper than scope
-	// - only root element for independent systems
-	scopeDepth, err := model.Depth(scope)
-	if err != nil {
-		panic(err)
-	}
+	// We also want to add elements related to scope
+	// where one of the following is true:
+	// - parent is an ancestor of scope
+	// - it is a root element
 	for _, rel := range model.ImplicitAssociations() {
 		if linked := getLinked(rel, scope); linked != nil {
-			// Association links an element of interest...
-			linkedDepth, err := model.Depth(linked)
-			if err != nil {
-				panic(err)
-			}
-			// If there is no common ancestor, we only want the root
-			if !model.ShareAncestor(scope, linked) && linkedDepth != 0 {
-				continue
-			}
-			// Ensure the element is not more specific than scope
-			if linkedDepth <= scopeDepth {
+			// Fetch parent of linked element
+			parent, err := model.Parent(linked)
+			panicOnError(err)
+			if parent == nil {
+				// Add any linked root elements
+				elements = append(elements, linked)
+			} else if model.IsAncestor(scope, parent) {
+				// Add elements who's parents are ancestors of scope
 				elements = append(elements, linked)
 			}
 		}
@@ -47,9 +39,7 @@ func NewContextView(model *mdl.Model, scope mdl.Element) mdl.Model {
 	// Create a model from the model's root elements
 	view, err := CreateSubmodel(model, elements)
 	// We shouldn't error (we've pulled elements out sensibly)
-	if err != nil {
-		panic(err)
-	}
+	panicOnError(err)
 	return view
 }
 
