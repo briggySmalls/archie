@@ -9,8 +9,6 @@ func NewLandscapeView(model *mdl.Model) mdl.Model {
 	// Create a model from the model's root elements
 	view, err := CreateSubmodel(model, model.RootElements())
 	// We shouldn't error (we've pulled elements out sensibly)
-	if err != nil {
-		panic(err)
-	}
+	panicOnError(err)
 	return view
 }

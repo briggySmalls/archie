@@ -96,3 +96,9 @@ func contains(haystack []mdl.Element, needle mdl.Element) bool {
 	}
 	return false
 }
+
+func panicOnError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
