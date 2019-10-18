@@ -12,7 +12,7 @@ func (p PlantUmlStrategy) Footer(scribe Scribe) {
 }
 
 func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
-	scribe.WriteLine("[%s]", element.Name())
+	scribe.WriteLine("[%s] as %s", element.Name(), element.ID())
 }
 
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
@@ -26,5 +26,5 @@ func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element Element) {
 }
 
 func (p PlantUmlStrategy) Association(scribe Scribe, association Relationship) {
-	scribe.WriteLine("[%s] -- [%s]", association.Source().Name(), association.Destination().Name())
+	scribe.WriteLine("[%s] -- [%s]", association.Source().ID(), association.Destination().ID())
 }
