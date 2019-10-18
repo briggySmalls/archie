@@ -1,6 +1,7 @@
 package writers
 
 import (
+	"fmt"
 	mdl "github.com/briggysmalls/archie/internal/model"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
@@ -41,9 +42,9 @@ func TestDraw(t *testing.T) {
 		}
 	}
 	assert.Equal(t, lines[parentLine], "package \"One\" {")
-	assert.Equal(t, lines[parentLine+1], "    [OneChild]")
+	assert.Equal(t, lines[parentLine+1], fmt.Sprintf("    [OneChild] as %s", oneChild.ID()))
 	assert.Equal(t, lines[parentLine+2], "}")
-	assert.Assert(t, is.Contains(lines, "[Two]"))
-	assert.Assert(t, is.Contains(lines, "[OneChild] -- [Two]"))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("[Two] as %s", two.ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("[%s] -- [%s]", oneChild.ID(), two.ID())))
 	assert.Equal(t, lines[len(lines)-2], "@enduml")
 }
