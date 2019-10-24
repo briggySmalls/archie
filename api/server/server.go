@@ -3,18 +3,17 @@ package server
 import (
 	"fmt"
 	"github.com/briggysmalls/archie"
+	"github.com/briggysmalls/archie/writers"
 	"github.com/gorilla/mux"
-	"html/template"
+	"io/ioutil"
 	"net/http"
-	"net/url"
-	"strings"
 )
 
 func Serve(address string) error {
 	// Create a router
 	r := mux.NewRouter()
 	r.HandleFunc("/diagram/landscape", landscapeHandler).Methods("POST")
-	r.PathPrefix("/diagram/context/").HandlerFunc(contextHandler).Methods("POST")
+	r.PathPrefix("/diagram/context").HandlerFunc(contextHandler).Methods("POST")
 
 	// Serve
 	return http.ListenAndServe(address, r)
@@ -42,12 +41,11 @@ func contextHandler(w http.ResponseWriter, r *http.Request) {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
 	}
 	// Determine the item
-	item, err := url.PathUnescape(strings.TrimFunc(r.URL.Path, func(r rune) bool {
-		return r == '/'
-	}))
-	if err != nil {
-		errorHandler(w, err.Error(), http.StatusBadRequest)
+	items := r.URL.Query()["scope"]
+	if len(items) != 1 {
+		errorHandler(w, fmt.Sprintf("Invalid scope '%s'", items), http.StatusBadRequest)
 	}
+	item := items[0]
 	// Create the view
 	chart, err := archie.ContextView(item)
 	if err != nil {
@@ -63,13 +61,16 @@ func errorHandler(w http.ResponseWriter, error string, code int) {
 	fmt.Fprintf(w, "Error %d: %s", code, error)
 }
 
-func readModel(r *http.Request) (archie.Archie, err) {
+func readModel(r *http.Request) (archie.Archie, error) {
 	// Obtain the model from the request body
-	model := r.Body
+	model, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, fmt.Errorf("Cannot read body")
+	}
 	if model == nil {
-		return "", fmt.Errorf("No model found in request")
+		return nil, fmt.Errorf("No model found in request")
 	}
 	// Create an Archie from the model
-	archie, err := archie.New(model)
-	return archie, nil
+	archie, err := archie.New(writers.PlantUmlStrategy{}, string(model))
+	return archie, err
 }
