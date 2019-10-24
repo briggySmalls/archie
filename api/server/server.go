@@ -24,11 +24,13 @@ func landscapeHandler(w http.ResponseWriter, r *http.Request) {
 	archie, err := readModel(r)
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	// Create a landscape view
 	chart, err := archie.LandscapeView()
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	// Return diagram in browser
 	fmt.Fprintf(w, chart)
@@ -39,17 +41,20 @@ func contextHandler(w http.ResponseWriter, r *http.Request) {
 	archie, err := readModel(r)
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	// Determine the item
 	items := r.URL.Query()["scope"]
 	if len(items) != 1 {
 		errorHandler(w, fmt.Sprintf("Invalid scope '%s'", items), http.StatusBadRequest)
+		return
 	}
 	item := items[0]
 	// Create the view
 	chart, err := archie.ContextView(item)
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	// Return diagram in browser
 	fmt.Fprintf(w, chart)
