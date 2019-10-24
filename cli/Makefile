@@ -14,10 +14,12 @@ WASM := $(BIN_DIR)/archie-lib.wasm
 WASM_MAIN := ./wasm/main.go
 WASM_SRC := $(call src,wasm)
 
+WASM_JS := $(BIN_DIR)/wasm_exec.js
+
 $(CLI): $(CLI_SRC) pack
 	go build $(LDFLAGS) -o $(CLI) $(CLI_MAIN)
 
-pack: $(WASM) runtime
+pack: $(WASM) $(WASM_JS)
 	packr
 
 $(WASM): export GOOS=js
@@ -25,7 +27,7 @@ $(WASM): export GOARCH=wasm
 $(WASM): $(WASM_SRC)
 	go build $(LDFLAGS) -o $(WASM) $(WASM_SRC)
 
-runtime:
+$(WASM_JS):
 	cp $(shell go env GOROOT)"/misc/wasm/wasm_exec.js" $(BIN_DIR)
 
 clean:
