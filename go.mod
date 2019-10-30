@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/briggySmalls/archie v0.0.0-20190730080609-c6b58d4e0fce
 	github.com/ghodss/yaml v1.0.0
+	github.com/gobuffalo/packr v1.30.1
 	github.com/gorilla/mux v1.7.3
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.1.2

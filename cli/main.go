@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/briggysmalls/archie-cli/cmd"
+import "github.com/briggysmalls/archie/cli/cmd"
 
 func main() {
 	cmd.Execute()
