@@ -15,7 +15,7 @@ func toInternalModel(apiModel Model) (*mdl.Model, error) {
 		if rootEl.Kind == "actor" {
 			el = mdl.NewActor(rootEl.Name)
 		} else {
-			el = mdl.NewItem(rootEl.Name, rootEl.Technology)
+			el = mdl.NewItem(rootEl.Name, rootEl.Tags)
 		}
 		m.AddRootElement(el)
 		// Now recursively add children
@@ -50,7 +50,7 @@ func addChildren(model *mdl.Model, parent mdl.Element, children []interface{}) e
 		switch i := child.(type) {
 		case string:
 			// This is a shorthand
-			new := mdl.NewItem(i, "")
+			new := mdl.NewItem(i, nil)
 			// Add to the model
 			model.AddElement(new, parent)
 		case map[string]interface{}:
@@ -80,7 +80,7 @@ func addChildren(model *mdl.Model, parent mdl.Element, children []interface{}) e
 
 func updateModelAndRecurse(model *mdl.Model, parent mdl.Element, el Element) error {
 	// This is a fully-specified element
-	new := mdl.NewItem(el.Name, el.Technology)
+	new := mdl.NewItem(el.Name, el.Tags)
 	// Add to the model
 	model.AddElement(new, parent)
 	// Add children

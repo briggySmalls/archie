@@ -17,9 +17,9 @@ elements:
       - name: speaker
         children:
           - name: enclosure
-            technology: physical
+            tags: [physical]
           - name: driver
-            technology: electro-mechanical
+            tags: [electronics, mechanical]
           - connector
           - cable
       - name: amplifier
@@ -30,9 +30,9 @@ elements:
           - mixer
           - amplifier circuit
           - name: power button
-            technology: electro-mechanical
+            tags: [electronics, mechanical]
           - name: input select
-            technology: electro-mechanical
+            tags: [electronics, mechanical]
 associations:
   - source: user
     destination: sound system/amplifier/input select

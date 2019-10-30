@@ -4,15 +4,17 @@ import (
 	"testing"
 
 	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
 )
 
 // Test creating an item
 func TestNewItem(t *testing.T) {
 	// Create a test item
-	el := NewItem("MyItem", "electronics")
+	el := NewItem("MyItem", []string{"electronics"})
 	// Verify fields
 	assert.Equal(t, el.Name(), "MyItem")
-	assert.Equal(t, el.Technology(), "electronics")
+	assert.Assert(t, is.Len(el.Tags(), 1))
+	assert.Assert(t, is.Contains(el.Tags(), "electronics"))
 	assert.Assert(t, !el.IsActor())
 }
 
@@ -22,6 +24,6 @@ func TestNewActor(t *testing.T) {
 	el := NewActor("MyActor")
 	// Verify fields
 	assert.Equal(t, el.Name(), "MyActor")
-	assert.Equal(t, el.Technology(), "")
+	assert.Equal(t, el.Tags(), nil)
 	assert.Assert(t, el.IsActor())
 }
