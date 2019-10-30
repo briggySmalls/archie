@@ -14,11 +14,13 @@ func TestDraw(t *testing.T) {
 	m := mdl.NewModel()
 
 	// Create the items we'll be testing
+	actor := mdl.NewActor("User")
 	one := mdl.NewItem("One", "")
 	oneChild := mdl.NewItem("OneChild", "")
 	two := mdl.NewItem("Two", "")
 
 	// Add the items, and their relationships to the model
+	m.AddRootElement(actor)
 	m.AddRootElement(one)
 	m.AddElement(oneChild, one)
 	m.AddRootElement(two)
@@ -42,9 +44,10 @@ func TestDraw(t *testing.T) {
 		}
 	}
 	assert.Equal(t, lines[parentLine], "package \"One\" {")
-	assert.Equal(t, lines[parentLine+1], fmt.Sprintf("    [OneChild] as %s", oneChild.ID()))
+	assert.Equal(t, lines[parentLine+1], fmt.Sprintf("    rectangle \"OneChild\" as %s", oneChild.ID()))
 	assert.Equal(t, lines[parentLine+2], "}")
-	assert.Assert(t, is.Contains(lines, fmt.Sprintf("[Two] as %s", two.ID())))
-	assert.Assert(t, is.Contains(lines, fmt.Sprintf("[%s] -- [%s]", oneChild.ID(), two.ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("actor \"User\" as %s", actor.ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("rectangle \"Two\" as %s", two.ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("%s --> %s", oneChild.ID(), two.ID())))
 	assert.Equal(t, lines[len(lines)-2], "@enduml")
 }
