@@ -12,7 +12,11 @@ func (p PlantUmlStrategy) Footer(scribe Scribe) {
 }
 
 func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
-	scribe.WriteLine("[%s] as %s", element.Name(), element.ID())
+	if element.IsActor() {
+		scribe.WriteLine("actor \"%s\" as %s", element.Name(), element.ID())
+	} else {
+		scribe.WriteLine("rectangle \"%s\" as %s", element.Name(), element.ID())
+	}
 }
 
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
@@ -26,5 +30,5 @@ func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element Element) {
 }
 
 func (p PlantUmlStrategy) Association(scribe Scribe, association Relationship) {
-	scribe.WriteLine("[%s] -- [%s]", association.Source().ID(), association.Destination().ID())
+	scribe.WriteLine("%s --> %s", association.Source().ID(), association.Destination().ID())
 }
