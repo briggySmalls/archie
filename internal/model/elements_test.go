@@ -24,6 +24,6 @@ func TestNewActor(t *testing.T) {
 	el := NewActor("MyActor")
 	// Verify fields
 	assert.Equal(t, el.Name(), "MyActor")
-	assert.Equal(t, el.Tags(), nil)
+	assert.Assert(t, is.Len(el.Tags(), 0))
 	assert.Assert(t, el.IsActor())
 }
