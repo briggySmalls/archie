@@ -49,5 +49,9 @@ func TestDraw(t *testing.T) {
 	assert.Assert(t, is.Contains(lines, fmt.Sprintf("actor \"User\" as %s", actor.ID())))
 	assert.Assert(t, is.Contains(lines, fmt.Sprintf("rectangle \"Two\" as %s", two.ID())))
 	assert.Assert(t, is.Contains(lines, fmt.Sprintf("%s --> %s", oneChild.ID(), two.ID())))
+
+	assert.Assert(t, is.Contains(lines, "skinparam shadowing false"))
+	assert.Assert(t, is.Contains(lines, "skinparam nodesep 10"))
+	assert.Assert(t, is.Contains(lines, "skinparam ranksep 20"))
 	assert.Equal(t, lines[len(lines)-2], "@enduml")
 }
