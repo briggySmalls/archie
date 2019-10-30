@@ -74,7 +74,7 @@ func (m *Model) ImplicitAssociations() []Relationship {
 		// Now link each of source's ancestors to destination
 		for {
 			// Link all source's ancestors to destination
-			m.bubbleUpSource(relsMap, rel.Source(), dest)
+			m.bubbleUpSource(relsMap, rel.Source(), dest, rel.Tag())
 			// Iterate destination
 			if parent := m.parent(dest); parent == nil {
 				// This is a root element, so bail
@@ -229,14 +229,14 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Element, dest Element) {
+func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Element, dest Element, tag string) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
 			return
 		}
 		// Create the relationship
-		relationships[NewRelationship(source, dest, "")] = true
+		relationships[NewRelationship(source, dest, tag)] = true
 		// Iterate
 		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!
