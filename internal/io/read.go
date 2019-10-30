@@ -38,7 +38,7 @@ func toInternalModel(apiModel Model) (*mdl.Model, error) {
 			return nil, err
 		}
 		// Add a new relationship
-		m.AddAssociation(src, dest, "")
+		m.AddAssociation(src, dest, ass.Tag)
 	}
 	return &m, nil
 }

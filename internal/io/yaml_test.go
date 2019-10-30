@@ -36,12 +36,15 @@ elements:
 associations:
   - source: user
     destination: sound system/amplifier/input select
+    tag: press
   - source: sound system/amplifier/input select
     destination: sound system/amplifier/mixer
+    tag: signal
   - source: sound system/amplifier/mixer
     destination: sound system/amplifier/audio in connector
   - source: sound system/amplifier/ac-dc converter
     destination: sound system/amplifier/mixer
+    tag: power
   - source: sound system/amplifier/ac-dc converter
     destination: sound system/amplifier/amplifier circuit
   - source: sound system/amplifier/amplifier circuit
@@ -74,7 +77,6 @@ func TestRead(t *testing.T) {
   assertChildrenCount(t, m, "sound system/amplifier", 7)
   // Check some tags
   assertTags(t, m, "sound system/speaker/driver", []string{"electronics", "mechanical"})
-
 }
 
 func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
