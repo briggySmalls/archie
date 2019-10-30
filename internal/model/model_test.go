@@ -118,11 +118,11 @@ func TestTrivialImplicitAssociations(t *testing.T) {
 	m.AddRootElement(two)
 
 	// Create a single relationship
-	m.AddAssociation(one, two)
+	m.AddAssociation(one, two, "force")
 
 	// Assert implicit relationships returns trivial solution
 	implicitRels := m.ImplicitAssociations()
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: one, destination: two}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: one, destination: two, tag: "force"}))
 	assert.Assert(t, is.Len(implicitRels, 1))
 }
 
@@ -132,25 +132,26 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	m, elMap := createModel()
 
 	// Link the children together
-	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"])
-	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"])
+	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"], "force")
+	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"], "heat")
 
-	// Assert implicit relationships
-	assert.Assert(t, is.Contains(m.Associations, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Contains(m.Associations, relationship{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"]}))
+	// Assert relationships
+	assert.Assert(t, is.Contains(m.Associations, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(m.Associations, relationship{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
 	assert.Assert(t, is.Len(m.Associations, 2))
+	// Assert implicit relationships
 	implicitRels := m.ImplicitAssociations()
 	// TODO: Check we never link a child to it's parent
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["Two"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["TwoChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["Two"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["TwoChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["Two"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"]}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"]}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["Two"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["TwoChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["Two"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["Two"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
 	assert.Assert(t, is.Len(implicitRels, 10))
 }
 

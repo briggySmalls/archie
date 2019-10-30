@@ -34,9 +34,9 @@ func (m *Model) AddRootElement(new Element) {
 }
 
 // Add an association between Elements
-func (m *Model) AddAssociation(source, destination Element) {
+func (m *Model) AddAssociation(source, destination Element, tag string) {
 	// Append to relationships
-	m.Associations = append(m.Associations, NewRelationship(source, destination))
+	m.Associations = append(m.Associations, NewRelationship(source, destination, tag))
 }
 
 func (m *Model) RootElements() []Element {
@@ -236,7 +236,7 @@ func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Eleme
 			return
 		}
 		// Create the relationship
-		relationships[NewRelationship(source, dest)] = true
+		relationships[NewRelationship(source, dest, "")] = true
 		// Iterate
 		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!
