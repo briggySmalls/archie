@@ -15,9 +15,9 @@ func TestDraw(t *testing.T) {
 
 	// Create the items we'll be testing
 	actor := mdl.NewActor("User")
-	one := mdl.NewItem("One", "")
-	oneChild := mdl.NewItem("OneChild", "")
-	two := mdl.NewItem("Two", "")
+	one := mdl.NewItem("One", nil)
+	oneChild := mdl.NewItem("OneChild", nil)
+	two := mdl.NewItem("Two", nil)
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(actor)

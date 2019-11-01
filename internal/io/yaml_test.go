@@ -17,9 +17,9 @@ elements:
       - name: speaker
         children:
           - name: enclosure
-            technology: physical
+            tags: [physical]
           - name: driver
-            technology: electro-mechanical
+            tags: [electronics, mechanical]
           - connector
           - cable
       - name: amplifier
@@ -30,9 +30,9 @@ elements:
           - mixer
           - amplifier circuit
           - name: power button
-            technology: electro-mechanical
+            tags: [electronics, mechanical]
           - name: input select
-            technology: electro-mechanical
+            tags: [electronics, mechanical]
 associations:
   - source: user
     destination: sound system/amplifier/input select
@@ -72,6 +72,9 @@ func TestRead(t *testing.T) {
   assertChildrenCount(t, m, "sound system", 2)
   assertChildrenCount(t, m, "sound system/speaker", 4)
   assertChildrenCount(t, m, "sound system/amplifier", 7)
+  // Check some tags
+  assertTags(t, m, "sound system/speaker/driver", []string{"electronics", "mechanical"})
+
 }
 
 func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
@@ -80,4 +83,16 @@ func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
   assert.NilError(t, err)
   // Now assert the number of children is as expected
   assert.Assert(t, is.Len(m.Children(el), length))
+}
+
+func assertTags(t *testing.T, m *mdl.Model, name string, expected []string) {
+  // Lookup the name
+  el, err := m.LookupName(name)
+  assert.NilError(t, err)
+  // Assert the tag slices match
+  tags := el.Tags()
+  assert.Equal(t, len(expected), len(tags))
+  for _, tag := range tags {
+    assert.Assert(t, is.Contains(expected, tag))
+  }
 }

@@ -12,8 +12,8 @@ func TestElements(t *testing.T) {
 	m := NewModel()
 
 	// Create two items and add them to the model
-	one := NewItem("One", "")
-	two := NewItem("Two", "")
+	one := NewItem("One", nil)
+	two := NewItem("Two", nil)
 	m.AddRootElement(one)
 	m.AddRootElement(two)
 
@@ -112,8 +112,8 @@ func TestTrivialImplicitAssociations(t *testing.T) {
 	m := NewModel()
 
 	// Create two items, each with one child
-	one := NewItem("One", "")
-	two := NewItem("Two", "")
+	one := NewItem("One", nil)
+	two := NewItem("Two", nil)
 	m.AddRootElement(one)
 	m.AddRootElement(two)
 
@@ -201,7 +201,7 @@ func createModel() (*Model, map[string]Element) {
 	// Create the items we'll be testing
 	for _, name := range []string{"One", "OneChild", "OneChildChilda", "OneChildChildb", "Two", "TwoChild", "TwoChildChild"} {
 		// Create the element
-		el := NewItem(name, "")
+		el := NewItem(name, nil)
 		// Record it
 		elMap[name] = el
 	}

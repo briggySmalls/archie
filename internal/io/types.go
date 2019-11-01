@@ -8,14 +8,14 @@ type Model struct {
 type Element struct {
 	Name       string        `json:"name"`
 	Kind       string        `json:"kind,omitempty"`
-	Technology string        `json:"technology,omitempty"`
+	Tags []string        `json:"technology,omitempty"`
 	Children   []interface{} `json:"children,omitempty"`
 }
 
 type ElementWithChildren struct {
 	Name       string        `json:"name"`
 	Kind       string        `json:"kind,omitempty"`
-	Technology string        `json:"technology,omitempty"`
+	Tags []string        `json:"technology,omitempty,flow"`
 	Children   []interface{} `json:"children,omitempty"`
 }
 

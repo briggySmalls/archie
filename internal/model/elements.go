@@ -11,22 +11,22 @@ const (
 
 type element struct {
 	name       string
-	technology string
+	tags []string
 	kind       uint
 }
 
 type Element interface {
 	Name() string
-	Technology() string
+	Tags() []string
 	ID() string
 	IsActor() bool
 }
 
 // Create a new item
-func NewItem(name, technology string) Element {
+func NewItem(name string, tags []string) Element {
 	el := newElement(item)
 	el.name = name
-	el.technology = technology
+	el.tags = tags
 	return &el
 }
 
@@ -56,6 +56,6 @@ func (e *element) Name() string {
 	return e.name
 }
 
-func (e *element) Technology() string {
-	return e.technology
+func (e *element) Tags() []string {
+	return e.tags
 }

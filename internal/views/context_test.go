@@ -92,7 +92,7 @@ func createModel() (*mdl.Model, map[string]mdl.Element) {
 	}
 	for _, name := range elements {
 		// Create the element
-		el := mdl.NewItem(name, "")
+		el := mdl.NewItem(name, nil)
 		// Record it
 		elMap[name] = el
 	}
