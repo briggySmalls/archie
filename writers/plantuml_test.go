@@ -26,7 +26,7 @@ func TestDraw(t *testing.T) {
 	m.AddRootElement(two)
 
 	// Link the children together
-	m.AddAssociation(oneChild, two)
+	m.AddAssociation(oneChild, two, "")
 
 	// Drawer
 	d := New(PlantUmlStrategy{})
