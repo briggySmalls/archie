@@ -2,6 +2,7 @@ package writers
 
 import (
 	"fmt"
+	"strings"
 )
 
 type PlantUmlStrategy struct {
@@ -21,9 +22,16 @@ func (p PlantUmlStrategy) Footer(scribe Scribe) {
 func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
 	if element.IsActor() {
 		scribe.WriteLine("actor \"%s\" as %s", element.Name(), element.ID())
-	} else {
-		scribe.WriteLine("rectangle \"%s\" as %s", element.Name(), element.ID())
+		return
 	}
+	if len(element.Tags()) != 0 {
+		scribe.WriteLine("rectangle %s [", element.ID())
+		scribe.WriteLine("%s", element.Name())
+		scribe.WriteLine("<i>%s</i>", strings.Join(element.Tags(), ", "))
+		scribe.WriteLine("]")
+		return
+	}
+	scribe.WriteLine("rectangle \"%s\" as %s", element.Name(), element.ID())
 }
 
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
