@@ -1,5 +1,9 @@
 package writers
 
+import (
+	"fmt"
+)
+
 type PlantUmlStrategy struct {
 }
 
@@ -33,5 +37,10 @@ func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element Element) {
 }
 
 func (p PlantUmlStrategy) Association(scribe Scribe, association Relationship) {
-	scribe.WriteLine("%s --> %s", association.Source().ID(), association.Destination().ID())
+	linkStr := fmt.Sprintf("%s --> %s", association.Source().ID(), association.Destination().ID())
+	if association.Tag() != "" {
+		scribe.WriteLine("%s : \"%s\"", linkStr, association.Tag())
+	} else {
+		scribe.WriteLine(linkStr)
+	}
 }

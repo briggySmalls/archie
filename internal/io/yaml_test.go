@@ -6,6 +6,7 @@ import (
 
   "gotest.tools/assert"
   is "gotest.tools/assert/cmp"
+  "fmt"
 )
 
 var data = `
@@ -36,12 +37,15 @@ elements:
 associations:
   - source: user
     destination: sound system/amplifier/input select
+    tag: press
   - source: sound system/amplifier/input select
     destination: sound system/amplifier/mixer
+    tag: signal
   - source: sound system/amplifier/mixer
     destination: sound system/amplifier/audio in connector
   - source: sound system/amplifier/ac-dc converter
     destination: sound system/amplifier/mixer
+    tag: power
   - source: sound system/amplifier/ac-dc converter
     destination: sound system/amplifier/amplifier circuit
   - source: sound system/amplifier/amplifier circuit
@@ -72,9 +76,12 @@ func TestRead(t *testing.T) {
   assertChildrenCount(t, m, "sound system", 2)
   assertChildrenCount(t, m, "sound system/speaker", 4)
   assertChildrenCount(t, m, "sound system/amplifier", 7)
-  // Check some tags
-  assertTags(t, m, "sound system/speaker/driver", []string{"electronics", "mechanical"})
-
+  // Check some element tags
+  assertElementTags(t, m, "sound system/speaker/driver", []string{"electronics", "mechanical"})
+  // Check some association tags
+  ass, err := findFirstRelationship(m, "user", "input select")
+  assert.NilError(t, err)
+  assert.Equal(t, ass.Tag(), "press")
 }
 
 func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
@@ -85,7 +92,7 @@ func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
   assert.Assert(t, is.Len(m.Children(el), length))
 }
 
-func assertTags(t *testing.T, m *mdl.Model, name string, expected []string) {
+func assertElementTags(t *testing.T, m *mdl.Model, name string, expected []string) {
   // Lookup the name
   el, err := m.LookupName(name)
   assert.NilError(t, err)
@@ -95,4 +102,14 @@ func assertTags(t *testing.T, m *mdl.Model, name string, expected []string) {
   for _, tag := range tags {
     assert.Assert(t, is.Contains(expected, tag))
   }
+}
+
+func findFirstRelationship(model *mdl.Model, source, destination string) (mdl.Relationship, error) {
+  for _, rel := range model.Associations {
+    if rel.Source().Name() == source && rel.Destination().Name() == destination {
+      // We've found a relationship that links the two
+      return rel, nil
+    }
+  }
+  return nil, fmt.Errorf("Association not found")
 }

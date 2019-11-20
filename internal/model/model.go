@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+type relationshipNoTag struct {
+	Source      Element
+	Destination Element
+}
+
 type Model struct {
 	Associations []Relationship
 	Composition  map[Element]Element
@@ -34,9 +39,9 @@ func (m *Model) AddRootElement(new Element) {
 }
 
 // Add an association between Elements
-func (m *Model) AddAssociation(source, destination Element) {
+func (m *Model) AddAssociation(source, destination Element, tag string) {
 	// Append to relationships
-	m.Associations = append(m.Associations, NewRelationship(source, destination))
+	m.Associations = append(m.Associations, NewRelationship(source, destination, tag))
 }
 
 func (m *Model) RootElements() []Element {
@@ -67,14 +72,14 @@ func (m *Model) ImplicitAssociations() []Relationship {
 	// Get all the relationships
 	rels := m.Associations
 	// Prepare a list of implicit relationships (we map to ensure no duplicates)
-	relsMap := make(map[Relationship]bool)
+	relsMap := make(map[relationshipNoTag]Relationship)
 	// Now add implicit relationships
 	for _, rel := range rels {
 		dest := rel.Destination()
 		// Now link each of source's ancestors to destination
 		for {
 			// Link all source's ancestors to destination
-			m.bubbleUpSource(relsMap, rel.Source(), dest)
+			m.bubbleUpSource(relsMap, rel.Source(), dest, rel.Tag())
 			// Iterate destination
 			if parent := m.parent(dest); parent == nil {
 				// This is a root element, so bail
@@ -88,8 +93,8 @@ func (m *Model) ImplicitAssociations() []Relationship {
 	// Extract the keys of the map
 	keys := make([]Relationship, len(relsMap))
 	i := 0
-	for k := range relsMap {
-		keys[i] = k
+	for _, v := range relsMap {
+		keys[i] = v
 		i++
 	}
 	// Return the relationships
@@ -229,14 +234,24 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(relationships map[Relationship]bool, source Element, dest Element) {
+func (m *Model) bubbleUpSource(relationships map[relationshipNoTag]Relationship, source Element, dest Element, tag string) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
 			return
 		}
 		// Create the relationship
-		relationships[NewRelationship(source, dest)] = true
+		key := relationshipNoTag{Source: source, Destination: dest}
+		if val, ok := relationships[key]; ok && tag != val.Tag() {
+			// We have:
+			// a) Already got an association with this source/dest pair
+			// b) but it has a different tag to this new one
+			// Indicate the tags are complex
+			relationships[key] = NewRelationship(source, dest, "...")
+		} else {
+			// No previous source/dest implicit association
+			relationships[key] = NewRelationship(source, dest, tag)
+		}
 		// Iterate
 		if parent := m.parent(source); parent == nil {
 			// We've reached the root, we're done!
