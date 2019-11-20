@@ -44,7 +44,7 @@ All endpoints respond to a POST request that supplies the model (YAML) in the bo
   // Run the API
   Run: func(cmd *cobra.Command, args []string) {
     // Get the desired port from configuration
-    port := viper.Get("port")
+    port := viper.GetInt("port")
     // Run the server
     if err := server.Serve(fmt.Sprintf(":%d", port)); err != nil {
       panic(err)
@@ -91,6 +91,7 @@ func initConfig() {
     viper.SetConfigName(".archie-api")
   }
 
+  viper.SetEnvPrefix("ARCHIE")
   viper.AutomaticEnv() // read in environment variables that match
 
   // If a config file is found, read it in.
