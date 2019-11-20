@@ -10,6 +10,7 @@ import (
 type Archie interface {
 	LandscapeView() (string, error)
 	ContextView(element string) (string, error)
+	TagView(element, tag string) (string, error)
 	Elements() map[string]string
 }
 
@@ -49,6 +50,19 @@ func (a *archie) ContextView(scope string) (diagram string, err error) {
 	}
 	// Create the view
 	view := views.NewContextView(a.model, element)
+	// Convert to diagram
+	diagram, err = a.writer.Write(view)
+	return
+}
+
+func (a *archie) TagView(scope, tag string) (diagram string, err error) {
+	// Lookup the element
+	element, err := a.model.LookupName(scope)
+	if err != nil {
+		return
+	}
+	// Create the view
+	view := views.NewTagView(a.model, element, tag)
 	// Convert to diagram
 	diagram, err = a.writer.Write(view)
 	return
