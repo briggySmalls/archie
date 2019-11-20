@@ -35,19 +35,18 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-  Use:   "archie-api",
-  Short: "A brief description of your application",
-  Long: `A longer description that spans multiple lines and likely contains
-  examples and usage of using your application. For example:
+  Use:   "api",
+  Short: "REST API for archie system architecture tool",
+  Long: `Exposes endpoints for obtaining plantuml views from a supplied model
 
-  Cobra is a CLI library for Go that empowers applications.
-  This application is a tool to generate the needed files
-  to quickly create a Cobra application.`,
-  // Uncomment the following line if your bare application
-  // has ean action associated with it:
+All endpoints respond to a POST request that supplies the model (YAML) in the body.
+  `,
+  // Run the API
   Run: func(cmd *cobra.Command, args []string) {
-    err := server.Serve("localhost:8080")
-    if err != nil {
+    // Get the desired port from configuration
+    port := viper.Get("port")
+    // Run the server
+    if err := server.Serve(fmt.Sprintf(":%d", port)); err != nil {
       panic(err)
     }
   },
@@ -65,15 +64,13 @@ func Execute() {
 func init() {
   cobra.OnInitialize(initConfig)
 
-  // Here you will define your flags and configuration settings.
-  // Cobra supports persistent flags, which, if defined here,
-  // will be global for your application.
+  // Define command flags/configuration
 
+  // Path of configuration file
   rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.archie-api.yaml)")
-
-  // Cobra also supports local flags, which will only run
-  // when this action is called directly.
-  rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+  // Server port (bind to config too)
+  rootCmd.Flags().Int("port", 8080, "Port to run server on")
+  viper.BindPFlag("port", rootCmd.Flags().Lookup("port"))
 }
 
 // initConfig reads in config file and ENV variables if set.
