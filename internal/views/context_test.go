@@ -6,6 +6,7 @@ import (
 	mdl "github.com/briggysmalls/archie/internal/model"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
+	"strings"
 )
 
 // Test creating view for a scope with no children
@@ -23,13 +24,21 @@ func TestContextElements(t *testing.T) {
 	l := NewContextView(m, elMap["1/1/1"])
 
 	// Check elements are correct
-	assert.Assert(t, is.Contains(l.Elements, elMap["1"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/1"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/2"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/1"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/2"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["2"]))
-	assert.Assert(t, is.Len(l.Elements, 6))
+	expectedElements := []mdl.Element{
+		elMap["1"],
+		elMap["1/1"],
+		elMap["1/2"],
+		elMap["1/1/1"],
+		elMap["1/1/2"],
+		elMap["2"],
+	}
+	for _, el := range expectedElements {
+		// Assert elements are present
+		assert.Assert(t, is.Contains(l.Elements, el))
+	}
+	assert.Assert(t, is.Len(l.Elements, len(expectedElements)))
+
+	// Check children are correct
 	assert.Assert(t, is.Len(l.Children(elMap["2"]), 0))
 	assert.Assert(t, is.Len(l.Children(elMap["1/2"]), 0))
 
@@ -54,12 +63,20 @@ func TestContextChildElements(t *testing.T) {
 	l := NewContextView(m, elMap["1/1"])
 
 	// Check elements are correct
-	assert.Assert(t, is.Contains(l.Elements, elMap["1"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/1"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/2"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/1"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["1/1/2"]))
-	assert.Assert(t, is.Contains(l.Elements, elMap["2"]))
+	expectedElements := []mdl.Element{
+		elMap["1"],
+		elMap["1/1"],
+		elMap["1/2"],
+		elMap["1/1/1"],
+		elMap["1/1/2"],
+		elMap["2"],
+	}
+	for _, el := range expectedElements {
+		// Assert elements are present
+		assert.Assert(t, is.Contains(l.Elements, el))
+	}
+
+	// Check children are correct
 	assert.Assert(t, is.Len(l.Elements, 6))
 	assert.Assert(t, is.Len(l.Children(elMap["2"]), 0))
 	assert.Assert(t, is.Len(l.Children(elMap["1/2"]), 0))
@@ -99,15 +116,14 @@ func createModel() (*mdl.Model, map[string]mdl.Element) {
 	}
 
 	// Add the items to the model
-	m.AddRootElement(elMap["1"])
-	m.AddRootElement(elMap["2"])
-	m.AddElement(elMap["1/1"], elMap["1"])
-	m.AddElement(elMap["1/2"], elMap["1"])
-	m.AddElement(elMap["1/1/1"], elMap["1/1"])
-	m.AddElement(elMap["1/1/2"], elMap["1/1"])
-	m.AddElement(elMap["1/2/1"], elMap["1/2"])
-	m.AddElement(elMap["2/1"], elMap["2"])
-	m.AddElement(elMap["2/1/1"], elMap["2/1"])
+	for name, el := range elMap {
+		nesting := strings.Split(name, "/")
+		if len(nesting) == 1 {
+			m.AddRootElement(el)
+		} else {
+			m.AddElement(el, elMap[strings.Join(nesting[:len(nesting)-1], "/")])
+		}
+	}
 
 	return &m, elMap
 }
