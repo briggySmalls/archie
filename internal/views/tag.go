@@ -29,6 +29,10 @@ func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
 
 	// Create a model from the model's root elements
 	view, err := CreateSubmodel(model, taggedElements, relatedElements)
+
+	// Remove elements that have no tag (logical dividers)
+	model = removeUntagged(model)
+
 	// We shouldn't error (we've pulled elements out sensibly)
 	panicOnError(err)
 	return view
@@ -47,6 +51,20 @@ func findElements(model *mdl.Model, scope mdl.Element, tag string) []mdl.Element
 		elements = append(elements, findElements(model, child, tag)...)
 	}
 	return elements
+}
+
+// TODO: Should there be a 'RemoveElement' function provided by model?
+func removeUntagged(model *mdl.Model, el mdl.Element) *mdl.Model {
+	newParentsMap := make(map[Element]Element)
+	for _, child := range model.Children(el) {
+		if len(child.Tags()) == 0 {
+			// The child is untagged, so remove it
+			for _, grandchild := range model.Children(child) {
+				// Rewire composition to skip element
+				newParentsMap[grandchild] = el
+			}
+		}
+	}
 }
 
 func containsString(haystack []string, needle string) bool {
