@@ -17,6 +17,7 @@ func TestContextElements(t *testing.T) {
 	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"], "")
 	m.AddAssociation(elMap["1/1/1"], elMap["1/1/2"], "")
 	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"], "")
+	m.AddAssociation(elMap["1/1/2"], elMap["1/2/1"], "")
 
 	// Create the view
 	l := NewContextView(m, elMap["1/1/1"])

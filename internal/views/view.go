@@ -5,17 +5,17 @@ import (
 )
 
 // CreateSubmodel creates a sub-model from the full model
-func CreateSubmodel(model *mdl.Model, elements []mdl.Element) (mdl.Model, error) {
+func CreateSubmodel(model *mdl.Model, primary, secondary []mdl.Element) (mdl.Model, error) {
 	// Copy the model
 	new := model.Copy()
 	// Overwrite elements with relevant ones
-	relevant, err := getRelevantElements(&new, elements)
+	relevant, err := getRelevantElements(&new, append(primary, secondary...))
 	if err != nil {
 		return mdl.Model{}, err
 	}
 	new.Elements = relevant
 	// Overwrite relationships with relevant ones
-	new.Associations = getRelevantRelationships(&new, elements)
+	new.Associations = getRelevantRelationships(&new, primary, secondary)
 	// Fixup the composition relationships
 	for child := range new.Composition {
 		if !contains(new.Elements, child) {
@@ -48,11 +48,15 @@ func getRelevantElements(model *mdl.Model, elements []mdl.Element) ([]mdl.Elemen
 }
 
 // Select the relationships that are relevant, including implicit ones
-func getRelevantRelationships(model *mdl.Model, elements []mdl.Element) []mdl.Relationship {
+func getRelevantRelationships(model *mdl.Model, primary, secondary []mdl.Element) []mdl.Relationship {
+	// Union the primary and secondary elements
+	allRelevant := append(primary, secondary...)
 	var relationships []mdl.Relationship
 	for _, rel := range model.ImplicitAssociations() {
 		// Add relationships that link relevant elements
-		if contains(elements, rel.Source()) && contains(elements, rel.Destination()) {
+		sourcePrimary := contains(primary, rel.Source()) && contains(allRelevant, rel.Destination())
+		destPrimary := contains(primary, rel.Destination()) && contains(allRelevant, rel.Source())
+		if sourcePrimary || destPrimary {
 			relationships = append(relationships, rel)
 		}
 	}
