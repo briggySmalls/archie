@@ -2,7 +2,6 @@ package writers
 
 import (
 	"fmt"
-	"strings"
 )
 
 type PlantUmlStrategy struct {
@@ -28,15 +27,15 @@ func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
 	// Format all other items
 	scribe.WriteString(true, "rectangle \"%s\" as %s", element.Name(), element.ID())
 	// Add a list of tags as stereotypes (if present)
-	for _, tag := range element.Tags() {
-		scribe.WriteString(false, "<<%s>>", tag)
-	}
+	addStereotypes(scribe, element.Tags())
 	// Terminate with a newline
 	scribe.WriteString(false, "\n")
 }
 
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
-	scribe.WriteLine("package \"%s\" {", element.Name())
+	scribe.WriteString(true, "package \"%s\"", element.Name())
+	addStereotypes(scribe, element.Tags())
+	scribe.WriteString(false, " {\n")
 	scribe.UpdateIndent(1)
 }
 
@@ -54,14 +53,15 @@ func (p PlantUmlStrategy) Association(scribe Scribe, association Relationship) {
 	}
 }
 
-func buildStereotypes(tags []string) string {
-	// Build up a list of tags (if present)
-	var tagsBuilder strings.Builder
-	for _, tag := range tags {
-		_, err := tagsBuilder.WriteString(fmt.Sprintf("<<%s>>", tag))
-		if err != nil {
-			panic(err)
-		}
+// Add a list of tags as stereotypes (if present)
+func addStereotypes(scribe Scribe, tags []string) {
+	if len(tags) == 0 {
+		return
 	}
-	return tagsBuilder.String()
+	// Add a preceeding space
+	scribe.WriteString(false, " ")
+	// Now append tags as stereotypes
+	for _, tag := range tags {
+		scribe.WriteString(false, "<<%s>>", tag)
+	}
 }

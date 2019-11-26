@@ -15,9 +15,9 @@ func TestDraw(t *testing.T) {
 
 	// Create the items we'll be testing
 	actor := mdl.NewActor("User")
-	one := mdl.NewItem("One", nil)
+	one := mdl.NewItem("One", []string{"software"})
 	oneChild := mdl.NewItem("OneChild", nil)
-	two := mdl.NewItem("Two", nil)
+	two := mdl.NewItem("Two", []string{"software", "mechanical"})
 
 	// Add the items, and their relationships to the model
 	m.AddRootElement(actor)
@@ -37,17 +37,18 @@ func TestDraw(t *testing.T) {
 	lines := strings.Split(output, "\n")
 	assert.Equal(t, lines[0], "@startuml")
 	// Find the line with the parent object definition
+	parentString := "package \"One\" <<software>> {"
+	assert.Assert(t, is.Contains(lines, parentString))
 	var parentLine uint
 	for i, line := range lines[1:] {
-		if line == "package \"One\" {" {
+		if line == parentString {
 			parentLine = uint(i + 1)
 		}
 	}
-	assert.Equal(t, lines[parentLine], "package \"One\" {")
 	assert.Equal(t, lines[parentLine+1], fmt.Sprintf("    rectangle \"OneChild\" as %s", oneChild.ID()))
 	assert.Equal(t, lines[parentLine+2], "}")
 	assert.Assert(t, is.Contains(lines, fmt.Sprintf("actor \"User\" as %s", actor.ID())))
-	assert.Assert(t, is.Contains(lines, fmt.Sprintf("rectangle \"Two\" as %s", two.ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("rectangle \"Two\" as %s <<software>><<mechanical>>", two.ID())))
 	assert.Assert(t, is.Contains(lines, fmt.Sprintf("%s --> %s", oneChild.ID(), two.ID())))
 
 	assert.Assert(t, is.Contains(lines, "skinparam shadowing false"))
