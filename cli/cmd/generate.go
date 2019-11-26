@@ -20,11 +20,13 @@ import (
 	"github.com/briggysmalls/archie"
 	"github.com/briggysmalls/archie/writers"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var view string
 var scope string
 var tag string
+var customFooter string
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
@@ -38,7 +40,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Create an archie from the yaml
-		arch, err := archie.New(writers.PlantUmlStrategy{}, modelYaml)
+		arch, err := archie.New(writers.PlantUmlStrategy{CustomFooter: viper.GetString("footer")}, modelYaml)
 		if err != nil {
 			panic(err)
 		}
@@ -68,4 +70,6 @@ func init() {
 	generateCmd.PersistentFlags().StringVarP(&view, "view", "v", "", "view to create")
 	generateCmd.PersistentFlags().StringVarP(&scope, "scope", "s", "", "scope for the view")
 	generateCmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "tag to filter by (tag diagram only)")
+	generateCmd.PersistentFlags().StringVarP(&customFooter, "footer", "f", "", "custom footer for plantuml styling")
+	viper.BindPFlag("footer", generateCmd.PersistentFlags().Lookup("footer"))
 }
