@@ -4,7 +4,7 @@ import (
 	mdl "github.com/briggysmalls/archie/internal/model"
 )
 
-// Create a context view
+// Create a tag view
 // TODO: This should probably return an error
 func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
 	// Find elements with correct tag
