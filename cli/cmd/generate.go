@@ -24,6 +24,7 @@ import (
 
 var view string
 var scope string
+var tag string
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
@@ -49,6 +50,8 @@ to quickly create a Cobra application.`,
 		case "context":
 			// Construct the view
 			diagram, err = arch.ContextView(scope)
+		case "tag":
+			diagram, err = arch.TagView(scope, tag)
 		}
 		if err != nil {
 			panic(err)
@@ -64,4 +67,5 @@ func init() {
 	// Add flags
 	generateCmd.PersistentFlags().StringVarP(&view, "view", "v", "", "view to create")
 	generateCmd.PersistentFlags().StringVarP(&scope, "scope", "s", "", "scope for the view")
+	generateCmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "tag to filter by (tag diagram only)")
 }

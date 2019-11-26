@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 func Serve(address string) error {
@@ -14,6 +15,7 @@ func Serve(address string) error {
 	r := mux.NewRouter()
 	r.HandleFunc("/diagram/landscape", landscapeHandler).Methods("POST")
 	r.PathPrefix("/diagram/context").HandlerFunc(contextHandler).Methods("POST")
+	r.PathPrefix("/diagram/tag").HandlerFunc(tagHandler).Methods("POST")
 
 	// Serve
 	return http.ListenAndServe(address, r)
@@ -44,20 +46,56 @@ func contextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Determine the item
-	items := r.URL.Query()["scope"]
-	if len(items) != 1 {
-		errorHandler(w, fmt.Sprintf("Invalid scope '%s'", items), http.StatusBadRequest)
+	scope, err := readSingleParameter(r.URL, "scope")
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	item := items[0]
 	// Create the view
-	chart, err := archie.ContextView(item)
+	chart, err := archie.ContextView(scope)
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	// Return diagram in browser
 	fmt.Fprintf(w, chart)
+}
+
+func tagHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the model
+	archie, err := readModel(r)
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	// Determine the item
+	scope, err := readSingleParameter(r.URL, "scope")
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	// Determine the tag
+	tag, err := readSingleParameter(r.URL, "tag")
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	// Create the view
+	chart, err := archie.TagView(scope, tag)
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	// Return diagram in browser
+	fmt.Fprintf(w, chart)
+}
+
+func readSingleParameter(url *url.URL, parameter string) (value string, err error) {
+	items := url.Query()[parameter]
+	if len(items) != 1 {
+		return "", fmt.Errorf("Invalid %s '%s'", parameter, items)
+	}
+	return items[0], nil
 }
 
 // Our custom error page

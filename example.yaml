@@ -6,30 +6,34 @@ elements:
       - name: speaker
         children:
           - name: enclosure
-            technology: physical
+            tags: [physical]
           - name: driver
-            technology: electro-mechanical
+            tags: [electronic, mechanical]
           - connector
           - cable
       - name: amplifier
         children:
-          - audio in connector
-          - audio out connector
-          - bluetooth receiver
-          - ac-dc converter
-          - mixer
-          - amplifier
+          - name: audio in connector
+            tags: [electronic]
+          - name: audio out connector
+            tags: [electronic]
+          - name: bluetooth receiver
+            tags: [electronic]
+          - name: ac-dc converter
+            tags: [electronic]
+          - name: mixer
+            tags: [electronic]
+          - name: amplifier
+            tags: [electronic]
           - name: power button
-            technology: electro-mechanical
+            tags: [electronic, mechanical]
           - name: input select
-            technology: electro-mechanical
+            tags: [electronic, mechanical]
   - name: app
     children:
     - bluetooth driver
     - spotify client
     - ui
-
-
 associations:
   # Sound system
   - source: user
