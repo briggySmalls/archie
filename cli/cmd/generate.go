@@ -21,12 +21,15 @@ import (
 	"github.com/briggysmalls/archie/writers"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"io/ioutil"
 )
 
 var view string
 var scope string
 var tag string
 var customFooter string
+var generateModelFile string
+var generateModelYaml string
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
@@ -38,9 +41,15 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// Read in the yaml file
+		model, err := ioutil.ReadFile(generateModelFile)
+		handleError(err)
+		generateModelYaml = string(model)
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Create an archie from the yaml
-		arch, err := archie.New(writers.PlantUmlStrategy{CustomFooter: viper.GetString("footer")}, modelYaml)
+		arch, err := archie.New(writers.PlantUmlStrategy{CustomFooter: viper.GetString("footer")}, generateModelYaml)
 		if err != nil {
 			panic(err)
 		}
@@ -67,6 +76,7 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(generateCmd)
 	// Add flags
+	generateCmd.PersistentFlags().StringVarP(&generateModelFile, "model", "m", "", "Model to generate diagrams from")
 	generateCmd.PersistentFlags().StringVarP(&view, "view", "v", "", "view to create")
 	generateCmd.PersistentFlags().StringVarP(&scope, "scope", "s", "", "scope for the view")
 	generateCmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "tag to filter by (tag diagram only)")

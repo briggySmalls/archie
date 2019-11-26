@@ -10,7 +10,11 @@ import (
 	"net/url"
 )
 
-func Serve(address string) error {
+var customFooter string
+
+func Serve(address, footer string) error {
+	// Record the custom footer
+	customFooter = footer
 	// Create a router
 	r := mux.NewRouter()
 	r.HandleFunc("/diagram/landscape", landscapeHandler).Methods("POST")
@@ -114,6 +118,6 @@ func readModel(r *http.Request) (archie.Archie, error) {
 		return nil, fmt.Errorf("No model found in request")
 	}
 	// Create an Archie from the model
-	archie, err := archie.New(writers.PlantUmlStrategy{}, string(model))
+	archie, err := archie.New(writers.PlantUmlStrategy{CustomFooter: customFooter}, string(model))
 	return archie, err
 }

@@ -24,7 +24,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
@@ -32,9 +31,6 @@ import (
 )
 
 var cfgFile string
-var modelFile string
-
-var modelYaml string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -43,15 +39,6 @@ var rootCmd = &cobra.Command{
 	Long: `
 archie-cli is an application that utilises the archie framework
 for developing lightweight system architecture modules`,
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		// Read in the yaml file
-		model, err := ioutil.ReadFile(modelFile)
-		handleError(err)
-		modelYaml = string(model)
-	},
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//  Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -65,7 +52,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.archie-cli.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&modelFile, "model", "m", "", "Model to generate diagrams from")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -83,6 +69,7 @@ func initConfig() {
 		viper.SetConfigName(".archie-cli")
 	}
 
+	viper.SetEnvPrefix("ARCHIE")
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
