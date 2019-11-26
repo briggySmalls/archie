@@ -19,15 +19,23 @@ func (p PlantUmlStrategy) Footer(scribe Scribe) {
 }
 
 func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
+	// Format actors with special style
 	if element.IsActor() {
 		scribe.WriteLine("actor \"%s\" as %s", element.Name(), element.ID())
-	} else {
-		scribe.WriteLine("rectangle \"%s\" as %s", element.Name(), element.ID())
+		return
 	}
+	// Format all other items
+	scribe.WriteString(true, "rectangle \"%s\" as %s", element.Name(), element.ID())
+	// Add a list of tags as stereotypes (if present)
+	addStereotypes(scribe, element.Tags())
+	// Terminate with a newline
+	scribe.WriteString(false, "\n")
 }
 
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
-	scribe.WriteLine("package \"%s\" {", element.Name())
+	scribe.WriteString(true, "package \"%s\"", element.Name())
+	addStereotypes(scribe, element.Tags())
+	scribe.WriteString(false, " {\n")
 	scribe.UpdateIndent(1)
 }
 
@@ -42,5 +50,18 @@ func (p PlantUmlStrategy) Association(scribe Scribe, association Relationship) {
 		scribe.WriteLine("%s : \"%s\"", linkStr, association.Tag())
 	} else {
 		scribe.WriteLine(linkStr)
+	}
+}
+
+// Add a list of tags as stereotypes (if present)
+func addStereotypes(scribe Scribe, tags []string) {
+	if len(tags) == 0 {
+		return
+	}
+	// Add a preceeding space
+	scribe.WriteString(false, " ")
+	// Now append tags as stereotypes
+	for _, tag := range tags {
+		scribe.WriteString(false, "<<%s>>", tag)
 	}
 }
