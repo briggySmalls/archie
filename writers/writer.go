@@ -42,6 +42,7 @@ type Strategy interface {
 type Scribe interface {
 	FullName(mdl.Element) (string, error)
 	WriteLine(string, ...interface{})
+	WriteString(bool, string, ...interface{})
 	UpdateIndent(int)
 }
 
@@ -102,9 +103,22 @@ func (d *writer) writeElement(model *mdl.Model, el mdl.Element) error {
 	return nil
 }
 
+// Write a correctly-indented string terminated with a newline
 func (d *writer) WriteLine(format string, args ...interface{}) {
+	// Write the string (with indent)
+	d.WriteString(true, fmt.Sprintf(format, args...))
+	// Append a newline
+	d.WriteString(false, "\n")
+}
+
+// Append the provided string to the current line
+func (d *writer) WriteString(withIndent bool, format string, args ...interface{}) {
+	// Add an indent, if requested
+	if withIndent {
+		d.builder.WriteString(fmt.Sprintf("%*s", d.indent*SPACES_IN_TAB, ""))
+	}
 	// Write the string
-	d.builder.WriteString(fmt.Sprintf("%*s%s\n", d.indent*SPACES_IN_TAB, "", fmt.Sprintf(format, args...)))
+	d.builder.WriteString(fmt.Sprintf(format, args...))
 }
 
 func (d *writer) UpdateIndent(indicator int) {

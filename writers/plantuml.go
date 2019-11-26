@@ -25,16 +25,14 @@ func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
 		scribe.WriteLine("actor \"%s\" as %s", element.Name(), element.ID())
 		return
 	}
-	// Build up a list of tags (if present)
-	var tagsBuilder strings.Builder
-	for _, tag := range element.Tags() {
-		_, err := tagsBuilder.WriteString(fmt.Sprintf("<<%s>>", tag))
-		if err != nil {
-			panic(err)
-		}
-	}
 	// Format all other items
-	scribe.WriteLine("rectangle \"%s\" as %s %s", element.Name(), element.ID(), tagsBuilder.String())
+	scribe.WriteString(true, "rectangle \"%s\" as %s", element.Name(), element.ID())
+	// Add a list of tags as stereotypes (if present)
+	for _, tag := range element.Tags() {
+		scribe.WriteString(false, "<<%s>>", tag)
+	}
+	// Terminate with a newline
+	scribe.WriteString(false, "\n")
 }
 
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
@@ -54,4 +52,16 @@ func (p PlantUmlStrategy) Association(scribe Scribe, association Relationship) {
 	} else {
 		scribe.WriteLine(linkStr)
 	}
+}
+
+func buildStereotypes(tags []string) string {
+	// Build up a list of tags (if present)
+	var tagsBuilder strings.Builder
+	for _, tag := range tags {
+		_, err := tagsBuilder.WriteString(fmt.Sprintf("<<%s>>", tag))
+		if err != nil {
+			panic(err)
+		}
+	}
+	return tagsBuilder.String()
 }
