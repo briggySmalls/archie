@@ -70,6 +70,4 @@ func init() {
 	generateCmd.PersistentFlags().StringVarP(&view, "view", "v", "", "view to create")
 	generateCmd.PersistentFlags().StringVarP(&scope, "scope", "s", "", "scope for the view")
 	generateCmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "tag to filter by (tag diagram only)")
-	generateCmd.PersistentFlags().StringVarP(&customFooter, "footer", "f", "", "custom footer for plantuml styling")
-	viper.BindPFlag("footer", generateCmd.PersistentFlags().Lookup("footer"))
 }
