@@ -5,6 +5,7 @@ import (
 )
 
 type PlantUmlStrategy struct {
+	CustomFooter string
 }
 
 func (p PlantUmlStrategy) Header(scribe Scribe) {
@@ -12,9 +13,7 @@ func (p PlantUmlStrategy) Header(scribe Scribe) {
 }
 
 func (p PlantUmlStrategy) Footer(scribe Scribe) {
-	scribe.WriteLine("skinparam shadowing false")
-	scribe.WriteLine("skinparam nodesep 10")
-	scribe.WriteLine("skinparam ranksep 20")
+	scribe.WriteString(true, p.CustomFooter)
 	scribe.WriteLine("@enduml")
 }
 
