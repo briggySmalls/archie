@@ -20,7 +20,11 @@ import (
 	"github.com/spf13/cobra"
 	"net/http"
 	"text/template"
+	"io/ioutil"
 )
+
+var browseModelFile string
+var browseModelYaml string
 
 // browseCmd represents the browse command
 var browseCmd = &cobra.Command{
@@ -28,6 +32,12 @@ var browseCmd = &cobra.Command{
 	Short: "Browse an architecture model",
 	Long: `Launches a browser application for navigating the
 different diagrams available from the provided model`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// Read in the yaml file
+		model, err := ioutil.ReadFile(browseModelFile)
+		handleError(err)
+		browseModelYaml = string(model)
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		// Grab the static files
 		box := packr.NewBox("../bin")
@@ -42,6 +52,8 @@ different diagrams available from the provided model`,
 
 func init() {
 	rootCmd.AddCommand(browseCmd)
+
+	browseCmd.PersistentFlags().StringVarP(&browseModelFile, "model", "m", "", "Model to generate diagrams from")
 }
 
 func pageHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +62,7 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	t.Execute(w, modelYaml)
+	t.Execute(w, generateModelYaml)
 }
 
 func fileHandler(w http.ResponseWriter, r *http.Request) {
