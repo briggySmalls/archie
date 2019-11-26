@@ -20,18 +20,21 @@ func (p PlantUmlStrategy) Footer(scribe Scribe) {
 }
 
 func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
+	// Format actors with special style
 	if element.IsActor() {
 		scribe.WriteLine("actor \"%s\" as %s", element.Name(), element.ID())
 		return
 	}
-	if len(element.Tags()) != 0 {
-		scribe.WriteLine("rectangle %s [", element.ID())
-		scribe.WriteLine("%s", element.Name())
-		scribe.WriteLine("<i>%s</i>", strings.Join(element.Tags(), ", "))
-		scribe.WriteLine("]")
-		return
+	// Build up a list of tags (if present)
+	var tagsBuilder strings.Builder
+	for _, tag := range element.Tags() {
+		_, err := tagsBuilder.WriteString(fmt.Sprintf("<<%s>>", tag))
+		if err != nil {
+			panic(err)
+		}
 	}
-	scribe.WriteLine("rectangle \"%s\" as %s", element.Name(), element.ID())
+	// Format all other items
+	scribe.WriteLine("rectangle \"%s\" as %s %s", element.Name(), element.ID(), tagsBuilder.String())
 }
 
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
