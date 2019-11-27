@@ -4,9 +4,6 @@ SHELL := /bin/bash
 TARGET := $(shell echo $${PWD\#\#*/})
 .DEFAULT_GOAL: $(TARGET)
 
-WASM_MAIN := wasm/main.go
-WASM := $(TARGET).wasm
-
 # These will be provided to the target
 VERSION := 1.0.0
 BUILD := `git rev-parse HEAD`
@@ -21,27 +18,7 @@ SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 TEST_FLAGS=-v
 COVERAGE_RESULTS=coverage.out
 
-.PHONY: all build clean install uninstall fmt simplify check run lint test coverage
-
-all: check install
-
-$(TARGET): $(SRC)
-	@go build $(LDFLAGS) -o $(TARGET)
-
-wasm: $(SRC)
-	@GOOS=js GOARCH=wasm go build $(LDFLAGS) -o $(WASM) $(WASM_MAIN)
-
-build: $(TARGET)
-	@true
-
-clean:
-	@rm -f $(TARGET)
-
-install:
-	@go install $(LDFLAGS)
-
-uninstall: clean
-	@rm -f $$(which ${TARGET})
+.PHONY: fmt simplify vet lint run test coverage
 
 fmt:
 	@gofmt -l -w $(SRC)
@@ -49,16 +26,14 @@ fmt:
 simplify:
 	@gofmt -s -l -w $(SRC)
 
-check:
-	@echo "[Formatting]"
-	@test -z $(shell gofmt -l main.go | tee /dev/stderr) || echo "[WARN] Fix formatting issues with 'make fmt'"
-	@echo "[Vetting]"
+vet:
 	@for d in $$(go list ./... | grep -v /vendor/); do go vet $${d}; done
-	@echo "[Linting]"
+
+lint:
 	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
 
 test:
-	@go test $(TEST_FLAGS) ./...
+	@for d in $$(go list ./... | grep -v /vendor/); do go test $(TEST_FLAGS) $${d}; done
 
 coverage: TEST_FLAGS+= -coverprofile=$(COVERAGE_RESULTS)
 coverage: test
