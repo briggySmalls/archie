@@ -10,9 +10,9 @@ const (
 )
 
 type element struct {
-	name       string
+	name string
 	tags []string
-	kind       uint
+	kind uint
 }
 
 type Element interface {

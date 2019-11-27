@@ -6,21 +6,21 @@ type Model struct {
 }
 
 type Element struct {
-	Name       string        `json:"name"`
-	Kind       string        `json:"kind,omitempty"`
-	Tags []string        `json:"technology,omitempty"`
-	Children   []interface{} `json:"children,omitempty"`
+	Name     string        `json:"name"`
+	Kind     string        `json:"kind,omitempty"`
+	Tags     []string      `json:"technology,omitempty"`
+	Children []interface{} `json:"children,omitempty"`
 }
 
 type ElementWithChildren struct {
-	Name       string        `json:"name"`
-	Kind       string        `json:"kind,omitempty"`
-	Tags []string        `json:"technology,omitempty,flow"`
-	Children   []interface{} `json:"children,omitempty"`
+	Name     string        `json:"name"`
+	Kind     string        `json:"kind,omitempty"`
+	Tags     []string      `json:"technology,omitempty,flow"`
+	Children []interface{} `json:"children,omitempty"`
 }
 
 type Association struct {
 	Source      string `json:"source"`
 	Destination string `json:"destination"`
-	Tag string `json:"tag"`
+	Tag         string `json:"tag"`
 }

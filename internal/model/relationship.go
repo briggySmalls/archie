@@ -3,7 +3,7 @@ package model
 type relationship struct {
 	source      Element
 	destination Element
-	tag string
+	tag         string
 }
 
 type Relationship interface {
