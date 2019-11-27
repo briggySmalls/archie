@@ -29,7 +29,12 @@ func TestDraw(t *testing.T) {
 	m.AddAssociation(oneChild, two, "")
 
 	// Drawer
-	d := New(PlantUmlStrategy{})
+	customFooter := `
+skinparam shadowing false
+skinparam nodesep 10
+skinparam ranksep 20
+`
+	d := New(PlantUmlStrategy{CustomFooter: customFooter})
 	output, err := d.Write(m)
 	assert.NilError(t, err)
 
