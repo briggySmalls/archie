@@ -8,7 +8,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"gopkg.in/yaml.v2"
 )
+
+type payload struct {
+	Model: interface{} `yaml:""`
+	Config: interface{} `yaml:""`
+}
 
 var customFooter string
 

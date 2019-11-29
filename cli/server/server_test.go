@@ -8,51 +8,56 @@ import (
 )
 
 var model = `
-elements:
-  - name: user
-    kind: actor
-  - name: sound-system
-    children:
-      - name: amplifier
-        children:
-          - name: audio in connector
-            tags: [electronic]
-          - name: audio out connector
-            tags: [electronic]
-          - name: bluetooth receiver
-            tags: [electronic]
-          - name: ac-dc converter
-            tags: [electronic]
-          - name: mixer
-            tags: [electronic]
-          - name: amplifier
-            tags: [electronic]
-          - name: power button
-            tags: [electronic, mechanical]
-          - name: input select
-            tags: [electronic, mechanical]
-associations:
-  # Sound system
-  - source: user
-    destination: sound-system/amplifier/input select
-  - source: sound-system/amplifier/input select
-    destination: sound-system/amplifier/mixer
-  - source: sound-system/amplifier/audio in connector
-    destination: sound-system/amplifier/mixer
-  - source: sound-system/amplifier/bluetooth receiver
-    destination: sound-system/amplifier/mixer
-  - source: sound-system/amplifier/ac-dc converter
-    destination: sound-system/amplifier/mixer
-  - source: sound-system/amplifier/mixer
-    destination: sound-system/amplifier/amplifier
-  - source: sound-system/amplifier/ac-dc converter
-    destination: sound-system/amplifier/amplifier
-  - source: sound-system/amplifier/amplifier
-    destination: sound-system/amplifier/audio out connector
-  - source: sound-system/amplifier/power button
-    destination: sound-system/amplifier/ac-dc converter
-  - source: user
-    destination: sound-system/amplifier/power button
+config:
+  footer: >
+skinparam nodesep 10
+skinparam nodesep 10
+model:
+  elements:
+    - name: user
+      kind: actor
+    - name: sound-system
+      children:
+        - name: amplifier
+          children:
+            - name: audio in connector
+              tags: [electronic]
+            - name: audio out connector
+              tags: [electronic]
+            - name: bluetooth receiver
+              tags: [electronic]
+            - name: ac-dc converter
+              tags: [electronic]
+            - name: mixer
+              tags: [electronic]
+            - name: amplifier
+              tags: [electronic]
+            - name: power button
+              tags: [electronic, mechanical]
+            - name: input select
+              tags: [electronic, mechanical]
+  associations:
+    # Sound system
+    - source: user
+      destination: sound-system/amplifier/input select
+    - source: sound-system/amplifier/input select
+      destination: sound-system/amplifier/mixer
+    - source: sound-system/amplifier/audio in connector
+      destination: sound-system/amplifier/mixer
+    - source: sound-system/amplifier/bluetooth receiver
+      destination: sound-system/amplifier/mixer
+    - source: sound-system/amplifier/ac-dc converter
+      destination: sound-system/amplifier/mixer
+    - source: sound-system/amplifier/mixer
+      destination: sound-system/amplifier/amplifier
+    - source: sound-system/amplifier/ac-dc converter
+      destination: sound-system/amplifier/amplifier
+    - source: sound-system/amplifier/amplifier
+      destination: sound-system/amplifier/audio out connector
+    - source: sound-system/amplifier/power button
+      destination: sound-system/amplifier/ac-dc converter
+    - source: user
+      destination: sound-system/amplifier/power button
 `
 
 func TestLandscapeHandler(t *testing.T) {
