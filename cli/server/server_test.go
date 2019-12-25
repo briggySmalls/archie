@@ -1,12 +1,9 @@
 package server
 
 import (
-    "github.com/briggysmalls/archie/core"
-    "github.com/briggysmalls/archie/core/writers"
-    "github.com/gorilla/mux"
-    "gotest.tools/assert"
     "net/http"
     "net/http/httptest"
+    "strings"
     "testing"
 )
 
@@ -14,34 +11,61 @@ var model = `
 elements:
   - name: user
     kind: actor
-  - name: sound system
+  - name: sound-system
     children:
-      - one
-      - two
-      - three
+      - name: amplifier
+        children:
+          - name: audio in connector
+            tags: [electronic]
+          - name: audio out connector
+            tags: [electronic]
+          - name: bluetooth receiver
+            tags: [electronic]
+          - name: ac-dc converter
+            tags: [electronic]
+          - name: mixer
+            tags: [electronic]
+          - name: amplifier
+            tags: [electronic]
+          - name: power button
+            tags: [electronic, mechanical]
+          - name: input select
+            tags: [electronic, mechanical]
 associations:
+  # Sound system
   - source: user
-    destination: sound system/one
-  - source: sound system/two
-    destination: sound system/three
-  - source: sound system/three
-    destination: user
+    destination: sound-system/amplifier/input select
+  - source: sound-system/amplifier/input select
+    destination: sound-system/amplifier/mixer
+  - source: sound-system/amplifier/audio in connector
+    destination: sound-system/amplifier/mixer
+  - source: sound-system/amplifier/bluetooth receiver
+    destination: sound-system/amplifier/mixer
+  - source: sound-system/amplifier/ac-dc converter
+    destination: sound-system/amplifier/mixer
+  - source: sound-system/amplifier/mixer
+    destination: sound-system/amplifier/amplifier
+  - source: sound-system/amplifier/ac-dc converter
+    destination: sound-system/amplifier/amplifier
+  - source: sound-system/amplifier/amplifier
+    destination: sound-system/amplifier/audio out connector
+  - source: sound-system/amplifier/power button
+    destination: sound-system/amplifier/ac-dc converter
+  - source: user
+    destination: sound-system/amplifier/power button
 `
 
-func TestHomeHandler(t *testing.T) {
-    // Create the server
-    s := newServer(t)
-
+func TestLandscapeHandler(t *testing.T) {
     // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
     // pass 'nil' as the third parameter.
-    req, err := http.NewRequest("GET", "/", nil)
+    req, err := http.NewRequest("POST", "diagram/landscape", strings.NewReader(model))
     if err != nil {
         t.Fatal(err)
     }
 
     // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
     rr := httptest.NewRecorder()
-    handler := http.HandlerFunc(s.homeHandler)
+    handler := http.HandlerFunc(landscapeHandler)
 
     // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
     // directly and pass in our Request and ResponseRecorder.
@@ -55,24 +79,20 @@ func TestHomeHandler(t *testing.T) {
 }
 
 func TestContextHandler(t *testing.T) {
-    // Create the server
-    s := newServer(t)
-
     // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
     // pass 'nil' as the third parameter.
-    req, err := http.NewRequest("GET", "/user", nil)
+    req, err := http.NewRequest("POST", "diagram/context?scope=sound-system", strings.NewReader(model))
     if err != nil {
         t.Fatal(err)
     }
 
     // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
     rr := httptest.NewRecorder()
+    handler := http.HandlerFunc(contextHandler)
 
-    // Need to create a router that we can pass the request through
-    // so that the vars will be added to the context
-    router := mux.NewRouter()
-    router.HandleFunc("/{item}", s.contextHandler)
-    router.ServeHTTP(rr, req)
+    // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+    // directly and pass in our Request and ResponseRecorder.
+    handler.ServeHTTP(rr, req)
 
     // Check the status code is what we expect.
     if status := rr.Code; status != http.StatusOK {
@@ -81,14 +101,25 @@ func TestContextHandler(t *testing.T) {
     }
 }
 
-func newServer(t *testing.T) *server {
-    // Create the api
-    a, err := core.New(writers.MermaidStrategy{}, model)
-    assert.NilError(t, err)
+func TestTagHandler(t *testing.T) {
+    // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
+    // pass 'nil' as the third parameter.
+    req, err := http.NewRequest("POST", "diagram/tag?scope=sound-system&tag=software", strings.NewReader(model))
+    if err != nil {
+        t.Fatal(err)
+    }
 
-    // Create the server
-    s, err := NewServer(a)
-    assert.NilError(t, err)
+    // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+    rr := httptest.NewRecorder()
+    handler := http.HandlerFunc(tagHandler)
 
-    return s.(*server)
+    // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+    // directly and pass in our Request and ResponseRecorder.
+    handler.ServeHTTP(rr, req)
+
+    // Check the status code is what we expect.
+    if status := rr.Code; status != http.StatusOK {
+        t.Errorf("handler returned wrong status code: got %v want %v",
+            status, http.StatusOK)
+    }
 }
