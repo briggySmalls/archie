@@ -13,7 +13,7 @@ var model = `
 config:
   footer: |
     skinparam nodesep 10
-    skinparam nodesep 10
+    skinparam ranksep 10
 model:
   elements:
     - name: user
@@ -62,77 +62,68 @@ model:
       destination: sound-system/amplifier/power button
 `
 
-func TestLandscapeHandler(t *testing.T) {
-  // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
-  // pass 'nil' as the third parameter.
-  req, err := http.NewRequest("POST", "diagram/landscape", strings.NewReader(model))
-  if err != nil {
-    t.Fatal(err)
+func TestRoutes(t *testing.T) {
+  params := []struct {
+    Route   string
+    Handler func(http.ResponseWriter, *http.Request)
+    Lines   []string
+  }{
+    {
+      "diagram/landscape",
+      landscapeHandler,
+      []string{
+        "rectangle \"sound-system\" as",
+        "actor \"user\" as",
+        "skinparam nodesep 10",
+        "skinparam ranksep 10",
+      },
+    },
+    {
+      "diagram/context?scope=sound-system",
+      contextHandler,
+      []string{
+        "package \"sound-system\" {",
+        "rectangle \"amplifier\" as",
+        "skinparam nodesep 10",
+        "skinparam ranksep 10",
+      },
+    },
+    {
+      "diagram/tag?scope=sound-system&tag=mechanical",
+      tagHandler,
+      []string{
+        "package \"sound-system\"",
+        "package \"amplifier\"",
+        "rectangle \"input select\"",
+        "rectangle \"mixer\"",
+        "rectangle \"ac-dc converter\"",
+        "skinparam nodesep 10",
+        "skinparam ranksep 10",
+      },
+    },
   }
 
-  // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-  rr := httptest.NewRecorder()
-  handler := http.HandlerFunc(landscapeHandler)
-
-  // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-  // directly and pass in our Request and ResponseRecorder.
-  handler.ServeHTTP(rr, req)
-
-  // Check the status code is what we expect.
-  if status := rr.Code; status != http.StatusOK {
-    t.Errorf("handler returned wrong status code: got %v want %v",
-      status, http.StatusOK)
-  }
-
-  // Check the content is what we expect
-  body := rr.Body.String()
-  assert.Assert(t, is.Contains(body, "rectangle \"sound-system\" as"))
-  assert.Assert(t, is.Contains(body, "actor \"user\" as"))
-  assert.Assert(t, is.Contains(body, "skinparam nodesep 10"))
-}
-
-func TestContextHandler(t *testing.T) {
-  // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
-  // pass 'nil' as the third parameter.
-  req, err := http.NewRequest("POST", "diagram/context?scope=sound-system", strings.NewReader(model))
-  if err != nil {
-    t.Fatal(err)
-  }
-
-  // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-  rr := httptest.NewRecorder()
-  handler := http.HandlerFunc(contextHandler)
-
-  // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-  // directly and pass in our Request and ResponseRecorder.
-  handler.ServeHTTP(rr, req)
-
-  // Check the status code is what we expect.
-  if status := rr.Code; status != http.StatusOK {
-    t.Errorf("handler returned wrong status code: got %v want %v",
-      status, http.StatusOK)
-  }
-}
-
-func TestTagHandler(t *testing.T) {
-  // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
-  // pass 'nil' as the third parameter.
-  req, err := http.NewRequest("POST", "diagram/tag?scope=sound-system&tag=software", strings.NewReader(model))
-  if err != nil {
-    t.Fatal(err)
-  }
-
-  // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-  rr := httptest.NewRecorder()
-  handler := http.HandlerFunc(tagHandler)
-
-  // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-  // directly and pass in our Request and ResponseRecorder.
-  handler.ServeHTTP(rr, req)
-
-  // Check the status code is what we expect.
-  if status := rr.Code; status != http.StatusOK {
-    t.Errorf("handler returned wrong status code: got %v want %v",
-      status, http.StatusOK)
+  for _, testData := range params {
+    // Create a request to pass to our handler
+    req, err := http.NewRequest("POST", testData.Route, strings.NewReader(model))
+    if err != nil {
+      t.Fatal(err)
+    }
+    // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+    rr := httptest.NewRecorder()
+    handler := http.HandlerFunc(testData.Handler)
+    // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+    // directly and pass in our Request and ResponseRecorder.
+    handler.ServeHTTP(rr, req)
+    // Check the status code is what we expect.
+    if status := rr.Code; status != http.StatusOK {
+      t.Errorf("handler returned wrong status code: got %v want %v",
+        status, http.StatusOK)
+    }
+    // Check the content is what we expect
+    body := rr.Body.String()
+    for _, line := range testData.Lines {
+      assert.Assert(t, is.Contains(body, line))
+    }
   }
 }
