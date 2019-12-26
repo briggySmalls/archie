@@ -1,15 +1,17 @@
 package server
 
 import (
-    "net/http"
-    "net/http/httptest"
-    "strings"
-    "testing"
+  "gotest.tools/assert"
+  is "gotest.tools/assert/cmp"
+  "net/http"
+  "net/http/httptest"
+  "strings"
+  "testing"
 )
 
 var model = `
 config:
-  footer: >
+  footer: |
     skinparam nodesep 10
     skinparam nodesep 10
 model:
@@ -61,70 +63,76 @@ model:
 `
 
 func TestLandscapeHandler(t *testing.T) {
-    // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
-    // pass 'nil' as the third parameter.
-    req, err := http.NewRequest("POST", "diagram/landscape", strings.NewReader(model))
-    if err != nil {
-        t.Fatal(err)
-    }
+  // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
+  // pass 'nil' as the third parameter.
+  req, err := http.NewRequest("POST", "diagram/landscape", strings.NewReader(model))
+  if err != nil {
+    t.Fatal(err)
+  }
 
-    // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-    rr := httptest.NewRecorder()
-    handler := http.HandlerFunc(landscapeHandler)
+  // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+  rr := httptest.NewRecorder()
+  handler := http.HandlerFunc(landscapeHandler)
 
-    // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-    // directly and pass in our Request and ResponseRecorder.
-    handler.ServeHTTP(rr, req)
+  // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+  // directly and pass in our Request and ResponseRecorder.
+  handler.ServeHTTP(rr, req)
 
-    // Check the status code is what we expect.
-    if status := rr.Code; status != http.StatusOK {
-        t.Errorf("handler returned wrong status code: got %v want %v",
-            status, http.StatusOK)
-    }
+  // Check the status code is what we expect.
+  if status := rr.Code; status != http.StatusOK {
+    t.Errorf("handler returned wrong status code: got %v want %v",
+      status, http.StatusOK)
+  }
+
+  // Check the content is what we expect
+  body := rr.Body.String()
+  assert.Assert(t, is.Contains(body, "rectangle \"sound-system\" as"))
+  assert.Assert(t, is.Contains(body, "actor \"user\" as"))
+  assert.Assert(t, is.Contains(body, "skinparam nodesep 10"))
 }
 
 func TestContextHandler(t *testing.T) {
-    // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
-    // pass 'nil' as the third parameter.
-    req, err := http.NewRequest("POST", "diagram/context?scope=sound-system", strings.NewReader(model))
-    if err != nil {
-        t.Fatal(err)
-    }
+  // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
+  // pass 'nil' as the third parameter.
+  req, err := http.NewRequest("POST", "diagram/context?scope=sound-system", strings.NewReader(model))
+  if err != nil {
+    t.Fatal(err)
+  }
 
-    // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-    rr := httptest.NewRecorder()
-    handler := http.HandlerFunc(contextHandler)
+  // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+  rr := httptest.NewRecorder()
+  handler := http.HandlerFunc(contextHandler)
 
-    // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-    // directly and pass in our Request and ResponseRecorder.
-    handler.ServeHTTP(rr, req)
+  // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+  // directly and pass in our Request and ResponseRecorder.
+  handler.ServeHTTP(rr, req)
 
-    // Check the status code is what we expect.
-    if status := rr.Code; status != http.StatusOK {
-        t.Errorf("handler returned wrong status code: got %v want %v",
-            status, http.StatusOK)
-    }
+  // Check the status code is what we expect.
+  if status := rr.Code; status != http.StatusOK {
+    t.Errorf("handler returned wrong status code: got %v want %v",
+      status, http.StatusOK)
+  }
 }
 
 func TestTagHandler(t *testing.T) {
-    // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
-    // pass 'nil' as the third parameter.
-    req, err := http.NewRequest("POST", "diagram/tag?scope=sound-system&tag=software", strings.NewReader(model))
-    if err != nil {
-        t.Fatal(err)
-    }
+  // Create a request to pass to our handler. We don't have any query parameters for now, so we'll
+  // pass 'nil' as the third parameter.
+  req, err := http.NewRequest("POST", "diagram/tag?scope=sound-system&tag=software", strings.NewReader(model))
+  if err != nil {
+    t.Fatal(err)
+  }
 
-    // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-    rr := httptest.NewRecorder()
-    handler := http.HandlerFunc(tagHandler)
+  // We create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+  rr := httptest.NewRecorder()
+  handler := http.HandlerFunc(tagHandler)
 
-    // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
-    // directly and pass in our Request and ResponseRecorder.
-    handler.ServeHTTP(rr, req)
+  // Our handlers satisfy http.Handler, so we can call their ServeHTTP method
+  // directly and pass in our Request and ResponseRecorder.
+  handler.ServeHTTP(rr, req)
 
-    // Check the status code is what we expect.
-    if status := rr.Code; status != http.StatusOK {
-        t.Errorf("handler returned wrong status code: got %v want %v",
-            status, http.StatusOK)
-    }
+  // Check the status code is what we expect.
+  if status := rr.Code; status != http.StatusOK {
+    t.Errorf("handler returned wrong status code: got %v want %v",
+      status, http.StatusOK)
+  }
 }
