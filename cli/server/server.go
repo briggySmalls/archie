@@ -11,9 +11,13 @@ import (
 	"net/url"
 )
 
+type config struct {
+	Footer string `yaml:""`
+}
+
 type payload struct {
 	Model  interface{} `yaml:""`
-	Config interface{} `yaml:""`
+	Config config      `yaml:""`
 }
 
 var customFooter string
@@ -129,11 +133,11 @@ func readModel(r *http.Request) (archie.Archie, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Create an Archie from the model
+	// Create an Archie from the model & config
 	model, err := yaml.Marshal(p.Model)
 	if err != nil {
 		return nil, err
 	}
-	archie, err := archie.New(writers.PlantUmlStrategy{CustomFooter: customFooter}, string(model))
+	archie, err := archie.New(writers.PlantUmlStrategy{CustomFooter: p.Config.Footer}, string(model))
 	return archie, err
 }
