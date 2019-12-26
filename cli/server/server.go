@@ -20,6 +20,7 @@ type payload struct {
 	Config config      `yaml:""`
 }
 
+// Serve a REST API exposing Archie functionality
 func Serve(address string) error {
 	// Create a router
 	r := mux.NewRouter()

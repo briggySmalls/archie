@@ -7,6 +7,7 @@ import (
 	"github.com/briggysmalls/archie/writers"
 )
 
+// Archie diagram tool
 type Archie interface {
 	LandscapeView() (string, error)
 	ContextView(element string) (string, error)
@@ -19,6 +20,7 @@ type archie struct {
 	writer writers.Writer
 }
 
+// New Archie constructor
 func New(strategy writers.Strategy, yaml string) (Archie, error) {
 	// Convert the yaml to a model
 	model, err := io.ParseYaml(yaml)
