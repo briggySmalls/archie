@@ -10,8 +10,8 @@ import (
 var model = `
 config:
   footer: >
-skinparam nodesep 10
-skinparam nodesep 10
+    skinparam nodesep 10
+    skinparam nodesep 10
 model:
   elements:
     - name: user

@@ -5,15 +5,15 @@ import (
 	"github.com/briggysmalls/archie"
 	"github.com/briggysmalls/archie/writers"
 	"github.com/gorilla/mux"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"gopkg.in/yaml.v2"
 )
 
 type payload struct {
-	Model: interface{} `yaml:""`
-	Config: interface{} `yaml:""`
+	Model  interface{} `yaml:""`
+	Config interface{} `yaml:""`
 }
 
 var customFooter string
@@ -115,15 +115,25 @@ func errorHandler(w http.ResponseWriter, error string, code int) {
 }
 
 func readModel(r *http.Request) (archie.Archie, error) {
-	// Obtain the model from the request body
-	model, err := ioutil.ReadAll(r.Body)
+	// Obtain the model and config from the request body
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, fmt.Errorf("Cannot read body")
 	}
-	if model == nil {
-		return nil, fmt.Errorf("No model found in request")
+	if body == nil {
+		return nil, fmt.Errorf("No payload found in request")
+	}
+	// Separate config and model
+	p := payload{}
+	err = yaml.Unmarshal(body, &p)
+	if err != nil {
+		return nil, err
 	}
 	// Create an Archie from the model
+	model, err := yaml.Marshal(p.Model)
+	if err != nil {
+		return nil, err
+	}
 	archie, err := archie.New(writers.PlantUmlStrategy{CustomFooter: customFooter}, string(model))
 	return archie, err
 }
