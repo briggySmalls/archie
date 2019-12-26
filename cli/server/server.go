@@ -20,11 +20,7 @@ type payload struct {
 	Config config      `yaml:""`
 }
 
-var customFooter string
-
-func Serve(address, footer string) error {
-	// Record the custom footer
-	customFooter = footer
+func Serve(address string) error {
 	// Create a router
 	r := mux.NewRouter()
 	r.HandleFunc("/diagram/landscape", landscapeHandler).Methods("POST")
@@ -138,6 +134,9 @@ func readModel(r *http.Request) (archie.Archie, error) {
 	if err != nil {
 		return nil, err
 	}
-	archie, err := archie.New(writers.PlantUmlStrategy{CustomFooter: p.Config.Footer}, string(model))
+	// Create a writer, using the provided config
+	writer := writers.PlantUmlStrategy{CustomFooter: p.Config.Footer}
+	// Create an archie instance with the writer and model
+	archie, err := archie.New(writer, string(model))
 	return archie, err
 }

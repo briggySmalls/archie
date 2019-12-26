@@ -48,8 +48,10 @@ to quickly create a Cobra application.`,
 		generateModelYaml = string(model)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		// Create a writer from config
+		writer := writers.PlantUmlStrategy{CustomFooter: viper.GetString("footer")}
 		// Create an archie from the yaml
-		arch, err := archie.New(writers.PlantUmlStrategy{CustomFooter: viper.GetString("footer")}, generateModelYaml)
+		arch, err := archie.New(writer, generateModelYaml)
 		if err != nil {
 			panic(err)
 		}

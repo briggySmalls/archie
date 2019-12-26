@@ -33,12 +33,12 @@ var apiCmd = &cobra.Command{
 All endpoints respond to a POST request that supplies the model (YAML) in the body`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Get the desired port from configuration
-	    port := viper.GetInt("port")
-	    // Run the server
-	    fmt.Printf("Starting server on port: %d\n", port)
-	    if err := server.Serve(fmt.Sprintf(":%d", port), viper.GetString("footer")); err != nil {
-	      panic(err)
-	    }
+		port := viper.GetInt("port")
+		// Run the server
+		fmt.Printf("Starting server on port: %d\n", port)
+		if err := server.Serve(fmt.Sprintf(":%d", port)); err != nil {
+			panic(err)
+		}
 	},
 }
 
