@@ -4,19 +4,23 @@ import (
 	"fmt"
 )
 
+// PlantUmlStrategy is the strategy for drawing a PlantUML diagram from a model/view.
 type PlantUmlStrategy struct {
 	CustomFooter string
 }
 
+// Header writes the header PlantUML syntax.
 func (p PlantUmlStrategy) Header(scribe Scribe) {
 	scribe.WriteLine("@startuml")
 }
 
+// Footer writes a footer in PlantUML syntax.
 func (p PlantUmlStrategy) Footer(scribe Scribe) {
 	scribe.WriteString(true, p.CustomFooter)
 	scribe.WriteLine("@enduml")
 }
 
+// Element writes an element in PlantUML syntax.
 func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
 	// Format actors with special style
 	if element.IsActor() {
@@ -31,6 +35,7 @@ func (p PlantUmlStrategy) Element(scribe Scribe, element Element) {
 	scribe.WriteString(false, "\n")
 }
 
+// StartParentElement writes the start of an enclosing/parent element in PlantUML syntax.
 func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
 	scribe.WriteString(true, "package \"%s\"", element.Name())
 	addStereotypes(scribe, element.Tags())
@@ -38,11 +43,13 @@ func (p PlantUmlStrategy) StartParentElement(scribe Scribe, element Element) {
 	scribe.UpdateIndent(1)
 }
 
+// EndParentElement writes the end of an enclosing/parent element in PlantUML syntax.
 func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element Element) {
 	scribe.UpdateIndent(-1)
 	scribe.WriteLine("}")
 }
 
+// Association writes an association in PlantUML syntax
 func (p PlantUmlStrategy) Association(scribe Scribe, association Association) {
 	linkStr := fmt.Sprintf("%s --> %s", association.Source().ID(), association.Destination().ID())
 	if association.Tag() != "" {
