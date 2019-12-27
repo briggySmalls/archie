@@ -266,12 +266,13 @@ func (m *Model) bubbleUpSource(relationships map[relationshipNoTag]Relationship,
 			relationships[key] = NewRelationship(source, dest, tag)
 		}
 		// Iterate
-		if parent := m.parent(source); parent == nil {
+		parent := m.parent(source)
+		if parent == nil {
 			// We've reached the root, we're done!
 			return
-		} else {
-			// Iterate for the source's parent
-			source = parent
 		}
+
+		// Iterate for the source's parent
+		source = parent
 	}
 }
