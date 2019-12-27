@@ -10,13 +10,14 @@ type relationshipNoTag struct {
 	Destination Element
 }
 
+// Model holds a fully defined Archie model for processing
 type Model struct {
 	Associations []Relationship
 	Composition  map[Element]Element
 	Elements     []Element
 }
 
-// NewModel creates an initialises new model
+// NewModel creates and initialises new model
 func NewModel() Model {
 	// Create a model
 	model := Model{
@@ -25,6 +26,7 @@ func NewModel() Model {
 	return model
 }
 
+// AddElement adds a new element to the model, as a child of the specified parent
 func (m *Model) AddElement(new, parent Element) {
 	// Add the new element
 	m.Elements = append(m.Elements, new)
@@ -32,23 +34,25 @@ func (m *Model) AddElement(new, parent Element) {
 	m.Composition[new] = parent
 }
 
-// Add an element to the root of the model
+// AddRootElement adds an element to the root of the model
 func (m *Model) AddRootElement(new Element) {
 	// Add element as a child of the root
 	m.AddElement(new, nil)
 }
 
-// Add an association between Elements
+// AddAssociation directionally associates the two specified elements
 func (m *Model) AddAssociation(source, destination Element, tag string) {
 	// Append to relationships
 	m.Associations = append(m.Associations, NewRelationship(source, destination, tag))
 }
 
+// RootElements returns a slice of the root elements in a model
 func (m *Model) RootElements() []Element {
 	// Root is 'nil'
 	return m.Children(nil)
 }
 
+// Copy safely duplicates a model
 func (m *Model) Copy() Model {
 	// Initially copy the struct
 	new := *m
@@ -67,9 +71,10 @@ func (m *Model) Copy() Model {
 	return new
 }
 
-// Get a slice of all relationships, including implicit parent relationships
 func (m *Model) ImplicitAssociations() []Relationship {
 	// Get all the relationships
+// ImplicitAssociations gets a slice of all associations, including implicit ones.
+// Implicit associations are those that link element parents of explicit associations.
 	rels := m.Associations
 	// Prepare a list of implicit relationships (we map to ensure no duplicates)
 	relsMap := make(map[relationshipNoTag]Relationship)
@@ -132,6 +137,7 @@ func (m *Model) parent(element Element) Element {
 	return element
 }
 
+// Parent gets the parent of a specified element.
 func (m *Model) Parent(element Element) (Element, error) {
 	// Lookup
 	element, ok := m.Composition[element]
@@ -141,6 +147,7 @@ func (m *Model) Parent(element Element) (Element, error) {
 	return element, nil
 }
 
+// Children gets the children of a specified element.
 func (m *Model) Children(element Element) []Element {
 	var children []Element
 	for child, parent := range m.Composition {
@@ -151,6 +158,7 @@ func (m *Model) Children(element Element) []Element {
 	return children
 }
 
+// IsAncestor indicates whether the queired element is a descendent of a specified element.
 func (m *Model) IsAncestor(descendant, ancestor Element) bool {
 	for {
 		// Check for a match
@@ -166,6 +174,9 @@ func (m *Model) IsAncestor(descendant, ancestor Element) bool {
 	}
 }
 
+// Name gets the fully namespaced name of an element.
+// The namespaced name is of the form 'parent_name/child_name',
+// i.e. the name of all anscestors with a '/' separator.
 func (m *Model) Name(element Element) (string, error) {
 	// Build full name for element
 	parts := []string{}
@@ -186,6 +197,7 @@ func (m *Model) Name(element Element) (string, error) {
 	return strings.Join(parts, "/"), nil
 }
 
+// ShareAncestor checks whether two elements have a common ancestor
 func (m *Model) ShareAncestor(a, b Element) bool {
 	// Find the respective root elements
 	return m.getRoot(a) == m.getRoot(b)
@@ -204,6 +216,7 @@ func (m *Model) getRoot(element Element) Element {
 	}
 }
 
+// LookupName returns a model element corresponding to the fully-namespaced name.
 func (m *Model) LookupName(name string) (Element, error) {
 	// Split the string by slashes
 	parts := strings.Split(name, "/")

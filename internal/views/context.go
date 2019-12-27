@@ -4,8 +4,10 @@ import (
 	mdl "github.com/briggysmalls/archie/internal/model"
 )
 
-// Create a context view
-// TODO: This should probably return an error
+// NewContextView creates a view that shows the context of the specified element.
+// The view contains: a) all child elements of the scope, b) relevant associated elements.
+// A relevant associated element is one that is associated to one of the child elements of the scope, where either:
+// the parent is an ancestor of scope, or it is a root element.
 func NewContextView(model *mdl.Model, scope mdl.Element) mdl.Model {
 	// Find relevant elements
 	var primary []mdl.Element

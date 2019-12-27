@@ -15,6 +15,7 @@ type element struct {
 	kind uint
 }
 
+// Element describes a model element
 type Element interface {
 	Name() string
 	Tags() []string
@@ -22,7 +23,7 @@ type Element interface {
 	IsActor() bool
 }
 
-// Create a new item
+// NewItem creates a new item element
 func NewItem(name string, tags []string) Element {
 	el := newElement(item)
 	el.name = name
@@ -30,14 +31,13 @@ func NewItem(name string, tags []string) Element {
 	return &el
 }
 
-// Create a new actor
+// NewActor creates a new actor element
 func NewActor(name string) Element {
 	el := newElement(actor)
 	el.name = name
 	return &el
 }
 
-// Create an element
 func newElement(kind uint) element {
 	return element{
 		kind: kind,

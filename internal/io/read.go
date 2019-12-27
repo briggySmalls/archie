@@ -7,7 +7,7 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-// Parse an API model from a yaml string
+// ParseYaml parses an API model from a yaml string
 func ParseYaml(data string) (*mdl.Model, error) {
 	// Parse the yaml using the package
 	var sModel Model
