@@ -43,9 +43,9 @@ func TestContextElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Children(elMap["1/2"]), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/1/2"], "")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["2"], "")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/2"], "")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/1/2"], "")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["2"], "")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/2"], "")))
 	assert.Assert(t, is.Len(l.Associations, 3))
 }
 
@@ -82,9 +82,9 @@ func TestContextChildElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Children(elMap["1/2"]), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/1/2"], "")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["2"], "")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewRelationship(elMap["1/1/1"], elMap["1/2"], "")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/1/2"], "")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["2"], "")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/2"], "")))
 	assert.Assert(t, is.Len(l.Associations, 3))
 }
 

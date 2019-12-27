@@ -24,6 +24,6 @@ func (p MermaidStrategy) EndParentElement(scribe Scribe, element Element) {
 	scribe.WriteLine("end")
 }
 
-func (p MermaidStrategy) Association(scribe Scribe, association Relationship) {
+func (p MermaidStrategy) Association(scribe Scribe, association Association) {
 	scribe.WriteLine("%s-->%s", association.Source().ID(), association.Destination().ID())
 }

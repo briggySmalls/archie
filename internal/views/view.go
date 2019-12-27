@@ -15,7 +15,7 @@ func CreateSubmodel(model *mdl.Model, primary, secondary []mdl.Element) (mdl.Mod
 	}
 	new.Elements = relevant
 	// Overwrite relationships with relevant ones
-	new.Associations = getRelevantRelationships(&new, primary, secondary)
+	new.Associations = getRelevantAssociations(&new, primary, secondary)
 	// Fixup the composition relationships
 	for child := range new.Composition {
 		if !contains(new.Elements, child) {
@@ -48,10 +48,10 @@ func getRelevantElements(model *mdl.Model, elements []mdl.Element) ([]mdl.Elemen
 }
 
 // Select the relationships that are relevant, including implicit ones
-func getRelevantRelationships(model *mdl.Model, primary, secondary []mdl.Element) []mdl.Relationship {
+func getRelevantAssociations(model *mdl.Model, primary, secondary []mdl.Element) []mdl.Association {
 	// Union the primary and secondary elements
 	allRelevant := append(primary, secondary...)
-	var relationships []mdl.Relationship
+	var relationships []mdl.Association
 	for _, rel := range model.ImplicitAssociations() {
 		// Add relationships that link relevant elements
 		sourcePrimary := contains(primary, rel.Source()) && contains(allRelevant, rel.Destination())
@@ -108,7 +108,7 @@ func panicOnError(err error) {
 }
 
 // Get the linked element, if the specified element is in the relationship
-func getLinked(relationship mdl.Relationship, element mdl.Element) mdl.Element {
+func getLinked(relationship mdl.Association, element mdl.Element) mdl.Element {
 	if relationship.Source() == element {
 		return relationship.Destination()
 	}

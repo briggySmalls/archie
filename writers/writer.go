@@ -14,8 +14,8 @@ type Element interface {
 	mdl.Element
 }
 
-type Relationship interface {
-	mdl.Relationship
+type Association interface {
+	mdl.Association
 }
 
 type Writer interface {
@@ -36,7 +36,7 @@ type Strategy interface {
 	Element(writer Scribe, element Element)
 	StartParentElement(writer Scribe, element Element)
 	EndParentElement(writer Scribe, element Element)
-	Association(writer Scribe, association Relationship)
+	Association(writer Scribe, association Association)
 }
 
 type Scribe interface {
@@ -68,7 +68,7 @@ func (d *writer) Write(model mdl.Model) (string, error) {
 	}
 	// Now draw the relationships
 	for _, rel := range model.Associations {
-		d.strategy.Association(d, Relationship(rel))
+		d.strategy.Association(d, Association(rel))
 	}
 	// Write footer
 	d.strategy.Footer(d)

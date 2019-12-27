@@ -43,7 +43,7 @@ func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element Element) {
 	scribe.WriteLine("}")
 }
 
-func (p PlantUmlStrategy) Association(scribe Scribe, association Relationship) {
+func (p PlantUmlStrategy) Association(scribe Scribe, association Association) {
 	linkStr := fmt.Sprintf("%s --> %s", association.Source().ID(), association.Destination().ID())
 	if association.Tag() != "" {
 		scribe.WriteLine("%s : \"%s\"", linkStr, association.Tag())

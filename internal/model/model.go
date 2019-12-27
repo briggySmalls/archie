@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-type relationshipNoTag struct {
+type associationNoTag struct {
 	Source      Element
 	Destination Element
 }
 
 // Model holds a fully defined Archie model for processing
 type Model struct {
-	Associations []Relationship
+	Associations []Association
 	Composition  map[Element]Element
 	Elements     []Element
 }
@@ -42,8 +42,8 @@ func (m *Model) AddRootElement(new Element) {
 
 // AddAssociation directionally associates the two specified elements
 func (m *Model) AddAssociation(source, destination Element, tag string) {
-	// Append to relationships
-	m.Associations = append(m.Associations, NewRelationship(source, destination, tag))
+	// Append to associations
+	m.Associations = append(m.Associations, NewAssociation(source, destination, tag))
 }
 
 // RootElements returns a slice of the root elements in a model
@@ -61,7 +61,7 @@ func (m *Model) Copy() Model {
 	new.Elements = make([]Element, len(m.Elements))
 	copy(new.Elements, m.Elements)
 	// Associations
-	new.Associations = make([]Relationship, len(m.Associations))
+	new.Associations = make([]Association, len(m.Associations))
 	copy(new.Associations, m.Associations)
 	// Composition
 	new.Composition = make(map[Element]Element)
@@ -71,14 +71,14 @@ func (m *Model) Copy() Model {
 	return new
 }
 
-func (m *Model) ImplicitAssociations() []Relationship {
-	// Get all the relationships
 // ImplicitAssociations gets a slice of all associations, including implicit ones.
 // Implicit associations are those that link element parents of explicit associations.
+func (m *Model) ImplicitAssociations() []Association {
+	// Get all the associations
 	rels := m.Associations
-	// Prepare a list of implicit relationships (we map to ensure no duplicates)
-	relsMap := make(map[relationshipNoTag]Relationship)
-	// Now add implicit relationships
+	// Prepare a list of implicit associations (we map to ensure no duplicates)
+	relsMap := make(map[associationNoTag]Association)
+	// Now add implicit associations
 	for _, rel := range rels {
 		dest := rel.Destination()
 		// Now link each of source's ancestors to destination
@@ -96,13 +96,13 @@ func (m *Model) ImplicitAssociations() []Relationship {
 		}
 	}
 	// Extract the keys of the map
-	keys := make([]Relationship, len(relsMap))
+	keys := make([]Association, len(relsMap))
 	i := 0
 	for _, v := range relsMap {
 		keys[i] = v
 		i++
 	}
-	// Return the relationships
+	// Return the associations
 	return keys
 }
 
@@ -247,23 +247,23 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(relationships map[relationshipNoTag]Relationship, source Element, dest Element, tag string) {
+func (m *Model) bubbleUpSource(associations map[associationNoTag]Association, source Element, dest Element, tag string) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
 			return
 		}
-		// Create the relationship
-		key := relationshipNoTag{Source: source, Destination: dest}
-		if val, ok := relationships[key]; ok && tag != val.Tag() {
+		// Create the association
+		key := associationNoTag{Source: source, Destination: dest}
+		if val, ok := associations[key]; ok && tag != val.Tag() {
 			// We have:
 			// a) Already got an association with this source/dest pair
 			// b) but it has a different tag to this new one
 			// Indicate the tags are complex
-			relationships[key] = NewRelationship(source, dest, "...")
+			associations[key] = NewAssociation(source, dest, "...")
 		} else {
 			// No previous source/dest implicit association
-			relationships[key] = NewRelationship(source, dest, tag)
+			associations[key] = NewAssociation(source, dest, tag)
 		}
 		// Iterate
 		parent := m.parent(source)
