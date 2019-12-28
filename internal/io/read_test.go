@@ -4,9 +4,9 @@ import (
   mdl "github.com/briggysmalls/archie/internal/model"
   "testing"
 
+  "fmt"
   "gotest.tools/assert"
   is "gotest.tools/assert/cmp"
-  "fmt"
 )
 
 var data = `
@@ -79,7 +79,7 @@ func TestRead(t *testing.T) {
   // Check some element tags
   assertElementTags(t, m, "sound system/speaker/driver", []string{"electronics", "mechanical"})
   // Check some association tags
-  ass, err := findFirstRelationship(m, "user", "input select")
+  ass, err := findFirstAssociation(m, "user", "input select")
   assert.NilError(t, err)
   assert.Equal(t, ass.Tag(), "press")
 }
@@ -104,7 +104,7 @@ func assertElementTags(t *testing.T, m *mdl.Model, name string, expected []strin
   }
 }
 
-func findFirstRelationship(model *mdl.Model, source, destination string) (mdl.Relationship, error) {
+func findFirstAssociation(model *mdl.Model, source, destination string) (mdl.Association, error) {
   for _, rel := range model.Associations {
     if rel.Source().Name() == source && rel.Destination().Name() == destination {
       // We've found a relationship that links the two

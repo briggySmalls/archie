@@ -42,11 +42,11 @@ func TestTagElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Elements, len(expectedElements)))
 
 	// Check relationships are correct
-	expectedAssociations := []mdl.Relationship{
-		mdl.NewRelationship(elMap["1/1/2"], elMap["1/1/1"], "detect"),
-		mdl.NewRelationship(elMap["1/1/1"], elMap["1/2/1"], "start"),
-		mdl.NewRelationship(elMap["1/2/1"], elMap["1/2/2"], "actuate"),
-		mdl.NewRelationship(elMap["1/3"], elMap["1/1/1"], "listen"),
+	expectedAssociations := []mdl.Association{
+		mdl.NewAssociation(elMap["1/1/2"], elMap["1/1/1"], "detect"),
+		mdl.NewAssociation(elMap["1/1/1"], elMap["1/2/1"], "start"),
+		mdl.NewAssociation(elMap["1/2/1"], elMap["1/2/2"], "actuate"),
+		mdl.NewAssociation(elMap["1/3"], elMap["1/1/1"], "listen"),
 	}
 	for _, el := range expectedAssociations {
 		// Assert elements are present

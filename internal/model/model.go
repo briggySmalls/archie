@@ -5,18 +5,19 @@ import (
 	"strings"
 )
 
-type relationshipNoTag struct {
+type associationNoTag struct {
 	Source      Element
 	Destination Element
 }
 
+// Model holds a fully defined Archie model for processing
 type Model struct {
-	Associations []Relationship
+	Associations []Association
 	Composition  map[Element]Element
 	Elements     []Element
 }
 
-// NewModel creates an initialises new model
+// NewModel creates and initialises new model
 func NewModel() Model {
 	// Create a model
 	model := Model{
@@ -25,6 +26,7 @@ func NewModel() Model {
 	return model
 }
 
+// AddElement adds a new element to the model, as a child of the specified parent
 func (m *Model) AddElement(new, parent Element) {
 	// Add the new element
 	m.Elements = append(m.Elements, new)
@@ -32,23 +34,25 @@ func (m *Model) AddElement(new, parent Element) {
 	m.Composition[new] = parent
 }
 
-// Add an element to the root of the model
+// AddRootElement adds an element to the root of the model
 func (m *Model) AddRootElement(new Element) {
 	// Add element as a child of the root
 	m.AddElement(new, nil)
 }
 
-// Add an association between Elements
+// AddAssociation directionally associates the two specified elements
 func (m *Model) AddAssociation(source, destination Element, tag string) {
-	// Append to relationships
-	m.Associations = append(m.Associations, NewRelationship(source, destination, tag))
+	// Append to associations
+	m.Associations = append(m.Associations, NewAssociation(source, destination, tag))
 }
 
+// RootElements returns a slice of the root elements in a model
 func (m *Model) RootElements() []Element {
 	// Root is 'nil'
 	return m.Children(nil)
 }
 
+// Copy safely duplicates a model
 func (m *Model) Copy() Model {
 	// Initially copy the struct
 	new := *m
@@ -57,7 +61,7 @@ func (m *Model) Copy() Model {
 	new.Elements = make([]Element, len(m.Elements))
 	copy(new.Elements, m.Elements)
 	// Associations
-	new.Associations = make([]Relationship, len(m.Associations))
+	new.Associations = make([]Association, len(m.Associations))
 	copy(new.Associations, m.Associations)
 	// Composition
 	new.Composition = make(map[Element]Element)
@@ -67,13 +71,14 @@ func (m *Model) Copy() Model {
 	return new
 }
 
-// Get a slice of all relationships, including implicit parent relationships
-func (m *Model) ImplicitAssociations() []Relationship {
-	// Get all the relationships
+// ImplicitAssociations gets a slice of all associations, including implicit ones.
+// Implicit associations are those that link element parents of explicit associations.
+func (m *Model) ImplicitAssociations() []Association {
+	// Get all the associations
 	rels := m.Associations
-	// Prepare a list of implicit relationships (we map to ensure no duplicates)
-	relsMap := make(map[relationshipNoTag]Relationship)
-	// Now add implicit relationships
+	// Prepare a list of implicit associations (we map to ensure no duplicates)
+	relsMap := make(map[associationNoTag]Association)
+	// Now add implicit associations
 	for _, rel := range rels {
 		dest := rel.Destination()
 		// Now link each of source's ancestors to destination
@@ -91,35 +96,14 @@ func (m *Model) ImplicitAssociations() []Relationship {
 		}
 	}
 	// Extract the keys of the map
-	keys := make([]Relationship, len(relsMap))
+	keys := make([]Association, len(relsMap))
 	i := 0
 	for _, v := range relsMap {
 		keys[i] = v
 		i++
 	}
-	// Return the relationships
+	// Return the associations
 	return keys
-}
-
-// Get the depth of an element
-func (m *Model) Depth(el Element) (uint, error) {
-	// Bubble up, while counting
-	depth := uint(0)
-	for {
-		// Get the parent of the element
-		parent, err := m.Parent(el)
-		if err != nil {
-			// Failed to find parent
-			return 0, err
-		}
-		if parent == nil {
-			// We're done!
-			return depth, nil
-		}
-		// Keep bubblin'
-		depth++
-		el = parent
-	}
 }
 
 func (m *Model) parent(element Element) Element {
@@ -132,6 +116,7 @@ func (m *Model) parent(element Element) Element {
 	return element
 }
 
+// Parent gets the parent of a specified element.
 func (m *Model) Parent(element Element) (Element, error) {
 	// Lookup
 	element, ok := m.Composition[element]
@@ -141,6 +126,7 @@ func (m *Model) Parent(element Element) (Element, error) {
 	return element, nil
 }
 
+// Children gets the children of a specified element.
 func (m *Model) Children(element Element) []Element {
 	var children []Element
 	for child, parent := range m.Composition {
@@ -151,6 +137,7 @@ func (m *Model) Children(element Element) []Element {
 	return children
 }
 
+// IsAncestor indicates whether the queired element is a descendent of a specified element.
 func (m *Model) IsAncestor(descendant, ancestor Element) bool {
 	for {
 		// Check for a match
@@ -166,6 +153,9 @@ func (m *Model) IsAncestor(descendant, ancestor Element) bool {
 	}
 }
 
+// Name gets the fully namespaced name of an element.
+// The namespaced name is of the form 'parent_name/child_name',
+// i.e. the name of all anscestors with a '/' separator.
 func (m *Model) Name(element Element) (string, error) {
 	// Build full name for element
 	parts := []string{}
@@ -186,6 +176,7 @@ func (m *Model) Name(element Element) (string, error) {
 	return strings.Join(parts, "/"), nil
 }
 
+// ShareAncestor checks whether two elements have a common ancestor
 func (m *Model) ShareAncestor(a, b Element) bool {
 	// Find the respective root elements
 	return m.getRoot(a) == m.getRoot(b)
@@ -204,6 +195,7 @@ func (m *Model) getRoot(element Element) Element {
 	}
 }
 
+// LookupName returns a model element corresponding to the fully-namespaced name.
 func (m *Model) LookupName(name string) (Element, error) {
 	// Split the string by slashes
 	parts := strings.Split(name, "/")
@@ -234,31 +226,32 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(relationships map[relationshipNoTag]Relationship, source Element, dest Element, tag string) {
+func (m *Model) bubbleUpSource(associations map[associationNoTag]Association, source Element, dest Element, tag string) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
 			return
 		}
-		// Create the relationship
-		key := relationshipNoTag{Source: source, Destination: dest}
-		if val, ok := relationships[key]; ok && tag != val.Tag() {
+		// Create the association
+		key := associationNoTag{Source: source, Destination: dest}
+		if val, ok := associations[key]; ok && tag != val.Tag() {
 			// We have:
 			// a) Already got an association with this source/dest pair
 			// b) but it has a different tag to this new one
 			// Indicate the tags are complex
-			relationships[key] = NewRelationship(source, dest, "...")
+			associations[key] = NewAssociation(source, dest, "...")
 		} else {
 			// No previous source/dest implicit association
-			relationships[key] = NewRelationship(source, dest, tag)
+			associations[key] = NewAssociation(source, dest, tag)
 		}
 		// Iterate
-		if parent := m.parent(source); parent == nil {
+		parent := m.parent(source)
+		if parent == nil {
 			// We've reached the root, we're done!
 			return
-		} else {
-			// Iterate for the source's parent
-			source = parent
 		}
+
+		// Iterate for the source's parent
+		source = parent
 	}
 }

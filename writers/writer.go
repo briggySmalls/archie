@@ -7,17 +7,20 @@ import (
 )
 
 const (
-	SPACES_IN_TAB = 4
+	spacesInTab = 4
 )
 
+// Element wraps an internal model element for use in defining writers
 type Element interface {
 	mdl.Element
 }
 
-type Relationship interface {
-	mdl.Relationship
+// Association wraps an internal model association for use in defining writers
+type Association interface {
+	mdl.Association
 }
 
+// Writer is an interface for writing a diagram from a model
 type Writer interface {
 	Write(mdl.Model) (string, error)
 }
@@ -30,15 +33,17 @@ type writer struct {
 	model    *mdl.Model
 }
 
+// Strategy is an interface for writing diagram strings from model entities
 type Strategy interface {
 	Header(writer Scribe)
 	Footer(writer Scribe)
 	Element(writer Scribe, element Element)
 	StartParentElement(writer Scribe, element Element)
 	EndParentElement(writer Scribe, element Element)
-	Association(writer Scribe, association Relationship)
+	Association(writer Scribe, association Association)
 }
 
+// Scribe is an interface for
 type Scribe interface {
 	FullName(mdl.Element) (string, error)
 	WriteLine(string, ...interface{})
@@ -46,11 +51,12 @@ type Scribe interface {
 	UpdateIndent(int)
 }
 
-func New(strategy Strategy) writer {
-	return writer{strategy: strategy}
+// New creates a writer from a strategy
+func New(strategy Strategy) Writer {
+	return &writer{strategy: strategy}
 }
 
-// Entrypoint for the writer
+// Write produces a diagram string from a model
 func (d *writer) Write(model mdl.Model) (string, error) {
 	// Reset the writer
 	d.indent = 0
@@ -68,7 +74,7 @@ func (d *writer) Write(model mdl.Model) (string, error) {
 	}
 	// Now draw the relationships
 	for _, rel := range model.Associations {
-		d.strategy.Association(d, Relationship(rel))
+		d.strategy.Association(d, Association(rel))
 	}
 	// Write footer
 	d.strategy.Footer(d)
@@ -76,6 +82,7 @@ func (d *writer) Write(model mdl.Model) (string, error) {
 	return d.builder.String(), nil
 }
 
+// FullName gets the full name of an element
 func (d *writer) FullName(element mdl.Element) (string, error) {
 	name, err := d.model.Name(element)
 	return name, err
@@ -111,16 +118,19 @@ func (d *writer) WriteLine(format string, args ...interface{}) {
 	d.WriteString(false, "\n")
 }
 
-// Append the provided string to the current line
+// WriteString appends the provided string to the current line
 func (d *writer) WriteString(withIndent bool, format string, args ...interface{}) {
 	// Add an indent, if requested
 	if withIndent {
-		d.builder.WriteString(fmt.Sprintf("%*s", d.indent*SPACES_IN_TAB, ""))
+		d.builder.WriteString(fmt.Sprintf("%*s", d.indent*spacesInTab, ""))
 	}
 	// Write the string
 	d.builder.WriteString(fmt.Sprintf(format, args...))
 }
 
+// UpdateIndent modifies the indentation of the writer.
+// Positive values increase the indent.
+// Negative values decrease the indent.
 func (d *writer) UpdateIndent(indicator int) {
 	switch {
 	case indicator > 0:

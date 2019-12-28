@@ -108,6 +108,6 @@ func (s strategy) EndParentElement(scribe writers.Scribe, element writers.Elemen
   scribe.WriteLine("end")
 }
 
-func (s strategy) Association(scribe writers.Scribe, association writers.Relationship) {
+func (s strategy) Association(scribe writers.Scribe, association writers.Association) {
   scribe.WriteLine("%s-->%s", association.Source().ID(), association.Destination().ID())
 }

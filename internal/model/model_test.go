@@ -24,7 +24,7 @@ func TestElements(t *testing.T) {
 	assertName(t, &m, two, "Two")
 }
 
-// Test composition relationships
+// Test composition associations
 func TestParent(t *testing.T) {
 	// Create a simple model
 	m, elMap := createModel()
@@ -37,21 +37,6 @@ func TestParent(t *testing.T) {
 	assertParent(t, m, elMap["Two"], nil)
 	assertParent(t, m, elMap["TwoChild"], elMap["Two"])
 	assertParent(t, m, elMap["TwoChildChild"], elMap["TwoChild"])
-}
-
-// Test composition relationships
-func TestDepth(t *testing.T) {
-	// Create a simple model
-	m, elMap := createModel()
-
-	// Test parent results
-	assertDepth(t, m, elMap["One"], 0)
-	assertDepth(t, m, elMap["OneChild"], 1)
-	assertDepth(t, m, elMap["OneChildChilda"], 2)
-	assertDepth(t, m, elMap["OneChildChildb"], 2)
-	assertDepth(t, m, elMap["Two"], 0)
-	assertDepth(t, m, elMap["TwoChild"], 1)
-	assertDepth(t, m, elMap["TwoChildChild"], 2)
 }
 
 func TestChildren(t *testing.T) {
@@ -106,7 +91,7 @@ func TestIsAnscestor(t *testing.T) {
 	assert.Assert(t, !m.IsAncestor(elMap["TwoChildChild"], elMap["OneChild"]))
 }
 
-// Test trivial implicit relationships
+// Test trivial implicit associations
 func TestTrivialImplicitAssociations(t *testing.T) {
 	// Create a simple model
 	m := NewModel()
@@ -117,17 +102,17 @@ func TestTrivialImplicitAssociations(t *testing.T) {
 	m.AddRootElement(one)
 	m.AddRootElement(two)
 
-	// Create a single relationship
+	// Create a single association
 	m.AddAssociation(one, two, "force")
 
-	// Assert implicit relationships returns trivial solution
+	// Assert implicit associations returns trivial solution
 	implicitRels := m.ImplicitAssociations()
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: one, destination: two, tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: one, destination: two, tag: "force"}))
 	assert.Assert(t, is.Len(implicitRels, 1))
 }
 
-// Test implicit relationships
-func TestDeepImplicitRelationships(t *testing.T) {
+// Test implicit associations
+func TestDeepImplicitAssociations(t *testing.T) {
 	// Create a simple model
 	m, elMap := createModel()
 
@@ -136,24 +121,24 @@ func TestDeepImplicitRelationships(t *testing.T) {
 	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"], "heat")
 	m.AddAssociation(elMap["OneChild"], elMap["TwoChild"], "friction")
 
-	// Assert relationships
-	assert.Assert(t, is.Contains(m.Associations, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(m.Associations, relationship{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
-	assert.Assert(t, is.Contains(m.Associations, relationship{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "friction"}))
+	// Assert associations
+	assert.Assert(t, is.Contains(m.Associations, association{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(m.Associations, association{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
+	assert.Assert(t, is.Contains(m.Associations, association{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "friction"}))
 	assert.Assert(t, is.Len(m.Associations, 3))
-	// Assert implicit relationships
+	// Assert implicit associations
 	implicitRels := m.ImplicitAssociations()
 	// TODO: Check we never link a child to it's parent
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["Two"], tag: "..."}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["TwoChild"], tag: "..."}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["One"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["Two"], tag: "..."}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "..."}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChild"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["Two"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, relationship{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["Two"], tag: "..."}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["TwoChild"], tag: "..."}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["Two"], tag: "..."}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "..."}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["Two"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["TwoChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
 	assert.Assert(t, is.Len(implicitRels, 10))
 }
 
@@ -185,12 +170,6 @@ func assertChildren(t *testing.T, m *Model, parent Element, children []Element) 
 	for _, expected := range children {
 		assert.Assert(t, is.Contains(result, expected))
 	}
-}
-
-func assertDepth(t *testing.T, m *Model, element Element, depth uint) {
-	result, err := m.Depth(element)
-	assert.NilError(t, err)
-	assert.Equal(t, depth, result)
 }
 
 // Helper function to create a model
