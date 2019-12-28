@@ -1,8 +1,7 @@
 // +build tools
 
-package tools
+package main
 
 import (
-	_ "github.com/shurcooL/goexec"
 	_ "golang.org/x/lint/golint"
 )
