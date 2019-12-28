@@ -52,8 +52,8 @@ type Scribe interface {
 }
 
 // New creates a writer from a strategy
-func New(strategy Strategy) writer {
-	return writer{strategy: strategy}
+func New(strategy Strategy) Writer {
+	return &writer{strategy: strategy}
 }
 
 // Write produces a diagram string from a model

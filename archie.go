@@ -29,12 +29,10 @@ func New(strategy writers.Strategy, yaml string) (Archie, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Create a new writer
-	w := writers.New(strategy)
 	// Return a new archie
 	return &archie{
 		model:  model,
-		writer: &w,
+		writer: writers.New(strategy),
 	}, nil
 }
 
