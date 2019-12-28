@@ -2,11 +2,14 @@ language: go
 
 jobs:
   include:
-      - stage: lint
+      - stage: checks
+        name: "Format"
         script: make check
-      - stage: lint
+      - stage: checks
+        name: "Lint"
         script: make lint
-      - stage: lint
+      - stage: checks
+        name: "Verify"
         script:
           - go mod download
           - make vet
