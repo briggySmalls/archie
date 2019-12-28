@@ -1,0 +1,10 @@
+language: go
+
+jobs:
+  include:
+      - stage: lint
+        script: make check
+        script: make lint
+        script: make vet
+      - stage: test
+        script: make test
