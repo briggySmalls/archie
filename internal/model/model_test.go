@@ -39,21 +39,6 @@ func TestParent(t *testing.T) {
 	assertParent(t, m, elMap["TwoChildChild"], elMap["TwoChild"])
 }
 
-// Test composition relationships
-func TestDepth(t *testing.T) {
-	// Create a simple model
-	m, elMap := createModel()
-
-	// Test parent results
-	assertDepth(t, m, elMap["One"], 0)
-	assertDepth(t, m, elMap["OneChild"], 1)
-	assertDepth(t, m, elMap["OneChildChilda"], 2)
-	assertDepth(t, m, elMap["OneChildChildb"], 2)
-	assertDepth(t, m, elMap["Two"], 0)
-	assertDepth(t, m, elMap["TwoChild"], 1)
-	assertDepth(t, m, elMap["TwoChildChild"], 2)
-}
-
 func TestChildren(t *testing.T) {
 	// Create a simple model
 	m, elMap := createModel()
@@ -185,12 +170,6 @@ func assertChildren(t *testing.T, m *Model, parent Element, children []Element) 
 	for _, expected := range children {
 		assert.Assert(t, is.Contains(result, expected))
 	}
-}
-
-func assertDepth(t *testing.T, m *Model, element Element, depth uint) {
-	result, err := m.Depth(element)
-	assert.NilError(t, err)
-	assert.Equal(t, depth, result)
 }
 
 // Helper function to create a model

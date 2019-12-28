@@ -106,27 +106,6 @@ func (m *Model) ImplicitAssociations() []Association {
 	return keys
 }
 
-// Get the depth of an element
-func (m *Model) Depth(el Element) (uint, error) {
-	// Bubble up, while counting
-	depth := uint(0)
-	for {
-		// Get the parent of the element
-		parent, err := m.Parent(el)
-		if err != nil {
-			// Failed to find parent
-			return 0, err
-		}
-		if parent == nil {
-			// We're done!
-			return depth, nil
-		}
-		// Keep bubblin'
-		depth++
-		el = parent
-	}
-}
-
 func (m *Model) parent(element Element) Element {
 	// Look up the element's parent
 	element, err := m.Parent(element)
