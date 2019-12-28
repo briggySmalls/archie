@@ -1,9 +1,9 @@
 package archie
 
 import (
-  "github.com/briggysmalls/archie/writers"
-  "gotest.tools/assert"
-  "testing"
+	"github.com/briggysmalls/archie/writers"
+	"gotest.tools/assert"
+	"testing"
 )
 
 var yaml = `
@@ -57,57 +57,57 @@ associations:
 `
 
 func TestLandscape(t *testing.T) {
-  // Create an archie
-  a, err := New(writers.MermaidStrategy{}, yaml)
-  assert.NilError(t, err)
+	// Create an archie
+	a, err := New(writers.MermaidStrategy{}, yaml)
+	assert.NilError(t, err)
 
-  // Create a landscape view
-  _, err = a.LandscapeView()
-  assert.NilError(t, err)
+	// Create a landscape view
+	_, err = a.LandscapeView()
+	assert.NilError(t, err)
 }
 
 func TestContext(t *testing.T) {
-  // Create an archie
-  a, err := New(writers.MermaidStrategy{}, yaml)
-  assert.NilError(t, err)
+	// Create an archie
+	a, err := New(writers.MermaidStrategy{}, yaml)
+	assert.NilError(t, err)
 
-  // Create a landscape view
-  _, err = a.ContextView("sound system")
-  assert.NilError(t, err)
+	// Create a landscape view
+	_, err = a.ContextView("sound system")
+	assert.NilError(t, err)
 }
 
 func TestExternalStrategy(t *testing.T) {
-  // Create a custom strategy
-  _, err := New(strategy{}, yaml)
-  assert.NilError(t, err)
+	// Create a custom strategy
+	_, err := New(strategy{}, yaml)
+	assert.NilError(t, err)
 }
 
 type strategy struct {
 }
 
 func (s strategy) Header(scribe writers.Scribe) {
-  scribe.WriteLine("graph TD")
-  scribe.UpdateIndent(1)
+	scribe.WriteLine("graph TD")
+	scribe.UpdateIndent(1)
 }
 
 func (s strategy) Footer(scribe writers.Scribe) {
-  // Do nothing
+	// Do nothing
 }
 
 func (s strategy) Element(scribe writers.Scribe, element writers.Element) {
-  scribe.WriteLine("%s(%s)", element.ID(), element.Name())
-  // Also add a hyperlink
-  scribe.WriteLine("click %s %s", element.ID(), "mermaidCallback")
+	scribe.WriteLine("%s(%s)", element.ID(), element.Name())
+	// Also add a hyperlink
+	scribe.WriteLine("click %s %s", element.ID(), "mermaidCallback")
 }
 
 func (s strategy) StartParentElement(scribe writers.Scribe, element writers.Element) {
-  scribe.WriteLine("subgraph %s", element.Name())
+	scribe.WriteLine("subgraph %s", element.Name())
 }
 
 func (s strategy) EndParentElement(scribe writers.Scribe, element writers.Element) {
-  scribe.WriteLine("end")
+	scribe.WriteLine("end")
 }
 
 func (s strategy) Association(scribe writers.Scribe, association writers.Association) {
-  scribe.WriteLine("%s-->%s", association.Source().ID(), association.Destination().ID())
+	scribe.WriteLine("%s-->%s", association.Source().ID(), association.Destination().ID())
 }
