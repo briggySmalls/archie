@@ -10,3 +10,6 @@ jobs:
         script: make vet
       - stage: test
         script: make test
+
+install:
+  - go mod download
