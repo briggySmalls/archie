@@ -18,13 +18,16 @@ SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 TEST_FLAGS=-v
 COVERAGE_RESULTS=coverage.out
 
-.PHONY: fmt simplify vet lint run test coverage
+# Format flags
+FMT_FLAGS=-l -e -s
+
+.PHONY: fmt vet lint run test coverage
 
 fmt:
-	@gofmt -l -w $(SRC)
+	@gofmt -w $(FMT_FLAGS) $(SRC)
 
-simplify:
-	@gofmt -s -l -w $(SRC)
+check:
+	@gofmt -d $(FMT_FLAGS) $(SRC)
 
 vet:
 	@for d in $$(go list ./... | grep -v /vendor/); do go vet $${d}; done
@@ -38,8 +41,5 @@ test:
 coverage: TEST_FLAGS+= -coverprofile=$(COVERAGE_RESULTS)
 coverage: test
 	@go tool cover -html=coverage.out
-
-run: install
-	@$(TARGET)
 
 print-%  : ; @echo $* = $($*)
