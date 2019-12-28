@@ -4,7 +4,9 @@ jobs:
   include:
       - stage: lint
         script: make check
+      - stage: lint
         script: make lint
+      - stage: lint
         script: make vet
       - stage: test
         script: make test
