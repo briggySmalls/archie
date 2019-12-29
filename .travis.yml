@@ -1,0 +1,21 @@
+language: go
+
+jobs:
+  include:
+      - stage: checks
+        name: "Format"
+        script: make check
+      - stage: checks
+        name: "Lint"
+        script:
+          - make install-tools
+          - make lint
+      - stage: checks
+        name: "Verify"
+        script: make vet
+      - stage: test
+        name: "Test"
+        script: make test
+
+env:
+  - GO111MODULE=on
