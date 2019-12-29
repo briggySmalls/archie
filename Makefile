@@ -38,6 +38,14 @@ lint:
 test:
 	@for d in $$(go list ./... | grep -v /vendor/); do go test $(TEST_FLAGS) $${d}; done
 
+download:
+	@echo Download go.mod dependencies
+	@go mod download
+
+install-tools: download
+	@echo Installing tools from tools.go
+	@cat tools.go | grep _ | awk -F'"' '{print $$2}' | xargs -tI % go install %
+
 coverage: TEST_FLAGS+= -coverprofile=$(COVERAGE_RESULTS)
 coverage: test
 	@go tool cover -html=coverage.out

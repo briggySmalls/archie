@@ -7,12 +7,12 @@ jobs:
         script: make check
       - stage: checks
         name: "Lint"
-        script: make lint
+        script:
+          - make install-tools
+          - make lint
       - stage: checks
         name: "Verify"
-        script:
-          - go mod download
-          - make vet
+        script: make vet
       - stage: test
         script: make test
 
