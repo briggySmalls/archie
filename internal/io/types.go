@@ -16,7 +16,7 @@ type Element struct {
 
 // Association holds a parsed Archie association
 type Association struct {
-	Source      string `json:"source"`
-	Destination string `json:"destination"`
-	Tag         string `json:"tag"`
+	Source      string   `json:"source"`
+	Destination string   `json:"destination"`
+	Tags        []string `json:"tag"`
 }
