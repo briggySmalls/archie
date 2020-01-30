@@ -3,9 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/briggysmalls/archie"
-	"github.com/briggysmalls/archie/writers"
+	"github.com/briggysmalls/archie/cli/utils"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"io/ioutil"
 )
 
@@ -14,34 +13,23 @@ var scope string
 var tag string
 var customFooter string
 var generateModelFile string
-var generateModelYaml string
+var arch archie.Archie
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generate a diagram from an architecture model",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Read in the yaml file
-		model, err := ioutil.ReadFile(generateModelFile)
+		modelAndConfig, err := ioutil.ReadFile(generateModelFile)
 		handleError(err)
-		generateModelYaml = string(model)
+		arch, err = utils.ReadModel(modelAndConfig)
+		handleError(err)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		// Create a writer from config
-		writer := writers.PlantUmlStrategy{CustomFooter: viper.GetString("footer")}
-		// Create an archie from the yaml
-		arch, err := archie.New(writer, generateModelYaml)
-		if err != nil {
-			panic(err)
-		}
 		// Create a view from the model
 		var diagram string
+		var err error
 		switch view {
 		case "landscape":
 			diagram, err = arch.LandscapeView()
@@ -50,6 +38,8 @@ to quickly create a Cobra application.`,
 			diagram, err = arch.ContextView(scope)
 		case "tag":
 			diagram, err = arch.TagView(scope, tag)
+		default:
+			panic(fmt.Errorf("Unrecognised view: %s", view))
 		}
 		if err != nil {
 			panic(err)

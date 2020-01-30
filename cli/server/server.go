@@ -3,22 +3,12 @@ package server
 import (
 	"fmt"
 	"github.com/briggysmalls/archie"
-	"github.com/briggysmalls/archie/writers"
+	"github.com/briggysmalls/archie/cli/utils"
 	"github.com/gorilla/mux"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 )
-
-type config struct {
-	Footer string `yaml:""`
-}
-
-type payload struct {
-	Model  interface{} `yaml:""`
-	Config config      `yaml:""`
-}
 
 // Serve a REST API exposing Archie functionality
 func Serve(address string) error {
@@ -124,20 +114,6 @@ func readModel(r *http.Request) (archie.Archie, error) {
 	if body == nil {
 		return nil, fmt.Errorf("No payload found in request")
 	}
-	// Separate config and model
-	p := payload{}
-	err = yaml.Unmarshal(body, &p)
-	if err != nil {
-		return nil, err
-	}
-	// Create an Archie from the model & config
-	model, err := yaml.Marshal(p.Model)
-	if err != nil {
-		return nil, err
-	}
-	// Create a writer, using the provided config
-	writer := writers.PlantUmlStrategy{CustomFooter: p.Config.Footer}
-	// Create an archie instance with the writer and model
-	archie, err := archie.New(writer, string(model))
-	return archie, err
+	// Parse the model and config into an archie instance
+	return utils.ReadModel(body)
 }
