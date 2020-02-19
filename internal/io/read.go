@@ -2,6 +2,7 @@ package io
 
 import (
 	"fmt"
+
 	mdl "github.com/briggysmalls/archie/internal/model"
 	"github.com/ghodss/yaml"
 	"github.com/mitchellh/mapstructure"
@@ -37,23 +38,35 @@ func toInternalModel(apiModel Model) (*mdl.Model, error) {
 			return nil, err
 		}
 	}
+
+	// Add top level associations
+	err := addAssociations(&m, nil, apiModel.Associations)
+	if err != nil {
+		return nil, err
+	}
+
+	return &m, nil
+}
+
+// Add associations for element of a model
+func addAssociations(model *mdl.Model, parent mdl.Element, assocs []Association) error {
 	// Copy the parsed relationships into the new model
-	for _, ass := range apiModel.Associations {
+	for _, ass := range assocs {
 		// Get the elements
 		var src, dest mdl.Element
 		var err error
-		src, err = m.LookupName(ass.Source)
+		src, err = model.LookupName(ass.Source, parent)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		dest, err = m.LookupName(ass.Destination)
+		dest, err = model.LookupName(ass.Destination, parent)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		// Add a new relationship
-		m.AddAssociation(src, dest, ass.Tag)
+		model.AddAssociation(src, dest, ass.Tag)
 	}
-	return &m, nil
+	return nil
 }
 
 func addChildren(model *mdl.Model, parent mdl.Element, children []interface{}) error {
@@ -101,5 +114,10 @@ func updateModelAndRecurse(model *mdl.Model, parent mdl.Element, el Element) err
 	if err != nil {
 		return err
 	}
+
+	if len(el.Associations) != 0 {
+		addAssociations(model, new, el.Associations)
+	}
+
 	return nil
 }

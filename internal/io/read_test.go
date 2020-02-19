@@ -1,10 +1,12 @@
 package io
 
 import (
-	mdl "github.com/briggysmalls/archie/internal/model"
 	"testing"
 
+	mdl "github.com/briggysmalls/archie/internal/model"
+
 	"fmt"
+
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 )
@@ -34,6 +36,10 @@ elements:
             tags: [electronics, mechanical]
           - name: input select
             tags: [electronics, mechanical]
+        associations:
+          - source: ac-dc converter
+            destination: amplifier circuit
+
 associations:
   - source: user
     destination: sound system/amplifier/input select
@@ -46,8 +52,6 @@ associations:
   - source: sound system/amplifier/ac-dc converter
     destination: sound system/amplifier/mixer
     tag: power
-  - source: sound system/amplifier/ac-dc converter
-    destination: sound system/amplifier/amplifier circuit
   - source: sound system/amplifier/amplifier circuit
     destination: sound system/amplifier/audio out connector
   - source: sound system/amplifier/audio out connector
@@ -78,15 +82,20 @@ func TestRead(t *testing.T) {
 	assertChildrenCount(t, m, "sound system/amplifier", 7)
 	// Check some element tags
 	assertElementTags(t, m, "sound system/speaker/driver", []string{"electronics", "mechanical"})
+
 	// Check some association tags
 	ass, err := findFirstAssociation(m, "user", "input select")
 	assert.NilError(t, err)
 	assert.Equal(t, ass.Tag(), "press")
+
+	// Check nested association
+	ass, err = findFirstAssociation(m, "ac-dc converter", "amplifier circuit")
+	assert.NilError(t, err)
 }
 
 func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
 	// Lookup the name
-	el, err := m.LookupName(name)
+	el, err := m.LookupName(name, nil)
 	assert.NilError(t, err)
 	// Now assert the number of children is as expected
 	assert.Assert(t, is.Len(m.Children(el), length))
@@ -94,7 +103,7 @@ func assertChildrenCount(t *testing.T, m *mdl.Model, name string, length int) {
 
 func assertElementTags(t *testing.T, m *mdl.Model, name string, expected []string) {
 	// Lookup the name
-	el, err := m.LookupName(name)
+	el, err := m.LookupName(name, nil)
 	assert.NilError(t, err)
 	// Assert the tag slices match
 	tags := el.Tags()
