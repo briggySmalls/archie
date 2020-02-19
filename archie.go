@@ -53,7 +53,7 @@ func (a *archie) LandscapeView() (diagram string, err error) {
 // the parent is an ancestor of scope, or it is a root element.
 func (a *archie) ContextView(scope string) (diagram string, err error) {
 	// Lookup the element
-	element, err := a.model.LookupName(scope)
+	element, err := a.model.LookupName(scope, nil)
 	if err != nil {
 		return
 	}
@@ -72,7 +72,7 @@ func (a *archie) ContextView(scope string) (diagram string, err error) {
 // the parent is an ancestor of scope, or it is a root element.
 func (a *archie) TagView(scope, tag string) (diagram string, err error) {
 	// Lookup the element
-	element, err := a.model.LookupName(scope)
+	element, err := a.model.LookupName(scope, nil)
 	if err != nil {
 		return
 	}

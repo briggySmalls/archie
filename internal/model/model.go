@@ -196,12 +196,10 @@ func (m *Model) getRoot(element Element) Element {
 }
 
 // LookupName returns a model element corresponding to the fully-namespaced name.
-func (m *Model) LookupName(name string) (Element, error) {
+func (m *Model) LookupName(name string, parent Element) (Element, error) {
 	// Split the string by slashes
 	parts := strings.Split(name, "/")
 	// Search down the tree
-	var parent Element
-	parent = nil
 NameLoop:
 	for i, name := range parts {
 		// Look for a child with the given name

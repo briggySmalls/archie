@@ -154,7 +154,7 @@ func assertParent(t *testing.T, m *Model, child Element, parent Element) {
 
 func assertName(t *testing.T, m *Model, el Element, name string) {
 	// Try to look up the name
-	result, err := m.LookupName(name)
+	result, err := m.LookupName(name, nil)
 	assert.NilError(t, err)
 	// Now check they match
 	assert.Equal(t, el, result)
