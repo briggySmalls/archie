@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+
 	"github.com/briggysmalls/archie"
 	"github.com/briggysmalls/archie/cli/utils"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 )
 
 var view string

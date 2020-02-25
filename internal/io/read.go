@@ -4,15 +4,15 @@ import (
 	"fmt"
 
 	mdl "github.com/briggysmalls/archie/internal/model"
-	"github.com/ghodss/yaml"
 	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v2"
 )
 
 // ParseYaml parses an API model from a yaml string
 func ParseYaml(data string) (*mdl.Model, error) {
 	// Parse the yaml using the package
 	var sModel Model
-	err := yaml.Unmarshal([]byte(data), &sModel)
+	err := yaml.UnmarshalStrict([]byte(data), &sModel)
 	if err != nil {
 		return nil, err
 	}
