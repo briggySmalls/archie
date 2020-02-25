@@ -15,10 +15,11 @@ type parsedModelAndConfig struct {
 	Config config      `yaml:""`
 }
 
+// ReadModel reads a yaml into a archie structure
 func ReadModel(modelAndConfig []byte) (archie.Archie, error) {
 	// Separate config and model
 	p := parsedModelAndConfig{}
-	err := yaml.Unmarshal(modelAndConfig, &p)
+	err := yaml.UnmarshalStrict(modelAndConfig, &p)
 	if err != nil {
 		return nil, err
 	}
