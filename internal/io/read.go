@@ -24,16 +24,7 @@ func toInternalModel(apiModel Model) (*mdl.Model, error) {
 	// Copy the parsed elements into the new model
 	m := mdl.NewModel()
 	for _, rootEl := range apiModel.Elements {
-		// Add these first elements to the root
-		var el mdl.Element
-		if rootEl.Kind == "actor" {
-			el = mdl.NewActor(rootEl.Name)
-		} else {
-			el = mdl.NewItem(rootEl.Name, rootEl.Tags)
-		}
-		m.AddRootElement(el)
-		// Now recursively add children
-		err := addChildren(&m, el, rootEl.Children)
+		err := updateModelAndRecurse(&m, nil, rootEl)
 		if err != nil {
 			return nil, err
 		}
@@ -105,8 +96,18 @@ func addChildren(model *mdl.Model, parent mdl.Element, children []interface{}) e
 }
 
 func updateModelAndRecurse(model *mdl.Model, parent mdl.Element, el Element) error {
+
+	// Handle creating actors
+	if el.Kind == "actor" {
+		// TODO assert that actor can only be in a root
+		new := mdl.NewActor(el.Name)
+		model.AddElement(new, parent)
+		return nil
+	}
+
 	// This is a fully-specified element
 	new := mdl.NewItem(el.Name, el.Tags)
+
 	// Add to the model
 	model.AddElement(new, parent)
 	// Add children
@@ -116,7 +117,10 @@ func updateModelAndRecurse(model *mdl.Model, parent mdl.Element, el Element) err
 	}
 
 	if len(el.Associations) != 0 {
-		addAssociations(model, new, el.Associations)
+		err := addAssociations(model, new, el.Associations)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

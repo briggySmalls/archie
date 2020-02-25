@@ -40,8 +40,8 @@ elements:
           - source: ac-dc converter
             destination: amplifier circuit
     associations:
-      - source: user
-        destination: amplifier/mixer
+	  - source: amplifier/audio out connector
+		destination: speaker/cable
 
 associations:
   - source: user
@@ -57,8 +57,6 @@ associations:
     tag: power
   - source: sound system/amplifier/amplifier circuit
     destination: sound system/amplifier/audio out connector
-  - source: sound system/amplifier/audio out connector
-    destination: sound system/speaker/cable
   - source: sound system/speaker/cable
     destination: sound system/speaker/connector
   - source: sound system/speaker/connector
@@ -96,7 +94,7 @@ func TestRead(t *testing.T) {
 	assert.NilError(t, err)
 
 	// Check nested association on root element
-	ass, err = findFirstAssociation(m, "user", "mixer")
+	ass, err = findFirstAssociation(m, "audio out connector", "cable")
 	assert.NilError(t, err)
 }
 
