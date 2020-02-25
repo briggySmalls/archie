@@ -40,8 +40,8 @@ elements:
           - source: ac-dc converter
             destination: amplifier circuit
     associations:
-	  - source: amplifier/audio out connector
-		destination: speaker/cable
+      - source: amplifier/audio out connector
+        destination: speaker/cable
 
 associations:
   - source: user

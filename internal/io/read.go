@@ -73,21 +73,29 @@ func addChildren(model *mdl.Model, parent mdl.Element, children []interface{}) e
 		case map[string]interface{}:
 			// Map into an element structure
 			var el Element
-			err := mapstructure.Decode(i, &el)
+			var err error
+			err = mapstructure.Decode(i, &el)
 			if err != nil {
 				return err
 			}
 			// Map into an element structure
-			updateModelAndRecurse(model, parent, el)
+			err = updateModelAndRecurse(model, parent, el)
+			if err != nil {
+				return err
+			}
 		case map[interface{}]interface{}:
 			// See: https://github.com/go-yaml/yaml/issues/139
 			// Map into an element structure
 			var el Element
-			err := mapstructure.Decode(i, &el)
+			var err error
+			err = mapstructure.Decode(i, &el)
 			if err != nil {
 				return err
 			}
-			updateModelAndRecurse(model, parent, el)
+			err = updateModelAndRecurse(model, parent, el)
+			if err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("Unexpected type %T", i)
 		}
@@ -99,7 +107,9 @@ func updateModelAndRecurse(model *mdl.Model, parent mdl.Element, el Element) err
 
 	// Handle creating actors
 	if el.Kind == "actor" {
-		// TODO assert that actor can only be in a root
+		if parent != nil {
+			return fmt.Errorf("Only root elements can be actors, element %s is not.", el.Name)
+		}
 		new := mdl.NewActor(el.Name)
 		model.AddElement(new, parent)
 		return nil
