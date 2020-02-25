@@ -39,6 +39,9 @@ elements:
         associations:
           - source: ac-dc converter
             destination: amplifier circuit
+    associations:
+      - source: user
+        destination: amplifier/mixer
 
 associations:
   - source: user
@@ -90,6 +93,10 @@ func TestRead(t *testing.T) {
 
 	// Check nested association
 	ass, err = findFirstAssociation(m, "ac-dc converter", "amplifier circuit")
+	assert.NilError(t, err)
+
+	// Check nested association on root element
+	ass, err = findFirstAssociation(m, "user", "mixer")
 	assert.NilError(t, err)
 }
 
