@@ -15,7 +15,7 @@ jobs:
         script: make vet
       - stage: test
         name: "Test"
-        script: make test
+        script: make coverage
 
 env:
   - GO111MODULE=on

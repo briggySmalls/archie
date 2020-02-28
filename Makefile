@@ -35,8 +35,13 @@ vet:
 lint:
 	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
 
+coverage: TEST_FLAGS+= -covermode=count -coverprofile=coverage.out
+coverage: test
+	goveralls -coverprofile=coverage.out -service=travis-ci
+
 test:
-	@for d in $$(go list ./... | grep -v /vendor/); do go test $(TEST_FLAGS) $${d}; done
+	go test $(TEST_FLAGS) ./...
+
 
 download:
 	@echo Download go.mod dependencies
