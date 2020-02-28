@@ -15,7 +15,7 @@ LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 # Testing flags
-TEST_FLAGS=-v -race
+TEST_FLAGS=-v
 
 # Format flags
 FMT_FLAGS=-l -e -s
@@ -36,7 +36,7 @@ lint:
 
 coverage: TEST_FLAGS+= -covermode=count -coverprofile=coverage.out
 coverage: test
-	goveralls -coverprofile=coverage.out -service=travis-ci
+	$$GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
 
 test:
 	go test $(TEST_FLAGS) ./...
