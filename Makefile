@@ -16,7 +16,6 @@ SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 # Testing flags
 TEST_FLAGS=-v
-COVERAGE_RESULTS=coverage.out
 
 # Format flags
 FMT_FLAGS=-l -e -s
@@ -35,8 +34,12 @@ vet:
 lint:
 	@for d in $$(go list ./... | grep -v /vendor/); do golint $${d}; done
 
+coverage: TEST_FLAGS+= -covermode=count -coverprofile=coverage.out
+coverage: test
+	$$GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
+
 test:
-	@for d in $$(go list ./... | grep -v /vendor/); do go test $(TEST_FLAGS) $${d}; done
+	go test $(TEST_FLAGS) ./...
 
 download:
 	@echo Download go.mod dependencies
@@ -44,10 +47,6 @@ download:
 
 install-tools: download
 	@echo Installing tools from tools.go
-	@cat tools.go | grep _ | awk -F'"' '{print $$2}' | xargs -tI % go install %
-
-coverage: TEST_FLAGS+= -coverprofile=$(COVERAGE_RESULTS)
-coverage: test
-	@go tool cover -html=coverage.out
+	@cat tools/tools.go | grep _ | awk -F'"' '{print $$2}' | xargs -tI % go install %
 
 print-%  : ; @echo $* = $($*)
