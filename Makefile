@@ -15,7 +15,7 @@ LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD)"
 SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 
 # Testing flags
-TEST_FLAGS=-v
+TEST_FLAGS=-v -race
 
 # Format flags
 FMT_FLAGS=-l -e -s
