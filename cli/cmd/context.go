@@ -19,7 +19,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var scope string
+var contextScope string
 
 // contextCmd represents the context command
 var contextCmd = &cobra.Command{
@@ -36,7 +36,7 @@ Those that are associated to one of the child elements of the scope, where eithe
 - It is a root element`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate the diagram
-		diagram, err = arch.ContextView(scope)
+		diagram, err = arch.ContextView(contextScope)
 	},
 }
 
@@ -44,6 +44,6 @@ func init() {
 	generateCmd.AddCommand(contextCmd)
 
 	fs := contextCmd.Flags()
-	fs.StringVarP(&scope, "scope", "s", "", "scope for the context")
+	fs.StringVarP(&contextScope, "scope", "s", "", "scope for the context")
 	cobra.MarkFlagRequired(fs, "scope")
 }
