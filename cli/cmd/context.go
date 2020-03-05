@@ -34,6 +34,7 @@ Children of the scoping element.
 Those that are associated to one of the child elements of the scope, where either:
 - The parent is an ancestor of scope
 - It is a root element`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate the diagram
 		diagram, err = arch.ContextView(contextScope)

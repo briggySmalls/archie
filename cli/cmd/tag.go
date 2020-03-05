@@ -16,8 +16,6 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -37,9 +35,10 @@ The 'eldest' element with the specified tag,
 Those that are associated to one of the main elements of interest, where either:
 - The parent is an ancestor of scope
 - It is a root element.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate the diagram
-		fmt.Println("tag called")
+		diagram, err = arch.TagView(tagScope, tagTag)
 	},
 }
 

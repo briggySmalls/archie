@@ -24,6 +24,7 @@ var landscapeCmd = &cobra.Command{
 	Use:   "landscape",
 	Short: "Generates a system landscape diagram",
 	Long:  `Generates a diagram of root actors and elements, and the associations between them.`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate the diagram
 		diagram, err = arch.LandscapeView()

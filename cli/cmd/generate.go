@@ -10,7 +10,6 @@ import (
 	"log"
 )
 
-var generateModelFile string
 var arch archie.Archie
 var diagram string
 var err error
@@ -21,7 +20,7 @@ var generateCmd = &cobra.Command{
 	Short: "Generate a diagram from an architecture model",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// Read in the yaml file
-		modelAndConfig, err := ioutil.ReadFile(generateModelFile)
+		modelAndConfig, err := ioutil.ReadFile(args[0])
 		handleError(err)
 		arch, err = utils.ReadModel(modelAndConfig)
 		handleError(err)
@@ -38,8 +37,4 @@ var generateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	// Add flags
-	pfs := generateCmd.PersistentFlags()
-	pfs.StringVarP(&generateModelFile, "model", "m", "", "Model to generate diagrams from")
-	cobra.MarkFlagRequired(pfs, "model")
 }
