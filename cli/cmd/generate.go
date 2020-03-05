@@ -7,14 +7,13 @@ import (
 	"github.com/briggysmalls/archie"
 	"github.com/briggysmalls/archie/cli/utils"
 	"github.com/spf13/cobra"
+	"log"
 )
 
-var view string
-var scope string
-var tag string
-var customFooter string
 var generateModelFile string
 var arch archie.Archie
+var diagram string
+var err error
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
@@ -27,25 +26,11 @@ var generateCmd = &cobra.Command{
 		arch, err = utils.ReadModel(modelAndConfig)
 		handleError(err)
 	},
-	Run: func(cmd *cobra.Command, args []string) {
-		// Create a view from the model
-		var diagram string
-		var err error
-		switch view {
-		case "landscape":
-			diagram, err = arch.LandscapeView()
-		case "context":
-			// Construct the view
-			diagram, err = arch.ContextView(scope)
-		case "tag":
-			diagram, err = arch.TagView(scope, tag)
-		default:
-			panic(fmt.Errorf("Unrecognised view: %s", view))
-		}
+	PersistentPostRun: func(cmd *cobra.Command, args []string) {
+		// Check the global error
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
-
 		// Draw the view (print json for now)
 		fmt.Print(diagram)
 	},
@@ -54,8 +39,7 @@ var generateCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(generateCmd)
 	// Add flags
-	generateCmd.PersistentFlags().StringVarP(&generateModelFile, "model", "m", "", "Model to generate diagrams from")
-	generateCmd.PersistentFlags().StringVarP(&view, "view", "v", "", "view to create")
-	generateCmd.PersistentFlags().StringVarP(&scope, "scope", "s", "", "scope for the view")
-	generateCmd.PersistentFlags().StringVarP(&tag, "tag", "t", "", "tag to filter by (tag diagram only)")
+	pfs := generateCmd.PersistentFlags()
+	pfs.StringVarP(&generateModelFile, "model", "m", "", "Model to generate diagrams from")
+	cobra.MarkFlagRequired(pfs, "model")
 }
