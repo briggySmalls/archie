@@ -4,7 +4,7 @@ jobs:
   # Ensure code is formatted correctly
   format:
     docker:
-      - image: circleci/golang
+      - image: circleci/golang:latest
     steps:
       - checkout
       - run:
@@ -13,7 +13,7 @@ jobs:
   # Run linter
   lint:
     docker:
-      - image: circleci/golang
+      - image: circleci/golang:latest
     steps:
       - checkout
       - run:
@@ -25,7 +25,7 @@ jobs:
   # Verify the code
   verify:
     docker:
-      - image: circleci/golang
+      - image: circleci/golang:latest
     steps:
       - checkout
       - run:
@@ -34,7 +34,7 @@ jobs:
   # Test the code
   test:
     docker:
-      - image: circleci/golang
+      - image: circleci/golang:latest
     steps:
       - checkout
       - run:
