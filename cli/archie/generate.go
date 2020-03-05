@@ -1,4 +1,4 @@
-package cmd
+package archie
 
 import (
 	"fmt"
@@ -36,5 +36,5 @@ var generateCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(generateCmd)
+	RootCmd.AddCommand(generateCmd)
 }

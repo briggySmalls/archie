@@ -1,5 +1,5 @@
 // Package cmd provides cobra command line configuration
-package cmd
+package archie
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 )
 
 // rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:   "archie",
 	Short: "Tool for developing system architecture",
 	Long: `
@@ -20,7 +20,7 @@ for developing lightweight system architecture modules`,
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
+	err := RootCmd.Execute()
 	handleError(err)
 }
 
