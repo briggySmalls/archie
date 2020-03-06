@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/briggySmalls/archie.svg?branch=master)](https://travis-ci.org/briggySmalls/archie)
+[![CircleCI](https://circleci.com/gh/briggySmalls/archie/tree/master.svg?style=shield)](https://circleci.com/gh/briggySmalls/archie/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/briggySmalls/archie/badge.svg)](https://coveralls.io/github/briggySmalls/archie)
 
 # archie
