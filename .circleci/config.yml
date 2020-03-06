@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: Install tools
-          commands: make install-tools
+          command: make install-tools
       - run:
           name: Run linting
           command: make lint
@@ -39,7 +39,7 @@ jobs:
       - checkout
       - run:
           name: Install tools
-          commands: make install-tools
+          command: make install-tools
       - run:
           name: Run tests
           command: make coverage
