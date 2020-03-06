@@ -1,4 +1,4 @@
-package cmd
+package archie
 
 import (
 	"github.com/briggysmalls/archie/cli/server"
@@ -28,7 +28,7 @@ All endpoints respond to a POST request that supplies the model (YAML) in the bo
 }
 
 func init() {
-	rootCmd.AddCommand(apiCmd)
+	RootCmd.AddCommand(apiCmd)
 
 	// Server port (bind to config too)
 	apiCmd.Flags().Int("port", 8080, "Port to run server on")
