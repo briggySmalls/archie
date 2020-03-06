@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/briggysmalls/archie"
-	"github.com/briggysmalls/archie/cli/utils"
+	"github.com/briggysmalls/archie/cli/archie/utils"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
