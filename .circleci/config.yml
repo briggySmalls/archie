@@ -1,0 +1,54 @@
+version: 2
+
+jobs:
+  # Ensure code is formatted correctly
+  format:
+    docker:
+      - image: circleci/golang:1.14
+    steps:
+      - checkout
+      - run:
+          name: Run check
+          command: make check
+  # Run linter
+  lint:
+    docker:
+      - image: circleci/golang:1.14
+    steps:
+      - checkout
+      - run:
+          name: Install tools
+          command: make install-tools
+      - run:
+          name: Run linting
+          command: make lint
+  # Verify the code
+  verify:
+    docker:
+      - image: circleci/golang:1.14
+    steps:
+      - checkout
+      - run:
+          name: Run verification
+          command: make vet
+  # Test the code
+  test:
+    docker:
+      - image: circleci/golang:1.14
+    steps:
+      - checkout
+      - run:
+          name: Install tools
+          command: make install-tools
+      - run:
+          name: Run tests
+          command: make coverage
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - format
+      - lint
+      - verify
+      - test

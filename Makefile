@@ -36,7 +36,7 @@ lint:
 
 coverage: TEST_FLAGS+= -covermode=count -coverprofile=coverage.out
 coverage: test
-	$$GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci
+	$$GOPATH/bin/goveralls -coverprofile=coverage.out -service=circle-ci -repotoken=$$COVERALLS_TOKEN
 
 test:
 	go test $(TEST_FLAGS) ./...
