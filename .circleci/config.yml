@@ -38,8 +38,8 @@ jobs:
     steps:
       - checkout
       - run:
-        name: Install tools
-        commands: make install-tools
+          name: Install tools
+          commands: make install-tools
       - run:
           name: Run tests
           command: make coverage
