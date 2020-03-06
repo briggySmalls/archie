@@ -1,5 +1,5 @@
 // Package cmd provides cobra command line configuration
-package archie
+package cmd
 
 import (
 	"fmt"

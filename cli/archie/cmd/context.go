@@ -13,42 +13,38 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package archie
+package cmd
 
 import (
 	"github.com/spf13/cobra"
 )
 
-var tagScope string
-var tagTag string
+var contextScope string
 
-// tagCmd represents the tag command
-var tagCmd = &cobra.Command{
-	Use:   "tag",
+// contextCmd represents the context command
+var contextCmd = &cobra.Command{
+	Use:   "context",
 	Short: "Generates a context diagram",
-	Long: `Generates a diagram that shows the context of elements with a specified tag
+	Long: `Generate a diagram that shows the context of the specified element.
 
 [1] Main elements of interest
-The 'eldest' element with the specified tag,
+Children of the scoping element.
 
 [2] Relevant associated elements
-Those that are associated to one of the main elements of interest, where either:
+Those that are associated to one of the child elements of the scope, where either:
 - The parent is an ancestor of scope
-- It is a root element.`,
+- It is a root element`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate the diagram
-		diagram, err = arch.TagView(tagScope, tagTag)
+		diagram, err = arch.ContextView(contextScope)
 	},
 }
 
 func init() {
-	generateCmd.AddCommand(tagCmd)
+	generateCmd.AddCommand(contextCmd)
 
-	fs := tagCmd.Flags()
-	fs.StringVarP(&tagScope, "scope", "s", "", "scope for the tag view")
-	fs.StringVarP(&tagTag, "tag", "t", "", "tag to filter by")
-
+	fs := contextCmd.Flags()
+	fs.StringVarP(&contextScope, "scope", "s", "", "scope for the context")
 	cobra.MarkFlagRequired(fs, "scope")
-	cobra.MarkFlagRequired(fs, "tag")
 }

@@ -1,7 +1,7 @@
-package archie
+package cmd
 
 import (
-	"github.com/briggysmalls/archie/cli/server"
+	"github.com/briggysmalls/archie/cli/archie/server"
 
 	"fmt"
 

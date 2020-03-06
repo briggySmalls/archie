@@ -1,11 +1,11 @@
-package archie
+package cmd
 
 import (
 	"fmt"
 	"io/ioutil"
 
 	"github.com/briggysmalls/archie"
-	"github.com/briggysmalls/archie/cli/utils"
+	"github.com/briggysmalls/archie/cli/archie/utils"
 	"github.com/spf13/cobra"
 	"log"
 )
