@@ -55,7 +55,8 @@ docs:
 	@echo Copying content
 	@cp -r ./docs/content ./docs/bin
 	@echo Generating content
-	@go run ./docs/main.go ./docs/bin
+	@mkdir -p ./docs/bin/cli
+	@go run ./docs/main.go ./docs/bin/cli
 
 
 print-%  : ; @echo $* = $($*)
