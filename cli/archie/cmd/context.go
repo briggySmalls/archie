@@ -28,10 +28,12 @@ var contextCmd = &cobra.Command{
 	Long: `Generate a diagram that shows the context of the specified element.
 
 [1] Main elements of interest
+
 Children of the scoping element.
 
 [2] Relevant associated elements
-Those that are associated to one of the child elements of the scope, where either:
+
+Those that are associated to one of the main elements of interest, where either:
 - The parent is an ancestor of scope
 - It is a root element`,
 	Args: cobra.ExactArgs(1),
