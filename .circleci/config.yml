@@ -53,8 +53,8 @@ jobs:
           name: Build docs
           command: make docs
       - persist_to_workspace:
-          root: ./docs
-          paths: bin
+          root: .
+          paths: docs/bin
   # Deploy docs
   docs-deploy:
     docker:
