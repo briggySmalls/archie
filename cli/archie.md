@@ -5,8 +5,8 @@ Tool for developing system architecture
 ### Synopsis
 
 
-archie-cli is an application that utilises the archie framework
-for developing lightweight system architecture modules
+archie is an application that utilises the archie framework
+for developing lightweight system architecture diagrams for a model
 
 ### Options
 

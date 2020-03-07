@@ -7,9 +7,11 @@ Generates a context diagram
 Generates a diagram that shows the context of elements with a specified tag
 
 [1] Main elements of interest
+
 The 'eldest' element with the specified tag,
 
 [2] Relevant associated elements
+
 Those that are associated to one of the main elements of interest, where either:
 - The parent is an ancestor of scope
 - It is a root element.
