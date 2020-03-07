@@ -13,7 +13,7 @@ var RootCmd = &cobra.Command{
 	Use:   "archie",
 	Short: "Tool for developing system architecture",
 	Long: `
-archie-cli is an application that utilises the archie framework
+archie is an application that utilises the archie framework
 for developing lightweight system architecture modules`,
 }
 
