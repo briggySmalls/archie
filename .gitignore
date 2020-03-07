@@ -1,2 +1,4 @@
 # Ignore coverage
 coverage.out
+# Ignore docs output
+docs/bin/
