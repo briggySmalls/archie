@@ -19,4 +19,4 @@ It's features:
 
 ## CLI
 
-- [CLI documentation](./cli/archie.md)
+- [CLI documentation](cli/archie.md)
