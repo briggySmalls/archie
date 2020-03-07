@@ -43,7 +43,40 @@ jobs:
       - run:
           name: Run tests
           command: make coverage
-
+  # Build docs
+  docs-build:
+    docker:
+      - image: circle-ci:golang:1.14
+    steps:
+      - checkout
+      - run:
+          name: Build docs
+          command: make docs
+      - persist_to_workspace:
+          root: ./docs
+          paths: bin
+  # Deploy docs
+  docs-deploy:
+    docker:
+      - image: node:8.10.0  # We need this for the javascript tool
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install and configure dependencies
+          command: npm install -g --silent gh-pages@2.0.1
+      - run:
+          name: Configure git
+          command: |
+            git config user.email "ci-build@sambriggs.dev"
+            git config user.name "ci-build"
+      - add_ssh_keys:
+          fingerprints:
+            - "ca:db:bd:d8:2f:18:ea:a9:a9:54:21:92:97:a6:5c:68"
+      - run:
+          name: Deploy to gh-pages branch
+          command: gh-pages --dist ./bin --message "[ci skip] Deploy documentation updates"
 workflows:
   version: 2
   main:
@@ -52,3 +85,11 @@ workflows:
       - lint
       - verify
       - test
+      - docs-build
+      - docs-deploy:
+          requires:
+            - docs-build
+          filters:
+            branches:
+              only: master
+
