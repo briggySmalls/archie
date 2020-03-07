@@ -46,7 +46,7 @@ jobs:
   # Build docs
   docs-build:
     docker:
-      - image: circle-ci:golang:1.14
+      - image: circleci/golang:1.14
     steps:
       - checkout
       - run:
