@@ -76,7 +76,7 @@ jobs:
             - "ca:db:bd:d8:2f:18:ea:a9:a9:54:21:92:97:a6:5c:68"
       - run:
           name: Deploy to gh-pages branch
-          command: gh-pages --dist ./bin --message "[ci skip] Deploy documentation updates"
+          command: gh-pages --dist ./docs/bin --message "[ci skip] Deploy documentation updates"
 workflows:
   version: 2
   main:
