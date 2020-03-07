@@ -20,7 +20,7 @@ TEST_FLAGS=-v
 # Format flags
 FMT_FLAGS=-l -e -s
 
-.PHONY: fmt vet lint run test coverage
+.PHONY: fmt vet lint run test coverage docs
 
 fmt:
 	@gofmt -w $(FMT_FLAGS) $(SRC)
@@ -48,5 +48,14 @@ download:
 install-tools: download
 	@echo Installing tools from tools.go
 	@cat tools/tools.go | grep _ | awk -F'"' '{print $$2}' | xargs -tI % go install %
+
+docs:
+	@echo Creating output directory
+	@rm -rf ./docs/bin
+	@echo Copying content
+	@cp -r ./docs/content ./docs/bin
+	@echo Generating content
+	@go run ./docs/main.go ./docs/bin
+
 
 print-%  : ; @echo $* = $($*)
