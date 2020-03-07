@@ -1,5 +1,7 @@
 # Archie documentation
 
+## Overview
+
 Archie is a lightweight tool for generating model-based system architecture diagrams.
 
 It's features:
@@ -17,6 +19,14 @@ It's features:
   - A CLI for local generation
   - A REST API for remote generation/interfacing
 
-## CLI
+## Installation
 
-- [CLI documentation](cli/archie.md)
+Install the archie CLI with:
+
+```bash
+go get github.com/briggysmalls/archie/cli/archie
+```
+
+## CLI Documentation
+
+Then read the [documentation](cli/archie.md) for invoking it!

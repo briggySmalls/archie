@@ -7,5 +7,14 @@ Simple model-based system architecture tooling
 
 ## Installation
 
-go get github.com/briggysmalls/archie
+Install the CLI with:
 
+```bash
+go get github.com/briggysmalls/archie/cli/archie
+```
+
+## Documentation
+
+The full project documentation can be found at:
+
+https://briggysmalls.github.io/archie
