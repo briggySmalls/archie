@@ -12,6 +12,13 @@ model:
               tags: [electronic, mechanical]
             - connector
             - cable
+          associations:
+            - source: cable
+              destination: connector
+            - source: connector
+              destination: driver
+            - source: driver
+              destination: enclosure
         - name: amplifier
           children:
             - name: audio in connector
@@ -30,39 +37,40 @@ model:
               tags: [electronic, mechanical]
             - name: input select
               tags: [electronic, mechanical]
+          associations:
+            - source: input select
+              destination: mixer
+            - source: audio in connector
+              destination: mixer
+            - source: bluetooth receiver
+              destination: mixer
+            - source: ac-dc converter
+              destination: mixer
+            - source: mixer
+              destination: amplifier
+            - source: ac-dc converter
+              destination: amplifier
+            - source: amplifier
+              destination: audio out connector
+            - source: power button
+              destination: ac-dc converter
+      associations:
+        - source: amplifier/audio out connector
+          destination: speaker/cable
     - name: app
       children:
       - bluetooth driver
       - spotify client
       - ui
+      associations:
+      - source: ui
+        destination: spotify client
+      - source: spotify client
+        destination: bluetooth driver
   associations:
     # Sound system
     - source: user
       destination: sound-system/amplifier/input select
-    - source: sound-system/amplifier/input select
-      destination: sound-system/amplifier/mixer
-    - source: sound-system/amplifier/audio in connector
-      destination: sound-system/amplifier/mixer
-    - source: sound-system/amplifier/bluetooth receiver
-      destination: sound-system/amplifier/mixer
-    - source: sound-system/amplifier/ac-dc converter
-      destination: sound-system/amplifier/mixer
-    - source: sound-system/amplifier/mixer
-      destination: sound-system/amplifier/amplifier
-    - source: sound-system/amplifier/ac-dc converter
-      destination: sound-system/amplifier/amplifier
-    - source: sound-system/amplifier/amplifier
-      destination: sound-system/amplifier/audio out connector
-    - source: sound-system/amplifier/audio out connector
-      destination: sound-system/speaker/cable
-    - source: sound-system/speaker/cable
-      destination: sound-system/speaker/connector
-    - source: sound-system/speaker/connector
-      destination: sound-system/speaker/driver
-    - source: sound-system/speaker/driver
-      destination: sound-system/speaker/enclosure
-    - source: sound-system/amplifier/power button
-      destination: sound-system/amplifier/ac-dc converter
     - source: sound-system/speaker/driver
       destination: user
     - source: user
@@ -70,10 +78,6 @@ model:
     # App
     - source: user
       destination: app/ui
-    - source: app/ui
-      destination: app/spotify client
-    - source: app/spotify client
-      destination: app/bluetooth driver
     - source: app/bluetooth driver
       destination: sound-system/amplifier/bluetooth receiver
 config:
