@@ -1,10 +1,11 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/briggysmalls/archie"
 	"github.com/briggysmalls/archie/writers"
 	"gopkg.in/yaml.v2"
-	"fmt"
 )
 
 type config struct {
@@ -38,6 +39,8 @@ func ReadModel(modelAndConfig []byte) (archie.Archie, error) {
 		fallthrough
 	case "plantuml":
 		writer = writers.PlantUmlStrategy{CustomFooter: p.Config.Footer}
+	case "graphviz":
+		writer = writers.GraphvizStrategy{}
 	default:
 		return nil, fmt.Errorf("Unexpected writer strategy: %s", p.Config.Writer)
 	}

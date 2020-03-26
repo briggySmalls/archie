@@ -26,22 +26,22 @@ var colors = []string{
 
 var colorMap = make(map[string]string)
 
-// Header writes the header mermaid syntax.
+// Header writes the header
 func (p GraphvizStrategy) Header(scribe Scribe) {
 	scribe.WriteLine("graph arch {")
 	scribe.UpdateIndent(1)
 	scribe.WriteLine("graph [fontname=Helvetica]")
-	scribe.WriteLine(`edge [fontsize=9; fontname=Helvetica, color="#333333"]`)
+	scribe.WriteLine(`edge [fontsize=9; fontname=Helvetica; color="#333333"]`)
 	scribe.WriteLine("node [shape=plaintext; margin=0; fontname=Helvetica]")
 }
 
-// Footer writes a footer in mermaid syntax.
+// Footer writes a footer
 func (p GraphvizStrategy) Footer(scribe Scribe) {
 	scribe.UpdateIndent(-1)
 	scribe.WriteLine("}")
 }
 
-// Element writes an element in mermaid syntax.
+// Element writes an element
 func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 	scribe.WriteLine(`"%p" [`, element)
 	scribe.UpdateIndent(1)
@@ -64,20 +64,20 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 	scribe.WriteLine(`];`)
 }
 
-// StartParentElement writes the start of an enclosing/parent element in mermaid syntax.
+// StartParentElement writes the start of an enclosing/parent element
 func (p GraphvizStrategy) StartParentElement(scribe Scribe, element Element) {
 	scribe.WriteLine(`subgraph "cluster_%p" {`, element)
 	scribe.UpdateIndent(1)
 	scribe.WriteLine(`label = <%s>`, element.Name())
 }
 
-// EndParentElement writes the end of an enclosing/parent element in mermaid syntax.
+// EndParentElement writes the end of an enclosing/parent element
 func (p GraphvizStrategy) EndParentElement(scribe Scribe, element Element) {
 	scribe.WriteLine("}")
 	scribe.UpdateIndent(-1)
 }
 
-// Association writes an association in mermaid syntax
+// Association writes an association
 func (p GraphvizStrategy) Association(scribe Scribe, association Association) {
 	scribe.WriteString(true, `"%s" -- "%s"`, association.Source().ID(), association.Destination().ID())
 	if association.Tag() != "" {
@@ -86,6 +86,7 @@ func (p GraphvizStrategy) Association(scribe Scribe, association Association) {
 	scribe.WriteString(false, "\n")
 }
 
+// makeTags creates the title title containing tags
 func makeTags(tags []string) string {
 	if len(tags) == 0 {
 		return ""
