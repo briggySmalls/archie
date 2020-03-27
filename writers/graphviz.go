@@ -50,7 +50,7 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 		scribe.WriteLine(`color = "#333333"`)
 		scribe.WriteLine("shape = circle")
 		scribe.WriteLine("margin = 0.04")
-		scribe.WriteLine("label = %s", element.Name())
+		scribe.WriteLine("label = <%s>", element.Name())
 	} else {
 		scribe.WriteLine(`label = <`)
 		scribe.UpdateIndent(1)
