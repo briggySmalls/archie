@@ -2,31 +2,15 @@ package writers
 
 import (
 	"fmt"
-	mdl "github.com/briggysmalls/archie/internal/model"
 	"gotest.tools/assert"
 	is "gotest.tools/assert/cmp"
 	"strings"
 	"testing"
 )
 
-func TestDraw(t *testing.T) {
-	// Create a simple model
-	m := mdl.NewModel()
-
-	// Create the items we'll be testing
-	actor := mdl.NewActor("User")
-	one := mdl.NewItem("One", []string{"software"})
-	oneChild := mdl.NewItem("OneChild", nil)
-	two := mdl.NewItem("Two", []string{"software", "mechanical"})
-
-	// Add the items, and their relationships to the model
-	m.AddRootElement(actor)
-	m.AddRootElement(one)
-	m.AddElement(oneChild, one)
-	m.AddRootElement(two)
-
-	// Link the children together
-	m.AddAssociation(oneChild, two, "")
+func TestDrawPlantuml(t *testing.T) {
+	// Create the test model
+	m, elMap := createTestModel()
 
 	// Drawer
 	customFooter := `
@@ -35,7 +19,7 @@ skinparam nodesep 10
 skinparam ranksep 20
 `
 	d := New(PlantUmlStrategy{CustomFooter: customFooter})
-	output, err := d.Write(m)
+	output, err := d.Write(*m)
 	assert.NilError(t, err)
 
 	// Assert result
@@ -50,11 +34,11 @@ skinparam ranksep 20
 			parentLine = uint(i + 1)
 		}
 	}
-	assert.Equal(t, lines[parentLine+1], fmt.Sprintf("    rectangle \"OneChild\" as %s", oneChild.ID()))
+	assert.Equal(t, lines[parentLine+1], fmt.Sprintf("    rectangle \"OneChild\" as %s", elMap["OneChild"].ID()))
 	assert.Equal(t, lines[parentLine+2], "}")
-	assert.Assert(t, is.Contains(lines, fmt.Sprintf("actor \"User\" as %s", actor.ID())))
-	assert.Assert(t, is.Contains(lines, fmt.Sprintf("rectangle \"Two\" as %s <<software>><<mechanical>>", two.ID())))
-	assert.Assert(t, is.Contains(lines, fmt.Sprintf("%s --> %s", oneChild.ID(), two.ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("actor \"User\" as %s", elMap["User"].ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("rectangle \"Two\" as %s <<software>><<mechanical>>", elMap["Two"].ID())))
+	assert.Assert(t, is.Contains(lines, fmt.Sprintf("%s --> %s", elMap["OneChild"].ID(), elMap["Two"].ID())))
 
 	assert.Assert(t, is.Contains(lines, "skinparam shadowing false"))
 	assert.Assert(t, is.Contains(lines, "skinparam nodesep 10"))
