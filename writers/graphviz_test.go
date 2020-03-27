@@ -38,7 +38,7 @@ func TestDrawGraphviz(t *testing.T) {
         color = "#333333"
         shape = circle
         margin = 0.04
-        label = User
+        label = <User>
     ];
     "%[2]s" -- "%[3]s"
 }
