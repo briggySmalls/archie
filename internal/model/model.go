@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -129,11 +130,16 @@ func (m *Model) Parent(element Element) (Element, error) {
 // Children gets the children of a specified element.
 func (m *Model) Children(element Element) []Element {
 	var children []Element
+	// Get the elements
 	for child, parent := range m.Composition {
 		if parent == element {
 			children = append(children, child)
 		}
 	}
+	// Sort elements by name
+	sort.Slice(children, func(i, j int) bool {
+		return children[i].Name() < children[j].Name()
+	})
 	return children
 }
 
