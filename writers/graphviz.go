@@ -75,8 +75,8 @@ func (p GraphvizStrategy) StartParentElement(scribe Scribe, element Element) {
 
 // EndParentElement writes the end of an enclosing/parent element
 func (p GraphvizStrategy) EndParentElement(scribe Scribe, element Element) {
-	scribe.WriteLine("}")
 	scribe.UpdateIndent(-1)
+	scribe.WriteLine("}")
 }
 
 // Association writes an association

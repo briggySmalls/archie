@@ -26,7 +26,7 @@ func TestDrawGraphviz(t *testing.T) {
                 <TR><TD COLSPAN="0" CELLPADDING="10" BGCOLOR="#dbdbdb">OneChild</TD></TR>
                 </TABLE>>
         ];
-        }
+    }
     "%[3]s" [
         label = <
             <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
