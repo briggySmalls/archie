@@ -5,6 +5,7 @@ import (
 	mdl "github.com/briggysmalls/archie/internal/model"
 	"gotest.tools/assert"
 	"testing"
+	"sort"
 )
 
 func createTestModel() (*mdl.Model, map[string]mdl.Element) {
@@ -37,10 +38,20 @@ func createTestModel() (*mdl.Model, map[string]mdl.Element) {
 	return &m, elMap
 }
 
-func assertOutput(t *testing.T, output string, formatString string, IDs []string) {
-	var IDsInterface []interface{} = make([]interface{}, len(IDs))
-	for i, d := range IDs {
-		IDsInterface[i] = d
+func assertOutput(t *testing.T, output string, formatString string, elMap map[string]mdl.Element) {
+	// Get the elements
+	els := make([]mdl.Element, 0, len(elMap))
+	for _, v := range elMap {
+		els = append(els, v)
+	}
+	// Sort them by name
+	sort.Slice(els, func(i, j int) bool {
+		return els[i].Name() < els[j].Name()
+	})
+	// Get the IDs
+	var IDsInterface []interface{} = make([]interface{}, len(els))
+	for i, e := range els {
+		IDsInterface[i] = e.ID()
 	}
 	assert.Equal(t, output, fmt.Sprintf(formatString, IDsInterface...))
 }

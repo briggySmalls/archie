@@ -21,11 +21,11 @@ skinparam ranksep 20
 
 	const resultFormat = `@startuml
 package "One" <<software>> {
-    rectangle "OneChild" as %[1]s
+    rectangle "OneChild" as %[2]s
 }
-rectangle "Two" as %[2]s <<software>><<mechanical>>
-actor "User" as %[3]s
-%[1]s --> %[2]s
+rectangle "Two" as %[3]s <<software>><<mechanical>>
+actor "User" as %[4]s
+%[2]s --> %[3]s
 
 skinparam shadowing false
 skinparam nodesep 10
@@ -33,5 +33,5 @@ skinparam ranksep 20
 @enduml
 `
 	// Assert result
-	assertOutput(t, output, resultFormat, []string{elMap["OneChild"].ID(), elMap["Two"].ID(), elMap["User"].ID()})
+	assertOutput(t, output, resultFormat, elMap)
 }
