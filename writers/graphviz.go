@@ -55,7 +55,9 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 		scribe.WriteLine(`label = <`)
 		scribe.UpdateIndent(1)
 		scribe.WriteLine(`<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">`)
-		scribe.WriteLine(makeTags(element.Tags()))
+		if len(element.Tags()) > 0 {
+			scribe.WriteLine(makeTags(element.Tags()))
+		}
 		scribe.WriteLine(`<TR><TD COLSPAN="%d" CELLPADDING="10" BGCOLOR="#dbdbdb">%s</TD></TR>`, len(element.Tags()), element.Name())
 		scribe.WriteLine("</TABLE>>")
 		scribe.UpdateIndent(-1)
