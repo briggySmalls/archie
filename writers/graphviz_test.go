@@ -44,5 +44,5 @@ func TestDrawGraphviz(t *testing.T) {
 }
 `
 	// Assert result
-	assertOutput(t, output, resultFormat, []string{elMap["One"].ID(), elMap["OneChild"].ID(), elMap["Two"].ID(), elMap["User"].ID()})
+	assertOutput(t, output, resultFormat, elMap)
 }
