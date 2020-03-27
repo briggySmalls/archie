@@ -1,7 +1,10 @@
 package writers
 
 import (
+	"fmt"
 	mdl "github.com/briggysmalls/archie/internal/model"
+	"gotest.tools/assert"
+	"testing"
 )
 
 func createTestModel() (*mdl.Model, map[string]mdl.Element) {
@@ -25,11 +28,19 @@ func createTestModel() (*mdl.Model, map[string]mdl.Element) {
 
 	// Create the map
 	elMap := map[string]mdl.Element{
-		"User": actor,
-		"One": one,
+		"User":     actor,
+		"One":      one,
 		"OneChild": oneChild,
-		"Two": two,
+		"Two":      two,
 	}
 
 	return &m, elMap
+}
+
+func assertOutput(t *testing.T, output string, formatString string, IDs []string) {
+	var IDsInterface []interface{} = make([]interface{}, len(IDs))
+	for i, d := range IDs {
+		IDsInterface[i] = d
+	}
+	assert.Equal(t, output, fmt.Sprintf(formatString, IDsInterface...))
 }

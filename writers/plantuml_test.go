@@ -1,7 +1,6 @@
 package writers
 
 import (
-	"fmt"
 	"gotest.tools/assert"
 	"testing"
 )
@@ -34,5 +33,5 @@ skinparam ranksep 20
 @enduml
 `
 	// Assert result
-	assert.Equal(t, output, fmt.Sprintf(resultFormat, elMap["OneChild"].ID(), elMap["Two"].ID(), elMap["User"].ID()))
+	assertOutput(t, output, resultFormat, []string{elMap["OneChild"].ID(), elMap["Two"].ID(), elMap["User"].ID()})
 }
