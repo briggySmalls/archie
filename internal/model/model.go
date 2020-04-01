@@ -6,11 +6,6 @@ import (
 	"strings"
 )
 
-type associationNoTag struct {
-	Source      Element
-	Destination Element
-}
-
 // Model holds a fully defined Archie model for processing
 type Model struct {
 	Associations []Association
@@ -78,7 +73,7 @@ func (m *Model) ImplicitAssociations() []Association {
 	// Get all the associations
 	rels := m.Associations
 	// Prepare a list of implicit associations (we map to ensure no duplicates)
-	relsMap := make(map[associationNoTag]Association)
+	relsMap := make(map[Association]bool)
 	// Now add implicit associations
 	for _, rel := range rels {
 		dest := rel.Destination()
@@ -96,11 +91,11 @@ func (m *Model) ImplicitAssociations() []Association {
 			}
 		}
 	}
-	// Extract the keys of the map
+	// Extract the associations from the map
 	keys := make([]Association, len(relsMap))
 	i := 0
-	for _, v := range relsMap {
-		keys[i] = v
+	for ass, _ := range relsMap {
+		keys[i] = ass
 		i++
 	}
 	// Return the associations
@@ -230,24 +225,14 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(associations map[associationNoTag]Association, source Element, dest Element, tag string) {
+func (m *Model) bubbleUpSource(associations map[Association]bool, source Element, dest Element, tag string) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
 			return
 		}
-		// Create the association
-		key := associationNoTag{Source: source, Destination: dest}
-		if val, ok := associations[key]; ok && tag != val.Tag() {
-			// We have:
-			// a) Already got an association with this source/dest pair
-			// b) but it has a different tag to this new one
-			// Indicate the tags are complex
-			associations[key] = NewAssociation(source, dest, "...")
-		} else {
-			// No previous source/dest implicit association
-			associations[key] = NewAssociation(source, dest, tag)
-		}
+		// Register that this association should be present
+		associations[NewAssociation(source, dest, tag)] = true
 		// Iterate
 		parent := m.parent(source)
 		if parent == nil {
