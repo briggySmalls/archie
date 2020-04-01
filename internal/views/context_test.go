@@ -45,10 +45,9 @@ func TestContextElements(t *testing.T) {
 
 	// Check relationships are correct
 	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/1/2"], "")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["2"], "force")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["2"], "data")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["2"], "...")))
 	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/2"], "")))
-	assert.Assert(t, is.Len(l.Associations, 4))
+	assert.Assert(t, is.Len(l.Associations, 3))
 }
 
 // Test creating view for a scope with children
