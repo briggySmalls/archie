@@ -4,6 +4,11 @@ import (
 	mdl "github.com/briggysmalls/archie/internal/model"
 )
 
+type srcAndDest struct {
+	Source      mdl.Element
+	Destination mdl.Element
+}
+
 // CreateSubmodel creates a sub-model from the full model
 func CreateSubmodel(model *mdl.Model, primary, secondary []mdl.Element) (mdl.Model, error) {
 	// Copy the model
@@ -14,8 +19,10 @@ func CreateSubmodel(model *mdl.Model, primary, secondary []mdl.Element) (mdl.Mod
 		return mdl.Model{}, err
 	}
 	new.Elements = relevant
-	// Overwrite relationships with relevant ones
+	// Overwrite associations with relevant ones
 	new.Associations = getRelevantAssociations(&new, primary, secondary)
+	// Coalesce associations
+	new.Associations = coalesceAssociations(new.Associations)
 	// Fixup the composition relationships
 	for child := range new.Composition {
 		if !contains(new.Elements, child) {
@@ -61,6 +68,30 @@ func getRelevantAssociations(model *mdl.Model, primary, secondary []mdl.Element)
 		}
 	}
 	return relationships
+}
+
+// Coalesce multiple associations between the same two items
+func coalesceAssociations(associations []mdl.Association) []mdl.Association {
+	// Group associations into bins of source/destination pair
+	assMap := make(map[srcAndDest][]mdl.Association, len(associations))
+	for _, ass := range associations {
+		// Create a key
+		key := srcAndDest{Source: ass.Source(), Destination: ass.Destination()}
+		// Add this association to those
+		assMap[key] = append(assMap[key], ass)
+	}
+	// Coalesce the associations for a given source/destination
+	coalesced := make([]mdl.Association, 0, len(assMap))
+	for pair, set := range assMap {
+		if len(set) == 1 {
+			// If there is only one association, return it
+			coalesced = append(coalesced, set[0])
+		} else {
+			// Indicate there are multiple associations
+			coalesced = append(coalesced, mdl.NewAssociation(pair.Source, pair.Destination, "..."))
+		}
+	}
+	return coalesced
 }
 
 // Add the specified element to the map, and all its ancestors
