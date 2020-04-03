@@ -15,11 +15,11 @@ func TestContextElements(t *testing.T) {
 	m, elMap := createModel()
 
 	// Link the children together
-	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"], "force")
-	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"], "data")
-	m.AddAssociation(elMap["1/1/1"], elMap["1/1/2"], "")
-	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"], "")
-	m.AddAssociation(elMap["1/1/2"], elMap["1/2/1"], "")
+	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"], nil)
+	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"], nil)
+	m.AddAssociation(elMap["1/1/1"], elMap["1/1/2"], nil)
+	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"], nil)
+	m.AddAssociation(elMap["1/1/2"], elMap["1/2/1"], nil)
 
 	// Create the view
 	l := NewContextView(m, elMap["1/1/1"])
@@ -44,9 +44,9 @@ func TestContextElements(t *testing.T) {
 	assert.Assert(t, is.Len(l.Children(elMap["1/2"]), 0))
 
 	// Check relationships are correct
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/1/2"], "")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["2"], "...")))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/2"], "")))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/1/2"], nil)))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["2"], []string{"..."})))
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(elMap["1/1/1"], elMap["1/2"], nil)))
 	assert.Assert(t, is.Len(l.Associations, 3))
 }
 
@@ -56,9 +56,9 @@ func TestContextChildElements(t *testing.T) {
 	m, elMap := createModel()
 
 	// Link the children together
-	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"], "")
-	m.AddAssociation(elMap["1/1/1"], elMap["1/1/2"], "")
-	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"], "")
+	m.AddAssociation(elMap["1/1/1"], elMap["2/1/1"], nil)
+	m.AddAssociation(elMap["1/1/1"], elMap["1/1/2"], nil)
+	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"], nil)
 
 	// Create the view
 	l := NewContextView(m, elMap["1/1"])
