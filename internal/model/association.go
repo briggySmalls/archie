@@ -3,19 +3,19 @@ package model
 type association struct {
 	source      Element
 	destination Element
-	tag         string
+	tags         []string
 }
 
 // Association describes an association
 type Association interface {
 	Source() Element
 	Destination() Element
-	Tag() string
+	Tags() []string
 }
 
 // NewAssociation creates an association between the specified elements, with the given tag
-func NewAssociation(source, destination Element, tag string) Association {
-	return association{source: source, destination: destination, tag: tag}
+func NewAssociation(source, destination Element, tags []string) Association {
+	return association{source: source, destination: destination, tags: tags}
 }
 
 // Source gets the source element of the association
@@ -29,6 +29,6 @@ func (r association) Destination() Element {
 }
 
 // Tag gets the tag given to the association
-func (r association) Tag() string {
-	return r.tag
+func (r association) Tags() []string {
+	return r.tags
 }
