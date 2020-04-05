@@ -46,15 +46,20 @@ jobs:
   # Build docs
   docs-build:
     docker:
-      - image: circleci/golang:1.14
+      - image: circleci/node:12
     steps:
       - checkout
       - run:
+          name: Install dependencies
+          command: yarn install
+          working_directory: ./docs
+      - run:
           name: Build docs
-          command: make docs
+          command: yarn build --prefix-paths
+          working_directory: ./docs
       - persist_to_workspace:
           root: .
-          paths: docs/bin
+          paths: docs/public
   # Deploy docs
   docs-deploy:
     docker:
@@ -76,7 +81,7 @@ jobs:
             - "ca:db:bd:d8:2f:18:ea:a9:a9:54:21:92:97:a6:5c:68"
       - run:
           name: Deploy to gh-pages branch
-          command: gh-pages --dist ./docs/bin --message "[ci skip] Deploy documentation updates"
+          command: gh-pages --dist ./docs/public --message "[ci skip] Deploy documentation updates"
 workflows:
   version: 2
   main:

@@ -1,12 +1,16 @@
-# Archie documentation
+import Layout from "../components/layout"
+import { Link } from "gatsby"
 
-## Overview
+<Layout>
+    <SEO title="Overview" />
 
-Archie is a lightweight tool for generating model-based system architecture diagrams.
+# Overview
 
-It's features:
+Archie is a lightweight tool for generating model-based architecture diagrams.
 
-- All diagrams generated from a yaml model
+Its features:
+
+- Diagrams generated from a yaml model
   - Actor elements (users)
   - Item elements (modules) that may be infinitly composed (sub-elements)
   - Associations between any elements
@@ -19,14 +23,6 @@ It's features:
   - A CLI for local generation
   - A REST API for remote generation/interfacing
 
-## Installation
+<Link to="/installation/">Installation</Link>
 
-Install the archie CLI with:
-
-```bash
-go get github.com/briggysmalls/archie/cli/archie
-```
-
-## CLI Documentation
-
-Then read the [documentation](cli/archie.md) for invoking it!
+</Layout>
