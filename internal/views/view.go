@@ -83,13 +83,23 @@ func coalesceAssociations(associations []mdl.Association) []mdl.Association {
 	// Coalesce the associations for a given source/destination
 	coalesced := make([]mdl.Association, 0, len(assMap))
 	for pair, set := range assMap {
-		if len(set) == 1 {
-			// If there is only one association, return it
-			coalesced = append(coalesced, set[0])
-		} else {
-			// Indicate there are multiple associations
-			coalesced = append(coalesced, mdl.NewAssociation(pair.Source, pair.Destination, "..."))
+		// Add each distinct tag, for each tag in each association
+		tagMap := make(map[string]struct{})
+		for _, ass := range set {
+			for _, t := range ass.Tags() {
+				tagMap[t] = struct{}{}
+			}
 		}
+		// Grab the tags
+		var tags []string
+		if len(tagMap) > 0 {
+			tags = make([]string, 0, len(tagMap))
+			for t := range tagMap {
+				tags = append(tags, t)
+			}
+		}
+		// Add the coalesced association
+		coalesced = append(coalesced, mdl.NewAssociation(pair.Source, pair.Destination, tags))
 	}
 	return coalesced
 }

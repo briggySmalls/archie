@@ -55,7 +55,7 @@ func addAssociations(model *mdl.Model, parent mdl.Element, assocs []Association)
 			return err
 		}
 		// Add a new relationship
-		model.AddAssociation(src, dest, ass.Tag)
+		model.AddAssociation(src, dest, ass.Tags)
 	}
 	return nil
 }

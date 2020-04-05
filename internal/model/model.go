@@ -37,9 +37,9 @@ func (m *Model) AddRootElement(new Element) {
 }
 
 // AddAssociation directionally associates the two specified elements
-func (m *Model) AddAssociation(source, destination Element, tag string) {
+func (m *Model) AddAssociation(source, destination Element, tags []string) {
 	// Append to associations
-	m.Associations = append(m.Associations, NewAssociation(source, destination, tag))
+	m.Associations = append(m.Associations, NewAssociation(source, destination, tags))
 }
 
 // RootElements returns a slice of the root elements in a model
@@ -73,14 +73,14 @@ func (m *Model) ImplicitAssociations() []Association {
 	// Get all the associations
 	rels := m.Associations
 	// Prepare a list of implicit associations (we map to ensure no duplicates)
-	relsMap := make(map[Association]bool)
+	relsMap := make(map[*Association]struct{})
 	// Now add implicit associations
 	for _, rel := range rels {
 		dest := rel.Destination()
 		// Now link each of source's ancestors to destination
 		for {
 			// Link all source's ancestors to destination
-			m.bubbleUpSource(relsMap, rel.Source(), dest, rel.Tag())
+			m.bubbleUpSource(relsMap, rel.Source(), dest, rel.Tags())
 			// Iterate destination
 			if parent := m.parent(dest); parent == nil {
 				// This is a root element, so bail
@@ -94,8 +94,8 @@ func (m *Model) ImplicitAssociations() []Association {
 	// Extract the associations from the map
 	keys := make([]Association, len(relsMap))
 	i := 0
-	for ass, _ := range relsMap {
-		keys[i] = ass
+	for ass := range relsMap {
+		keys[i] = *ass
 		i++
 	}
 	// Return the associations
@@ -225,14 +225,15 @@ NameLoop:
 	panic(fmt.Errorf("It should be impossible to reach this code"))
 }
 
-func (m *Model) bubbleUpSource(associations map[Association]bool, source Element, dest Element, tag string) {
+func (m *Model) bubbleUpSource(associations map[*Association]struct{}, source Element, dest Element, tags []string) {
 	for {
 		if m.IsAncestor(dest, source) || m.IsAncestor(source, dest) {
 			// We never link sub-items to their parents
 			return
 		}
 		// Register that this association should be present
-		associations[NewAssociation(source, dest, tag)] = true
+		newAss := NewAssociation(source, dest, tags)
+		associations[&newAss] = struct{}{}
 		// Iterate
 		parent := m.parent(source)
 		if parent == nil {

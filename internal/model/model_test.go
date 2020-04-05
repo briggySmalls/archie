@@ -103,11 +103,11 @@ func TestTrivialImplicitAssociations(t *testing.T) {
 	m.AddRootElement(two)
 
 	// Create a single association
-	m.AddAssociation(one, two, "force")
+	m.AddAssociation(one, two, []string{"force"})
 
 	// Assert implicit associations returns trivial solution
 	implicitRels := m.ImplicitAssociations()
-	assert.Assert(t, is.Contains(implicitRels, association{source: one, destination: two, tag: "force"}))
+	assert.Assert(t, is.Contains(implicitRels, association{source: one, destination: two, tags: []string{"force"}}))
 	assert.Assert(t, is.Len(implicitRels, 1))
 }
 
@@ -117,32 +117,32 @@ func TestDeepImplicitAssociations(t *testing.T) {
 	m, elMap := createModel()
 
 	// Link the children together
-	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"], "force")
-	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"], "heat")
-	m.AddAssociation(elMap["OneChild"], elMap["TwoChild"], "friction")
+	m.AddAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"], []string{"force"})
+	m.AddAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"], []string{"heat"})
+	m.AddAssociation(elMap["OneChild"], elMap["TwoChild"], []string{"friction"})
 
 	// Assert associations
-	assert.Assert(t, is.Contains(m.Associations, association{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(m.Associations, association{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
-	assert.Assert(t, is.Contains(m.Associations, association{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "friction"}))
+	assert.Assert(t, is.Contains(m.Associations, NewAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"], []string{"force"})))
+	assert.Assert(t, is.Contains(m.Associations, NewAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"], []string{"heat"})))
+	assert.Assert(t, is.Contains(m.Associations, NewAssociation(elMap["OneChild"], elMap["TwoChild"], []string{"friction"})))
 	assert.Assert(t, is.Len(m.Associations, 3))
 	// Assert implicit associations
 	implicitRels := m.ImplicitAssociations()
 	// TODO: Check we never link a child to it's parent
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["Two"], tag: "friction"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["Two"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["TwoChild"], tag: "friction"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["TwoChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["One"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["Two"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["Two"], tag: "friction"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "friction"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["TwoChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChild"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["Two"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["TwoChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["TwoChildChild"], tag: "force"}))
-	assert.Assert(t, is.Contains(implicitRels, association{source: elMap["OneChildChilda"], destination: elMap["OneChildChildb"], tag: "heat"}))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["One"], elMap["Two"], []string{"friction"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["One"], elMap["Two"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["One"], elMap["TwoChild"], []string{"friction"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["One"], elMap["TwoChild"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["One"], elMap["TwoChildChild"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChild"], elMap["Two"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChild"], elMap["Two"], []string{"friction"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChild"], elMap["TwoChild"], []string{"friction"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChild"], elMap["TwoChild"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChild"], elMap["TwoChildChild"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChildChilda"], elMap["Two"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChildChilda"], elMap["TwoChild"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChildChilda"], elMap["TwoChildChild"], []string{"force"})))
+	assert.Assert(t, is.Contains(implicitRels, NewAssociation(elMap["OneChildChilda"], elMap["OneChildChildb"], []string{"heat"})))
 	assert.Assert(t, is.Len(implicitRels, 14))
 }
 

@@ -46,15 +46,15 @@ elements:
 associations:
   - source: user
     destination: sound system/amplifier/input select
-    tag: press
+    tags: [press]
   - source: sound system/amplifier/input select
     destination: sound system/amplifier/mixer
-    tag: signal
+    tags: [signal]
   - source: sound system/amplifier/mixer
     destination: sound system/amplifier/audio in connector
   - source: sound system/amplifier/ac-dc converter
     destination: sound system/amplifier/mixer
-    tag: power
+    tags: [power]
   - source: sound system/amplifier/amplifier circuit
     destination: sound system/amplifier/audio out connector
   - source: sound system/speaker/cable
@@ -87,7 +87,8 @@ func TestRead(t *testing.T) {
 	// Check some association tags
 	ass, err := findFirstAssociation(m, "user", "input select")
 	assert.NilError(t, err)
-	assert.Equal(t, ass.Tag(), "press")
+	assert.Assert(t, is.Contains(ass.Tags(), "press"))
+	assert.Equal(t, len(ass.Tags()), 1)
 
 	// Check nested association
 	ass, err = findFirstAssociation(m, "ac-dc converter", "amplifier circuit")

@@ -82,8 +82,8 @@ func (p GraphvizStrategy) EndParentElement(scribe Scribe, element Element) {
 // Association writes an association
 func (p GraphvizStrategy) Association(scribe Scribe, association Association) {
 	scribe.WriteString(true, `"%s" -- "%s"`, association.Source().ID(), association.Destination().ID())
-	if association.Tag() != "" {
-		scribe.WriteString(false, ` [label = "%s"]`, association.Tag())
+	if len(association.Tags()) > 0 {
+		scribe.WriteString(false, ` [label = "%s"]`, strings.Join(association.Tags(), ",\\n"))
 	}
 	scribe.WriteString(false, "\n")
 }

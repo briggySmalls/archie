@@ -15,11 +15,11 @@ func TestTagElements(t *testing.T) {
 	m, elMap := createTagModel()
 
 	// Link the children together
-	m.AddAssociation(elMap["1/1/2"], elMap["1/1/1"], "detect")
-	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"], "start")
-	m.AddAssociation(elMap["1/2/1"], elMap["1/2/2"], "actuate")
-	m.AddAssociation(elMap["1/3"], elMap["1/1/1"], "listen")
-	m.AddAssociation(elMap["1/1/2"], elMap["1/2/2"], "spin")
+	m.AddAssociation(elMap["1/1/2"], elMap["1/1/1"], []string{"detect"})
+	m.AddAssociation(elMap["1/1/1"], elMap["1/2/1"], []string{"start"})
+	m.AddAssociation(elMap["1/2/1"], elMap["1/2/2"], []string{"actuate"})
+	m.AddAssociation(elMap["1/3"], elMap["1/1/1"], []string{"listen"})
+	m.AddAssociation(elMap["1/1/2"], elMap["1/2/2"], []string{"spin"})
 
 	// Create the view
 	l := NewTagView(m, elMap["1"], "software")
@@ -43,14 +43,14 @@ func TestTagElements(t *testing.T) {
 
 	// Check relationships are correct
 	expectedAssociations := []mdl.Association{
-		mdl.NewAssociation(elMap["1/1/2"], elMap["1/1/1"], "detect"),
-		mdl.NewAssociation(elMap["1/1/1"], elMap["1/2/1"], "start"),
-		mdl.NewAssociation(elMap["1/2/1"], elMap["1/2/2"], "actuate"),
-		mdl.NewAssociation(elMap["1/3"], elMap["1/1/1"], "listen"),
+		mdl.NewAssociation(elMap["1/1/2"], elMap["1/1/1"], []string{"detect"}),
+		mdl.NewAssociation(elMap["1/1/1"], elMap["1/2/1"], []string{"start"}),
+		mdl.NewAssociation(elMap["1/2/1"], elMap["1/2/2"], []string{"actuate"}),
+		mdl.NewAssociation(elMap["1/3"], elMap["1/1/1"], []string{"listen"}),
 	}
-	for _, el := range expectedAssociations {
+	for _, ass := range expectedAssociations {
 		// Assert elements are present
-		assert.Assert(t, is.Contains(l.Associations, el))
+		assert.Assert(t, is.Contains(l.Associations, ass))
 	}
 	assert.Assert(t, is.Len(l.Associations, len(expectedAssociations)))
 }

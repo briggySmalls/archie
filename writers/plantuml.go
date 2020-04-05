@@ -2,6 +2,7 @@ package writers
 
 import (
 	"fmt"
+	"strings"
 )
 
 // PlantUmlStrategy is the strategy for drawing a PlantUML diagram from a model/view.
@@ -52,8 +53,8 @@ func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element Element) {
 // Association writes an association in PlantUML syntax
 func (p PlantUmlStrategy) Association(scribe Scribe, association Association) {
 	linkStr := fmt.Sprintf("%s --> %s", association.Source().ID(), association.Destination().ID())
-	if association.Tag() != "" {
-		scribe.WriteLine("%s : \"%s\"", linkStr, association.Tag())
+	if len(association.Tags()) > 0 {
+		scribe.WriteLine("%s : \"%s\"", linkStr, strings.Join(association.Tags(), ",\\n"))
 	} else {
 		scribe.WriteLine(linkStr)
 	}
