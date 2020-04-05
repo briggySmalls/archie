@@ -54,7 +54,7 @@ func (p PlantUmlStrategy) EndParentElement(scribe Scribe, element Element) {
 func (p PlantUmlStrategy) Association(scribe Scribe, association Association) {
 	linkStr := fmt.Sprintf("%s --> %s", association.Source().ID(), association.Destination().ID())
 	if len(association.Tags()) > 0 {
-		scribe.WriteLine("%s : \"%s\"", linkStr, strings.Join(association.Tags(), ", "))
+		scribe.WriteLine("%s : \"%s\"", linkStr, strings.Join(association.Tags(), ",\\n"))
 	} else {
 		scribe.WriteLine(linkStr)
 	}
