@@ -1,20 +1,20 @@
 package writers
 
 import (
-	"gotest.tools/assert"
-	"testing"
+    "gotest.tools/assert"
+    "testing"
 )
 
 func TestDrawGraphviz(t *testing.T) {
-	// Create the test model
-	m, elMap := createTestModel()
+    // Create the test model
+    m, elMap := createTestModel()
 
-	// Drawer
-	d := New(GraphvizStrategy{})
-	output, err := d.Write(*m)
-	assert.NilError(t, err)
+    // Drawer
+    d := New(GraphvizStrategy{})
+    output, err := d.Write(*m)
+    assert.NilError(t, err)
 
-	const resultFormat = `graph arch {
+    const resultFormat = `digraph arch {
     graph [fontname=Helvetica]
     edge [fontsize=9; fontname=Helvetica; color="#333333"]
     node [shape=plaintext; margin=0; fontname=Helvetica]
@@ -40,9 +40,9 @@ func TestDrawGraphviz(t *testing.T) {
         margin = 0.04
         label = <User>
     ];
-    "%[2]s" -- "%[3]s"
+    "%[2]s" -> "%[3]s"
 }
 `
-	// Assert result
-	assertOutput(t, output, resultFormat, elMap)
+    // Assert result
+    assertOutput(t, output, resultFormat, elMap)
 }

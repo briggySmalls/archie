@@ -28,7 +28,7 @@ var colorMap = make(map[string]string)
 
 // Header writes the header
 func (p GraphvizStrategy) Header(scribe Scribe) {
-	scribe.WriteLine("graph arch {")
+	scribe.WriteLine("digraph arch {")
 	scribe.UpdateIndent(1)
 	scribe.WriteLine("graph [fontname=Helvetica]")
 	scribe.WriteLine(`edge [fontsize=9; fontname=Helvetica; color="#333333"]`)
@@ -81,7 +81,7 @@ func (p GraphvizStrategy) EndParentElement(scribe Scribe, element Element) {
 
 // Association writes an association
 func (p GraphvizStrategy) Association(scribe Scribe, association Association) {
-	scribe.WriteString(true, `"%s" -- "%s"`, association.Source().ID(), association.Destination().ID())
+	scribe.WriteString(true, `"%s" -> "%s"`, association.Source().ID(), association.Destination().ID())
 	if len(association.Tags()) > 0 {
 		scribe.WriteString(false, ` [label = "%s"]`, strings.Join(association.Tags(), ",\\n"))
 	}
