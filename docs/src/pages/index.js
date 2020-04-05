@@ -13,6 +13,17 @@ const IndexPage = () => (
       Archie is a lightweight tool for generating model-based architecture
       diagrams.
     </p>
+    <div class="archie">
+      config:
+        writer: graphviz
+      model:
+        elements:
+          - a
+          - b
+        associations:
+          - source: a
+            destination: b
+    </div>
     <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
       <Image />
     </div>

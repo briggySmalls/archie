@@ -3,14 +3,23 @@ import PropTypes from "prop-types"
 import axios from "axios"
 
 class Diagram extends React.Component {
-  async componentDidMount() {
+  constructor() {
+    super()
+    this.state = {diagram: ''}
+  }
+
+  componentDidMount() {
+    console.log("Running componentDidMount")
     // Make the request
-    const response = await axios.post(this.getEndpoint(), this.model)
-    // Save the response
-    this.setState({diagram: response.data})
+    axios
+      .post(this.getEndpoint(), this.props.children)
+      .then((response) => this.setState({diagram: response.data}))
+      .catch((error) => console.log(error))
+      .then(() => console.log(`It ran`))
   }
 
   render() {
+    console.log("Running render")
     return <div class="dot-diagram">{this.state.diagram}</div>
   }
 
@@ -32,7 +41,6 @@ class Diagram extends React.Component {
 }
 
 Diagram.propTypes = {
-  model: PropTypes.string.isRequired, // TODO: Find out why isRequired seems ineffectual
   type: PropTypes.string.isRequired, // TODO: Find out why isRequired seems ineffectual
   scope: PropTypes.string,
   tag: PropTypes.string,
