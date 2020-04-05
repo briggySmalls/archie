@@ -27,6 +27,7 @@ func TestLandscapeElements(t *testing.T) {
 	// Link the children together, redundantly
 	m.AddAssociation(oneChild, twoChild, []string{"tag1"})
 	m.AddAssociation(oneChild, twoChild, []string{"tag2"})
+	m.AddAssociation(one, twoChild, []string{"tag1"})
 
 	// Create the landscape view
 	l := NewLandscapeView(&m)
