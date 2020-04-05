@@ -4,25 +4,31 @@ import axios from "axios"
 
 class Diagram extends React.Component {
   async componentDidMount() {
-    // Build the request URL
+    // Make the request
+    const response = await axios.post(this.getEndpoint(), this.model)
+    // Save the response
+    this.setState({diagram: response.data})
+  }
+
+  render() {
+    return <div class="dot-diagram">{this.state.diagram}</div>
+  }
+
+  getEndpoint() {
+    // Get the base endpoint
     let endpoint = new URL(`http://localhost:3000/diagrams/${this.type}`)
-    let params = {}
+    // Add parameters
+    let params = []
     if (this.scope) {
-      params['scope'] = this.scope
+      params.push(`scope=${encodeURIComponent(this.scope)}`)
     }
     if (this.tag) {
-      params['tag'] = this.tag
+      params.push(`tag=${encodeURIComponent(this.tag)}`)
     }
-    // Make the request
-    const response = await axios.post(endpoint, model)
-    // Save the response
-
+    endpoint.search = `?${params.join('&')}`
+    // Return the string
+    return endpoint
   }
-}
-
-const Diagram = ({ model, type, scope, tag }) => {
-  // Request the
-  return <div><p>Type: { type }</p><p>Scope: { scope }</p><p>Tag: { tag }</p></div>;
 }
 
 Diagram.propTypes = {
