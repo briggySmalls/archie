@@ -48,9 +48,9 @@ func TestTagElements(t *testing.T) {
 		mdl.NewAssociation(elMap["1/2/1"], elMap["1/2/2"], []string{"actuate"}),
 		mdl.NewAssociation(elMap["1/3"], elMap["1/1/1"], []string{"listen"}),
 	}
-	for _, el := range expectedAssociations {
+	for _, ass := range expectedAssociations {
 		// Assert elements are present
-		assert.Assert(t, is.Contains(l.Associations, el))
+		assert.Assert(t, is.Contains(l.Associations, ass))
 	}
 	assert.Assert(t, is.Len(l.Associations, len(expectedAssociations)))
 }
