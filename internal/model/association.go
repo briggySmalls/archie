@@ -3,7 +3,7 @@ package model
 type association struct {
 	source      Element
 	destination Element
-	tags         []string
+	tags        []string
 }
 
 // Association describes an association
