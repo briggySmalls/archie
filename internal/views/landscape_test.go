@@ -24,8 +24,9 @@ func TestLandscapeElements(t *testing.T) {
 	m.AddRootElement(two)
 	m.AddElement(twoChild, two)
 
-	// Link the children together
-	m.AddAssociation(oneChild, twoChild, "")
+	// Link the children together, redundantly
+	m.AddAssociation(oneChild, twoChild, []string{"tag1"})
+	m.AddAssociation(oneChild, twoChild, []string{"tag2"})
 
 	// Create the landscape view
 	l := NewLandscapeView(&m)
@@ -39,7 +40,5 @@ func TestLandscapeElements(t *testing.T) {
 
 	// Check relationships are correct
 	assert.Assert(t, is.Len(l.Associations, 1))
-	rel := l.Associations[0]
-	assert.Equal(t, rel.Source(), one)
-	assert.Equal(t, rel.Destination(), two)
+	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(one, two, []string{"tag1", "tag2"})))
 }

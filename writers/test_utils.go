@@ -4,8 +4,8 @@ import (
 	"fmt"
 	mdl "github.com/briggysmalls/archie/internal/model"
 	"gotest.tools/assert"
-	"testing"
 	"sort"
+	"testing"
 )
 
 func createTestModel() (*mdl.Model, map[string]mdl.Element) {
@@ -25,7 +25,7 @@ func createTestModel() (*mdl.Model, map[string]mdl.Element) {
 	m.AddRootElement(two)
 
 	// Link the children together
-	m.AddAssociation(oneChild, two, "")
+	m.AddAssociation(oneChild, two, nil)
 
 	// Create the map
 	elMap := map[string]mdl.Element{
