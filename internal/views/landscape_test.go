@@ -40,5 +40,10 @@ func TestLandscapeElements(t *testing.T) {
 
 	// Check relationships are correct
 	assert.Assert(t, is.Len(l.Associations, 1))
-	assert.Assert(t, is.Contains(l.Associations, mdl.NewAssociation(one, two, []string{"tag1", "tag2"})))
+	ass := l.Associations[0]
+	assert.Equal(t, ass.Source(), one)
+	assert.Equal(t, ass.Destination(), two)
+	assert.Assert(t, is.Contains(ass.Tags(), "tag1"))
+	assert.Assert(t, is.Contains(ass.Tags(), "tag2"))
+	assert.Assert(t, is.Len(ass.Tags(), 2))
 }
