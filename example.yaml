@@ -1,3 +1,5 @@
+config:
+  writer: graphviz
 model:
   elements:
     - name: user
@@ -71,16 +73,16 @@ model:
     # Sound system
     - source: user
       destination: sound-system/amplifier/input select
+      tags: [press]
     - source: sound-system/speaker/driver
       destination: user
+      tags: [sound]
     - source: user
       destination: sound-system/amplifier/power button
+      tags: [press]
     # App
     - source: user
       destination: app/ui
     - source: app/bluetooth driver
       destination: sound-system/amplifier/bluetooth receiver
-config:
-  footer: |
-    skinparam nodesep 10
-    skinparam ranksep 20
+      tags: [sound, control]
