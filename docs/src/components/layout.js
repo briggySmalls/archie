@@ -36,7 +36,7 @@ const Layout = ({ children }) => {
         <main>{children}</main>
         <footer>
           © {new Date().getFullYear()}, Made with ❤️ by{" "}
-          <a href="https://github.com/briggySmalls" target="_blank">
+          <a href="https://github.com/briggySmalls" target="_blank" rel="noopener noreferrer">
             Sam Briggs
           </a>
         </footer>
