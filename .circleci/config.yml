@@ -49,13 +49,14 @@ jobs:
       - image: circleci/node:12
     steps:
       - checkout
-      - working_directory: ./docs
       - run:
           name: Install dependencies
           command: yarn install
+          working_directory: ./docs
       - run:
           name: Build docs
           command: yarn build
+          working_directory: ./docs
       - persist_to_workspace:
           root: .
           paths: docs/public
