@@ -35,7 +35,10 @@ const Layout = ({ children }) => {
       >
         <main>{children}</main>
         <footer>
-          © {new Date().getFullYear()}, Made with ❤️ by <a href="https://github.com/briggySmalls" target="_blank">Sam Briggs</a>
+          © {new Date().getFullYear()}, Made with ❤️ by{" "}
+          <a href="https://github.com/briggySmalls" target="_blank">
+            Sam Briggs
+          </a>
         </footer>
       </div>
     </>

@@ -9,7 +9,10 @@ const IndexPage = () => (
   <Layout>
     <SEO title="Home" />
     <h1>Systems engineering without the bloat</h1>
-    <p>Archie is a lightweight tool for generating model-based architecture diagrams.</p>
+    <p>
+      Archie is a lightweight tool for generating model-based architecture
+      diagrams.
+    </p>
     <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
       <Image />
     </div>
