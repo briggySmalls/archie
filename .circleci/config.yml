@@ -55,7 +55,7 @@ jobs:
           working_directory: ./docs
       - run:
           name: Build docs
-          command: yarn build
+          command: yarn build --prefix-paths
           working_directory: ./docs
       - persist_to_workspace:
           root: .
