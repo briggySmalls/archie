@@ -70,7 +70,6 @@ module.exports = ({ markdownAST }, pluginOptions) => new Promise(async (resolve,
     }
     // Get the model from the code block content
     const model = node.value
-    console.log(`${model}`)
     // Make the request
     const endpoint = getEndpoint(args)
     try {
