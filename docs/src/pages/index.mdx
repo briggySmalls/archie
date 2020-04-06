@@ -1,0 +1,38 @@
+import Layout from "../components/layout"
+
+<Layout>
+<SEO title="Home" />
+
+# Systems engineering without the bloat
+
+Archie is a lightweight tool for generating model-based architecture diagrams.
+
+Define a model...
+
+```yaml
+config:
+    writer: graphviz
+model:
+    elements:
+      - name: a
+      - name: b
+    associations:
+      - source: a
+        destination: b
+```
+
+Generate diagrams...
+
+```archie landscape
+config:
+    writer: graphviz
+model:
+    elements:
+      - name: a
+      - name: b
+    associations:
+      - source: a
+        destination: b
+```
+
+</Layout>
