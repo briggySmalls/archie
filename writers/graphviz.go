@@ -32,8 +32,8 @@ func (p GraphvizStrategy) Header(scribe Scribe) {
 	scribe.WriteLine("digraph arch {")
 	scribe.UpdateIndent(1)
 	scribe.WriteLine("graph [fontname=Helvetica]")
-	scribe.WriteLine(`edge [fontsize=9; fontname=Helvetica; color="#333333"]`)
-	scribe.WriteLine("node [shape=plaintext; margin=0; fontname=Helvetica]")
+	scribe.WriteLine(`edge [fontsize=9 fontname=Helvetica color="#333333"]`)
+	scribe.WriteLine("node [margin=0 fontname=Helvetica]")
 }
 
 // Footer writes a footer
@@ -51,12 +51,14 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 		scribe.WriteLine(`color = "#333333"`)
 		scribe.WriteLine("shape = circle")
 		scribe.WriteLine("margin = 0.04")
-		scribe.WriteLine("label = <%s>", element.Name())
+		scribe.WriteLine(`labelType="html"`)
+		scribe.WriteLine(`label = "%s"`, element.Name())
 	} else {
-		scribe.WriteLine(`label = <`)
+		scribe.WriteLine(`labelType="html"`)
+		scribe.WriteLine(`label = "`)
 		scribe.UpdateIndent(1)
 		// We render items as a table
-		scribe.WriteLine(`<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">`)
+		scribe.WriteLine(`<TABLE BORDER='0' CELLBORDER='0' CELLSPACING='0'>`)
 		// Create a header row for tags, if present
 		if len(element.Tags()) > 0 {
 			scribe.WriteLine(makeTags(element.Tags()))
@@ -65,9 +67,9 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 		scribe.WriteString(true, `<TR><TD`)
 		// If there are multiple tags then we want this column to span all of them
 		if len(element.Tags()) > 0 {
-			scribe.WriteString(false, ` COLSPAN="%d"`, len(element.Tags()))
+			scribe.WriteString(false, ` COLSPAN='%d'`, len(element.Tags()))
 		}
-		scribe.WriteString(false, " CELLPADDING=\"10\" BGCOLOR=\"#dbdbdb\">%s</TD></TR>\n", element.Name())
+		scribe.WriteString(false, " CELLPADDING='10' BGCOLOR='#dbdbdb'>%s</TD></TR>\n", element.Name())
 		scribe.WriteLine("</TABLE>>")
 		scribe.UpdateIndent(-1)
 	}
@@ -79,7 +81,8 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 func (p GraphvizStrategy) StartParentElement(scribe Scribe, element Element) {
 	scribe.WriteLine(`subgraph "cluster_%p" {`, element)
 	scribe.UpdateIndent(1)
-	scribe.WriteLine(`label = <%s>`, element.Name())
+	scribe.WriteLine(`labelType = "html"`)
+	scribe.WriteLine(`label = "%s"`, element.Name())
 }
 
 // EndParentElement writes the end of an enclosing/parent element
@@ -117,7 +120,7 @@ func makeTags(tags []string) string {
 			color = selectedColor
 		}
 		// Write the column
-		sb.WriteString(fmt.Sprintf(`<TD CELLPADDING="5" BGCOLOR="%s"><I><FONT POINT-SIZE="9">%s</FONT></I></TD>`, color, tag))
+		sb.WriteString(fmt.Sprintf(`<TD CELLPADDING='5' BGCOLOR='%s'><I><FONT POINT-SIZE='9'>%s</FONT></I></TD>`, color, tag))
 	}
 	sb.WriteString("</TR>")
 	return sb.String()
