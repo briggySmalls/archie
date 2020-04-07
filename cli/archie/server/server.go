@@ -75,10 +75,14 @@ func tagHandler(w http.ResponseWriter, r *http.Request) {
 
 func readSingleParameter(url *url.URL, parameter string) (value string, err error) {
 	items := url.Query()[parameter]
-	if len(items) != 1 {
+	switch (len(items)) {
+	case 0:
+		return "", nil
+	case 1:
+		return items[0], nil
+	default:
 		return "", fmt.Errorf("Invalid %s '%s'", parameter, items)
 	}
-	return items[0], nil
 }
 
 // Our custom error page
