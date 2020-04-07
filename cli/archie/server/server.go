@@ -14,29 +14,11 @@ import (
 func Serve(address string) error {
 	// Create a router
 	r := mux.NewRouter()
-	r.HandleFunc("/diagram/landscape", landscapeHandler).Methods("POST")
 	r.PathPrefix("/diagram/context").HandlerFunc(contextHandler).Methods("POST")
 	r.PathPrefix("/diagram/tag").HandlerFunc(tagHandler).Methods("POST")
 
 	// Serve
 	return http.ListenAndServe(address, r)
-}
-
-func landscapeHandler(w http.ResponseWriter, r *http.Request) {
-	// Get the model
-	archie, err := readModel(r)
-	if err != nil {
-		errorHandler(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	// Create a landscape view
-	chart, err := archie.LandscapeView()
-	if err != nil {
-		errorHandler(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	// Return diagram in browser
-	fmt.Fprintf(w, chart)
 }
 
 func contextHandler(w http.ResponseWriter, r *http.Request) {

@@ -10,7 +10,6 @@ import (
 
 // Archie diagram tool
 type Archie interface {
-	LandscapeView() (string, error)
 	ContextView(element string) (string, error)
 	TagView(element, tag string) (string, error)
 	Elements() map[string]string
@@ -36,26 +35,19 @@ func New(strategy writers.Strategy, yaml string) (Archie, error) {
 	}, nil
 }
 
-// LandscapeView creates a top-level diagram of the system.
-// The landscape comprises of root actors and elements, and the associations between them.
-func (a *archie) LandscapeView() (diagram string, err error) {
-	// Create the view
-	view := views.NewLandscapeView(a.model)
-	// Convert to diagram
-	diagram, err = a.writer.Write(view)
-	return
-}
-
 // ContextView creates a diagram that shows the context of the specified element.
 // The view contains: a) main elements of interest, b) relevant associated elements.
 // The main elements of interest are those that are children of the scoping element.
 // A relevant associated element is one that is associated to one of the child elements of the scope, where either:
 // the parent is an ancestor of scope, or it is a root element.
 func (a *archie) ContextView(scope string) (diagram string, err error) {
-	// Lookup the element
-	element, err := a.model.LookupName(scope, nil)
-	if err != nil {
-		return
+	var element mdl.Element
+	if scope != "" {
+		// Lookup the element
+		element, err = a.model.LookupName(scope, nil)
+		if err != nil {
+			return
+		}
 	}
 	// Create the view
 	view := views.NewContextView(a.model, element)

@@ -51,6 +51,5 @@ func init() {
 	fs.StringVarP(&tagScope, "scope", "s", "", "scope for the tag view")
 	fs.StringVarP(&tagTag, "tag", "t", "", "tag to filter by")
 
-	cobra.MarkFlagRequired(fs, "scope")
 	cobra.MarkFlagRequired(fs, "tag")
 }
