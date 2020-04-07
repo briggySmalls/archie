@@ -41,14 +41,9 @@ func New(strategy writers.Strategy, yaml string) (Archie, error) {
 // A relevant associated element is one that is associated to one of the child elements of the scope, where either:
 // the parent is an ancestor of scope, or it is a root element.
 func (a *archie) ContextView(scope string) (diagram string, err error) {
+	// Lookup the scope
 	var element mdl.Element
-	if scope != "" {
-		// Lookup the element
-		element, err = a.model.LookupName(scope, nil)
-		if err != nil {
-			return
-		}
-	}
+	element, err = a.lookupScope(scope)
 	// Create the view
 	view := views.NewContextView(a.model, element)
 	// Convert to diagram
@@ -62,11 +57,9 @@ func (a *archie) ContextView(scope string) (diagram string, err error) {
 // A relevant associated element is one that is associated to one of the child elements of the scope, where either:
 // the parent is an ancestor of scope, or it is a root element.
 func (a *archie) TagView(scope, tag string) (diagram string, err error) {
-	// Lookup the element
-	element, err := a.model.LookupName(scope, nil)
-	if err != nil {
-		return
-	}
+	// Lookup the scope
+	var element mdl.Element
+	element, err = a.lookupScope(scope)
 	// Create the view
 	view := views.NewTagView(a.model, element, tag)
 	// Convert to diagram
@@ -91,4 +84,17 @@ func (a *archie) Elements() map[string]string {
 	}
 	// Return the names
 	return elementLookup
+}
+
+// Helper function to lookup an element, if passed
+func (a *archie) lookupScope(scope string) (el mdl.Element, err error) {
+	if scope != "" {
+		// Lookup the element
+		el, err = a.model.LookupName(scope, nil)
+		if err != nil {
+			return
+		}
+	}
+	// Otherwise just return a nil element
+	return
 }
