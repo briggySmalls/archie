@@ -79,7 +79,7 @@ module.exports = ({ markdownAST }, pluginOptions) => new Promise(async (resolve,
       // Update the node
       node.type = 'html'
       node.children = undefined
-      node.value = `<div class="archie">${result.data}</div>`
+      node.value = `<Diagram>${result.data}</Diagram>`
     } catch (error) {
       // The request failed
       console.log(`Request to ${endpoint} failed: ${error}`)
