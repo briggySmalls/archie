@@ -29,7 +29,7 @@ func contextHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Determine the item
-	scope, err := readSingleParameter(r.URL, "scope")
+	scope, err := readSingleParameter(r.URL, "scope", true)
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
 		return
@@ -52,13 +52,13 @@ func tagHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Determine the item
-	scope, err := readSingleParameter(r.URL, "scope")
+	scope, err := readSingleParameter(r.URL, "scope", true)
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	// Determine the tag
-	tag, err := readSingleParameter(r.URL, "tag")
+	tag, err := readSingleParameter(r.URL, "tag", false)
 	if err != nil {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
 		return
@@ -73,13 +73,19 @@ func tagHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, chart)
 }
 
-func readSingleParameter(url *url.URL, parameter string) (value string, err error) {
+func readSingleParameter(url *url.URL, parameter string, allowEmpty bool) (value string, err error) {
 	items := url.Query()[parameter]
 	switch (len(items)) {
-	case 0:
-		return "", nil
 	case 1:
+		// If there is exactly one, we're always happy
 		return items[0], nil
+	case 0:
+		if allowEmpty {
+			// We're allowed to return an empty value
+			return "", nil
+		}
+		// Otherwise error
+		fallthrough
 	default:
 		return "", fmt.Errorf("Invalid %s '%s'", parameter, items)
 	}
