@@ -48,5 +48,4 @@ func init() {
 
 	fs := contextCmd.Flags()
 	fs.StringVarP(&contextScope, "scope", "s", "", "scope for the context")
-	cobra.MarkFlagRequired(fs, "scope")
 }

@@ -56,16 +56,6 @@ associations:
     destination: sound system/amplifier/ac-dc converter
 `
 
-func TestLandscape(t *testing.T) {
-	// Create an archie
-	a, err := New(writers.MermaidStrategy{}, yaml)
-	assert.NilError(t, err)
-
-	// Create a landscape view
-	_, err = a.LandscapeView()
-	assert.NilError(t, err)
-}
-
 func TestContext(t *testing.T) {
 	// Create an archie
 	a, err := New(writers.MermaidStrategy{}, yaml)

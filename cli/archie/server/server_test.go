@@ -69,8 +69,8 @@ func TestRoutes(t *testing.T) {
 		Lines   []string
 	}{
 		{
-			"diagram/landscape",
-			landscapeHandler,
+			"diagram/context",
+			contextHandler,
 			[]string{
 				"rectangle \"sound-system\" as",
 				"actor \"user\" as",
