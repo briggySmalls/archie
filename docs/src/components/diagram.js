@@ -1,33 +1,42 @@
-import React from "react"
-import dot from "graphlib-dot"
+import React from 'react'
+import Helmet from 'react-helmet'
 
-
-class Diagram extends React.Component {
-  componentDidMount() {
-      // D3 Code to create the chart
-      // using this._rootNode as container
-    // Read the children as a graph
-    const g = dot.read(this.props.children)
-    // Create the renderer
-    const render = new dot.graphlib.Graph().setGraph(g)
-    // Set up an SVG group so that we can translate the final graph.
-    const child = this._rootNode.appendChild(document.createElement('g'))
-    // Run the renderer. This is what draws the final graph.
-    render(child, g);
-  }
-
-  shouldComponentUpdate() {
-    // Prevents component re-rendering
-    return false;
-  }
-
-  _setRef(componentNode) {
-    this._rootNode = componentNode;
-  }
-
-  render() {
-    return <div className="line-container" ref={this._setRef.bind(this)} />
-  }
-}
+const Diagram = () => (
+  <>
+    <Helmet>
+      <script type="text/javascript" src="https://dagrejs.github.io/project/dagre-d3/latest/dagre-d3.min.js"></script>
+      <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+    </Helmet>
+    <script
+      dangerouslySetInnerHTML={{
+        __html: `
+          window.onload = function(e) {
+            // Create a renderer
+            const render = new dagreD3.render();
+            // Iterate through the graphs on the page
+            const els = d3.selectAll("div.graphviz");
+            console.log(els);
+            for (const el of els.nodes()) {
+              // Get the data
+              const dataEl = d3.select(el).select('script');
+              console.log(dataEl.html())
+              const data = JSON.parse(dataEl.html());
+              // Parse the graph
+              const g = dagreD3.graphlib.json.read(data);
+              // Add the svg
+              const svg = d3.select(el).append('svg');
+              const svgGroup = svg.append('g');
+              // Render
+              render(svgGroup, g);
+              // Set width/height
+              svg.attr("width", g.graph().width);
+              svg.attr("height", g.graph().height);
+            }
+          }
+        `,
+      }}
+    />
+  </>
+)
 
 export default Diagram
