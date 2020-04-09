@@ -1,6 +1,7 @@
 const visit = require(`unist-util-visit`)
 const axios = require(`axios`)
-const dot = require('graphlib-dot')
+const {spawn} = require('child_process');
+
 
 function parseArgs(args) {
   switch (args.length) {
@@ -70,14 +71,20 @@ module.exports = ({ markdownAST }, pluginOptions) => new Promise(async (resolve,
       console.log(`Request to ${endpoint} failed: ${error}`)
       reject(error)
     }
-    // Read the content as a graphviz graph
-    const g = dot.read(dotData);
-    // Seriealise the graph
-    const data = JSON.stringify(dot.graphlib.json.write(g))
+    // Create a subcommand to call dot
+    const dotProcess = spawn('dot', ['-Tsvg'], {stdio: ['pipe', 'pipe', process.stderr]}); // (A)
+    // Pipe in our diagram
+    dotProcess.stdin.write(dotData)
+    dotProcess.stdin.end()
+    // Fetch the response
+    let svg = ''
+    for await (const data of dotProcess.stdout) {
+      svg += data.toString()
+    };
     // Update the node
     node.type = 'html'
     node.children = undefined
-    node.value = `<div class="graphviz" data-graph="${encodeURIComponent(data)}"></div>`
+    node.value = svg
   }
   resolve(markdownAST)
 })
