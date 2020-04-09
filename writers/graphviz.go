@@ -24,7 +24,8 @@ var colors = []string{
 	"#ffed6f",
 }
 
-var colorMap = make(map[string]string)
+// Preallocate a map from tag to colour
+var colourMap = make(map[string]string)
 
 // Header writes the header
 func (p GraphvizStrategy) Header(scribe Scribe) {
@@ -96,28 +97,28 @@ func (p GraphvizStrategy) Association(scribe Scribe, association Association) {
 	scribe.WriteString(false, "\n")
 }
 
-// makeTags creates the title title containing tags
+// makeTags creates a column for every tag
 func makeTags(tags []string) string {
+	// Short-circuit if there are no tags
 	if len(tags) == 0 {
 		return ""
 	}
-
+	// Start building a row
 	var sb strings.Builder
 	sb.WriteString("<TR>")
-
+	// Create a column per tag
 	for _, tag := range tags {
-		color, hasColor := colorMap[tag]
+		// First check if we've encountered the tag already
+		color, hasColor := colourMap[tag]
+		// Allocate a new colour for the tag
 		if !hasColor {
-			selectedColor := colors[len(colorMap)]
-			colorMap[tag] = selectedColor
+			selectedColor := colors[len(colourMap)]
+			colourMap[tag] = selectedColor
 			color = selectedColor
 		}
-
-		templ := `<TD CELLPADDING="5" BGCOLOR="%s"><I><FONT POINT-SIZE="9">%s</FONT></I></TD>`
-		sb.WriteString(fmt.Sprintf(templ, color, tag))
+		// Write the column
+		sb.WriteString(fmt.Sprintf(`<TD CELLPADDING="5" BGCOLOR="%s"><I><FONT POINT-SIZE="9">%s</FONT></I></TD>`, color, tag))
 	}
-
 	sb.WriteString("</TR>")
-
 	return sb.String()
 }
