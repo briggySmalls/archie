@@ -112,7 +112,7 @@ func makeTags(tags []string) string {
 		color, hasColor := colourMap[tag]
 		// Allocate a new colour for the tag
 		if !hasColor {
-			selectedColor := colors[len(colourMap)]
+			selectedColor := colors[len(colourMap)%len(colors)]
 			colourMap[tag] = selectedColor
 			color = selectedColor
 		}
