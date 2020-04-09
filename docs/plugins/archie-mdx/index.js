@@ -84,7 +84,7 @@ module.exports = ({ markdownAST }, pluginOptions) => new Promise(async (resolve,
     // Update the node
     node.type = 'html'
     node.children = undefined
-    node.value = svg
+    node.value = `<div>${svg}</div>`
   }
   resolve(markdownAST)
 })
