@@ -1,0 +1,23 @@
+diagrams:
+  - type: context
+    scope: a
+model: |
+  config:
+    writer: graphviz
+  model:
+    elements:
+      - name: user
+        kind: actor
+      - name: a
+      - name: b
+        children:
+          - c
+          - d
+        associations:
+          - source: c
+            destination: d
+    associations:
+      - source: user
+        destination: a
+      - source: a
+        destination: b/c
