@@ -61,12 +61,12 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 			scribe.WriteLine(makeTags(element.Tags()))
 		}
 		// Start a row for the item name
-		scribe.WriteString(true, `<TR><TD `)
+		scribe.WriteString(true, `<TR><TD`)
 		// If there are multiple tags then we want this column to span all of them
 		if len(element.Tags()) > 0 {
-			scribe.WriteString(false, `COLSPAN="%d"`, len(element.Tags()))
+			scribe.WriteString(false, ` COLSPAN="%d"`, len(element.Tags()))
 		}
-		scribe.WriteString(false, "CELLPADDING=\"10\" BGCOLOR=\"#dbdbdb\">%s</TD></TR>\n", element.Name())
+		scribe.WriteString(false, " CELLPADDING=\"10\" BGCOLOR=\"#dbdbdb\">%s</TD></TR>\n", element.Name())
 		scribe.WriteLine("</TABLE>>")
 		scribe.UpdateIndent(-1)
 	}
