@@ -7,7 +7,7 @@ const Diagram = () => (
     <script
       dangerouslySetInnerHTML={{
         __html: `
-          window.onload = setTimeout(function() {
+          window.onload = function() {
             // Create a renderer
             const render = new dagreD3.render();
             // Iterate through the graphs on the page
@@ -28,7 +28,7 @@ const Diagram = () => (
               svg.attr("width", g.graph().width);
               svg.attr("height", g.graph().height);
             }
-          }, 1000);
+          }
         `,
       }}
     />
