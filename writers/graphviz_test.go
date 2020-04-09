@@ -23,7 +23,7 @@ func TestDrawGraphviz(t *testing.T) {
         "%[2]s" [
             label = <
                 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-                <TR><TD COLSPAN="0" CELLPADDING="10" BGCOLOR="#dbdbdb">OneChild</TD></TR>
+                <TR><TD CELLPADDING="10" BGCOLOR="#dbdbdb">OneChild</TD></TR>
                 </TABLE>>
         ];
     }
