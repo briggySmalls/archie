@@ -59,23 +59,25 @@ module.exports = ({ markdownAST }, pluginOptions) => new Promise(async (resolve,
     const model = node.value
     // Make the request
     const endpoint = getEndpoint(args)
+    var dotData
     try {
       // Request the diagram
       console.log(`Making request`)
       const result = await axios.post(endpoint, model)
-      // Read the content as a graphviz graph
-      const g = dot.read(result.data);
-      // Seriealise the graph
-      const data = JSON.stringify(dot.graphlib.json.write(g))
-      // Update the node
-      node.type = 'html'
-      node.children = undefined
-      node.value = `<div class="graphviz"><script>${data}</script></div>`
+      dotData = result.data
     } catch (error) {
       // The request failed
       console.log(`Request to ${endpoint} failed: ${error}`)
       reject(error)
     }
+    // Read the content as a graphviz graph
+    const g = dot.read(dotData);
+    // Seriealise the graph
+    const data = JSON.stringify(dot.graphlib.json.write(g))
+    // Update the node
+    node.type = 'html'
+    node.children = undefined
+    node.value = `<div class="graphviz"><script>${data}</script></div>`
   }
   resolve(markdownAST)
 })
