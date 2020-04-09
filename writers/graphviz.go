@@ -54,11 +54,19 @@ func (p GraphvizStrategy) Element(scribe Scribe, element Element) {
 	} else {
 		scribe.WriteLine(`label = <`)
 		scribe.UpdateIndent(1)
+		// We render items as a table
 		scribe.WriteLine(`<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">`)
+		// Create a header row for tags, if present
 		if len(element.Tags()) > 0 {
 			scribe.WriteLine(makeTags(element.Tags()))
 		}
-		scribe.WriteLine(`<TR><TD COLSPAN="%d" CELLPADDING="10" BGCOLOR="#dbdbdb">%s</TD></TR>`, len(element.Tags()), element.Name())
+		// Start a row for the item name
+		scribe.WriteString(true, `<TR><TD `)
+		// If there are multiple tags then we want this column to span all of them
+		if len(element.Tags()) > 0 {
+			scribe.WriteString(false, `COLSPAN="%d"`, len(element.Tags()))
+		}
+		scribe.WriteString(false, "CELLPADDING=\"10\" BGCOLOR=\"#dbdbdb\">%s</TD></TR>\n", element.Name())
 		scribe.WriteLine("</TABLE>>")
 		scribe.UpdateIndent(-1)
 	}
