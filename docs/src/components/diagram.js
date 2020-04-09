@@ -16,7 +16,6 @@ const Diagram = () => (
             for (const el of els.nodes()) {
               // Get the data
               const data = JSON.parse(decodeURIComponent(el.dataset.graph))
-              console.log(data)
               // Parse the graph
               const g = dagreD3.graphlib.json.read(data);
               // Add the svg
