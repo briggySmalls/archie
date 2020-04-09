@@ -15,9 +15,8 @@ const Diagram = () => (
             console.log(els);
             for (const el of els.nodes()) {
               // Get the data
-              const dataEl = d3.select(el).select('script');
-              console.log(dataEl.html())
-              const data = JSON.parse(dataEl.html());
+              const data = JSON.parse(decodeURIComponent(el.dataset.graph))
+              console.log(data)
               // Parse the graph
               const g = dagreD3.graphlib.json.read(data);
               // Add the svg

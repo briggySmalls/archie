@@ -77,7 +77,7 @@ module.exports = ({ markdownAST }, pluginOptions) => new Promise(async (resolve,
     // Update the node
     node.type = 'html'
     node.children = undefined
-    node.value = `<div class="graphviz"><script>${data}</script></div>`
+    node.value = `<div class="graphviz" data-graph="${encodeURIComponent(data)}"></div>`
   }
   resolve(markdownAST)
 })
