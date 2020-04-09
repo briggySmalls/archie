@@ -7,6 +7,16 @@ const axios = require('axios')
 const { spawn } = require('child_process');
 const { v4 } = require('uuid')
 const crypto = require('crypto')
+const winston = require('winston')
+
+const logger = winston.createLogger({
+  level: (process.env.NODE_ENV !== 'production') ? 'debug' : 'info',
+  format: winston.format.json(),
+  defaultMeta: { service: 'user-service' },
+  transports: [
+    new winston.transports.Console({format: winston.format.simple()}),
+  ]
+});
 
 exports.onCreateNode = async ({ node, actions }) => {
   // Short-circuit if we're not considering a yaml file
@@ -15,6 +25,9 @@ exports.onCreateNode = async ({ node, actions }) => {
   }
   // Get the archie model string
   const model = node.model
+  // Create an archie model node
+  // createModel(actions.createNode, model, node.id)
+  // Now create diagram nodes
   for (const diagram of node.diagrams) {
     // Get the arguments
     const args = {type: diagram.type}
@@ -24,37 +37,21 @@ exports.onCreateNode = async ({ node, actions }) => {
     const graphviz = await requestGraphviz(model, args)
     // Convert the dot graph to svg
     const svg = await convertToSvg(graphviz)
-    // Create a new node
-    const diagramNode = actions.createNode({
-      id: v4(),
-      value: svg,
-      args: args,
-      parent: node.id,
-      children: [],
-      internal: {
-        mediaType: `image/svg+xml`,
-        type: `SvgImage`,
-        contentDigest: crypto
-          .createHash(`md5`)
-          .update(JSON.stringify(svg))
-          .digest(`hex`),
-        description: `Image in SVG format`,
-      },
-    })
-    console.log(`node created`)
+    // Create a node
+    const diagramNode = createSvg(actions.createNode, svg, args, node.id)
     // Link the new node to its parent
     actions.createParentChildLink({parent: node, child: diagramNode})
   }
-  console.log(`finished!`)
+  logger.debug(`finished!`)
 }
 
 async function requestGraphviz(model, args) {
   const endpoint = getEndpoint(args)
   try {
     // Request the diagram
-    console.log(`Making request...`)
+    logger.debug(`Making request...`)
     const result = await axios.post(endpoint, model)
-    console.log(`request complete!`)
+    logger.debug(`request complete!`)
     return result.data
   } catch (error) {
     // The request failed
@@ -64,7 +61,7 @@ async function requestGraphviz(model, args) {
 
 async function convertToSvg(graphviz) {
   // Create a subcommand to call dot
-  console.log(`Converting with dot...`)
+  logger.debug(`Converting with dot...`)
   const dotProcess = spawn('dot', ['-Tsvg'], {stdio: ['pipe', 'pipe', process.stderr]}); // (A)
   // Pipe in our diagram
   dotProcess.stdin.write(graphviz)
@@ -74,7 +71,7 @@ async function convertToSvg(graphviz) {
   for await (const data of dotProcess.stdout) {
     svg += data.toString()
   };
-  console.log(`conversion complete!`)
+  logger.debug(`conversion complete!`)
   return svg;
 }
 
@@ -94,4 +91,41 @@ function getEndpoint(args) {
   }
   // Return the string
   return endpoint.toString()
+}
+
+function createSvg(create, svg, args, parentId) {
+  return create({
+    id: v4(),
+    value: svg,
+    args: args,
+    parent: parentId,
+    children: [],
+    internal: {
+      mediaType: `image/svg+xml`,
+      type: `SvgImage`,
+      contentDigest: crypto
+        .createHash(`md5`)
+        .update(JSON.stringify(svg))
+        .digest(`hex`),
+      description: `Image in SVG format`,
+    },
+  })
+}
+
+function createModel(create, model, parentId) {
+  return create({
+    id: v4(),
+    value: model,
+    parent: parentId,
+    children: [],
+    internal: {
+      mediaType: `text/yaml`,
+      type: `ArchieModel`,
+      contentDigest: crypto
+        .createHash(`md5`)
+        .update(JSON.stringify(model))
+        .digest(`hex`),
+      description: `Archie yaml model`,
+    },
+  })
 }
