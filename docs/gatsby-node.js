@@ -18,21 +18,24 @@ const logger = winston.createLogger({
   ]
 });
 
-exports.onCreateNode = async ({ node, actions }) => {
+exports.onCreateNode = async ({ node, getNode, actions }) => {
   // Short-circuit if we're not considering a yaml file
   if (node.internal.type !== `DataYaml`) {
     return
   }
   // Get the archie model string
   const model = node.model
+  // Get the filepath
+  const fileNode = getNode(node.parent)
   // Create an archie model node
-  // createModel(actions.createNode, model, node.id)
+  createModel(actions.createNode, model, fileNode.name, node.id)
   // Now create diagram nodes
   for (const diagram of node.diagrams) {
     // Get the arguments
     const args = {type: diagram.type}
     args.scope = diagram.hasOwnProperty('scope') ? diagram.scope : null
     args.tag = diagram.hasOwnProperty('tag') ? diagram.tag : null
+    args.name = fileNode.name
     // Get the dot graph
     const graphviz = await requestGraphviz(model, args)
     // Convert the dot graph to svg
@@ -112,10 +115,11 @@ function createSvg(create, svg, args, parentId) {
   })
 }
 
-function createModel(create, model, parentId) {
+function createModel(create, model, name, parentId) {
   return create({
     id: v4(),
     value: model,
+    name: name,
     parent: parentId,
     children: [],
     internal: {

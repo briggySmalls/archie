@@ -1,6 +1,8 @@
 diagrams:
   - type: context
     scope: a
+  - type: context
+    scope: b
 model: |
   config:
     writer: graphviz
