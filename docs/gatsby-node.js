@@ -80,9 +80,10 @@ async function convertToSvg(graphviz) {
 
 function getEndpoint(args) {
   // Get the base endpoint
-  let endpoint = new URL(`http://localhost:3000/diagram/${args.type}`)
+  const url = (process.env.ARCHIE_API) ? process.env.ARCHIE_API : `http://localhost:3000`
+  const endpoint = new URL(`${url}/diagram/${args.type}`)
   // Add parameters
-  let params = []
+  const params = []
   if (args.scope) {
     params.push(`scope=${encodeURIComponent(args.scope)}`)
   }
