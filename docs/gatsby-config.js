@@ -15,16 +15,7 @@ module.exports = {
     },
     `gatsby-transformer-yaml`,
     `gatsby-transformer-sharp`,
-    {
-      resolve: `gatsby-plugin-mdx`,
-      options: {
-        gatsbyRemarkPlugins: [
-          {
-            resolve: require.resolve('./plugins/archie-mdx')
-          }
-        ]
-      }
-    },
+    `gatsby-plugin-mdx`,
     `gatsby-plugin-sharp`,
     {
       resolve: `gatsby-plugin-manifest`,
