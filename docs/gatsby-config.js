@@ -13,6 +13,7 @@ module.exports = {
         path: `${__dirname}/src`,
       },
     },
+    `gatsby-transformer-yaml`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-mdx`,
     `gatsby-plugin-sharp`,

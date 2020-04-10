@@ -5,8 +5,10 @@
   "version": "0.1.0",
   "author": "Kyle Mathews <mathews.kyle@gmail.com>",
   "dependencies": {
+    "@material-ui/core": "^4.9.9",
     "@mdx-js/mdx": "^1.5.8",
     "@mdx-js/react": "^1.5.8",
+    "axios": "^0.19.2",
     "gatsby": "^2.20.12",
     "gatsby-image": "^2.3.1",
     "gatsby-plugin-manifest": "^2.3.3",
@@ -17,10 +19,13 @@
     "gatsby-source-filesystem": "^2.2.2",
     "gatsby-transformer-remark": "^2.7.1",
     "gatsby-transformer-sharp": "^2.4.3",
+    "gatsby-transformer-yaml": "^2.3.1",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-helmet": "^5.2.1"
+    "react-helmet": "^5.2.1",
+    "uuid": "^7.0.3",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "prettier": "^1.19.1"
@@ -30,6 +35,7 @@
   ],
   "license": "MIT",
   "scripts": {
+    "static": "cp node_modules/graphlib-dot/dist/graphlib-dot.min.js static",
     "build": "gatsby build",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
