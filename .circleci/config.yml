@@ -47,8 +47,17 @@ jobs:
   docs-build:
     docker:
       - image: circleci/node:12
+        environment:
+          ARCHIE_API: http://localhost:80
+      - image: briggysmalls/archie:v0.4.0
     steps:
       - checkout
+      - run:
+          name: Update apt
+          command: sudo apt-get update
+      - run:
+          name: Install graphviz
+          command: sudo apt-get install graphviz
       - run:
           name: Install dependencies
           command: yarn install
