@@ -124,7 +124,7 @@ function createModel(create, model, name, parentId) {
     parent: parentId,
     children: [],
     internal: {
-      mediaType: `text/yaml`,
+      mediaType: `text/archie`,
       type: `ArchieModel`,
       contentDigest: crypto
         .createHash(`md5`)
