@@ -1,27 +1,64 @@
 import Layout from "../components/layout"
 import { Link } from "gatsby"
+import { graphql } from "gatsby";
+
+export const query = graphql`
+query {
+  model: archieModel(name: {eq: "sound-system"}) {
+    value
+  }
+  landscape: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: null}}) {
+    value
+  }
+  soundSystem: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: "sound-system"}}) {
+    value
+  }
+  amplifier: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: "sound-system/amplifier"}}) {
+    value
+  }
+}
+`
 
 <Layout>
 <SEO title="Overview" />
 
 # Overview
 
-Archie is a lightweight tool for generating model-based architecture diagrams.
+So why does archie exist? Here are some motivators:
 
-Its features:
+- **A picture's worth a thousand words**: diagrams are good for conveying system design.
+- **Hand-drawing diagrams is distracting**: who wants to reposition boxes and lines?
+- **Don't try to say too much**: a complex system is, well, complex. So it's better to have multiple diagrams (or views) of the same system.
+- **Consistency problem**: changes, like renaming a component, shouldn't require manual updates in loads of diagrams
 
-- Diagrams generated from a yaml model
-  - Actor elements (users)
-  - Item elements (modules) that may be infinitly composed (sub-elements)
-  - Associations between any elements
-  - Elements and associations may be tagged
-- Various diagrams
-  - Landscape view for reviewing root elements
-  - Context view for reviewing an item and it's interfaces
-  - Tag view for reviewing a type of item in the system
-- Various methods for invocation
-  - A CLI for local generation
-  - A REST API for remote generation/interfacing
+
+## The CAD analogy
+
+Mechanical engineers have Computer Aided Design (CAD) in their toolkit.
+
+Physical parts are designed in a modelling software, and technical drawings can be produced for different parts.
+Updating the diameter of a hole? No problem, the new technical drawings will reflect that, wherever it appears.
+
+Model-based systems engineering (MBSE) is the systems equivalent!
+
+## Walkthrough
+
+Lets say we're designing a snazzy new home audio system.
+We might start off by picturing it in the home, and the systems it might talk to:
+
+<div dangerouslySetInnerHTML={{ __html: props.data.landscape.value }} />
+
+Happy in the knowledge that we know what our system will talk to, we open it up and define the innards:
+
+<div dangerouslySetInnerHTML={{ __html: props.data.soundSystem.value }} />
+
+Now what's going on in that amplifier?
+
+<div dangerouslySetInnerHTML={{ __html: props.data.amplifier.value }} />
+
+Notice how there is no connection between 'speaker' and 'user'?
+The amplifier doesn't care about that, it just cares about its inputs and outputs,
+so that is removed from the diagram. Don't try to say too much!
 
 <Link to="/installation/">Installation</Link>
 

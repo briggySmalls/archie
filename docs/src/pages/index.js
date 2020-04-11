@@ -23,7 +23,7 @@ const HomePage = ({data}) => {
           <div dangerouslySetInnerHTML={{ __html: data.scopeA.value }} />
         </Grid>
         <Grid item>
-          <h2>Context of C</h2>
+          <h2>Context of B</h2>
           <div dangerouslySetInnerHTML={{ __html: data.scopeB.value }} />
         </Grid>
       </Grid>
@@ -32,7 +32,7 @@ const HomePage = ({data}) => {
 }
 
 export const query = graphql`
-query MyQuery {
+query {
   model: archieModel(name: {eq: "simple"}) {
     value
   }
