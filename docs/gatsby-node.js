@@ -18,6 +18,37 @@ const logger = winston.createLogger({
   ]
 });
 
+exports.createSchemaCustomization = ({ actions }) => {
+  const { createTypes } = actions
+  const typeDefs = `
+    """
+    Archie Node
+    """
+    type ArchieModel implements Node @infer {
+      name: String!
+      value: String!
+    }
+
+    """
+    SVG Node
+    """
+    type SvgImage implements Node @infer {
+      name: String!
+      args: Args!
+    }
+
+    """
+    Args Node
+    """
+    type Args {
+      name: String!
+      scope: String
+      tag: String
+    }
+  `
+  createTypes(typeDefs)
+}
+
 exports.onCreateNode = async ({ node, getNode, actions }) => {
   // Short-circuit if we're not considering a yaml file
   if (node.internal.type !== `DataYaml`) {

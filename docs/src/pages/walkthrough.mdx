@@ -1,4 +1,5 @@
 import Layout from "../components/layout"
+import SEO from "../components/seo"
 import { Link } from "gatsby"
 import { graphql } from "gatsby";
 
@@ -20,26 +21,7 @@ query {
 `
 
 <Layout>
-<SEO title="Overview" />
-
-# Overview
-
-So why does archie exist? Here are some motivators:
-
-- **A picture's worth a thousand words**: diagrams are good for conveying system design.
-- **Hand-drawing diagrams is distracting**: who wants to reposition boxes and lines?
-- **Don't try to say too much**: a complex system is, well, complex. So it's better to have multiple diagrams (or views) of the same system.
-- **Consistency problem**: changes, like renaming a component, shouldn't require manual updates in loads of diagrams
-
-
-## The CAD analogy
-
-Mechanical engineers have Computer Aided Design (CAD) in their toolkit.
-
-Physical parts are designed in a modelling software, and technical drawings can be produced for different parts.
-Updating the diameter of a hole? No problem, the new technical drawings will reflect that, wherever it appears.
-
-Model-based systems engineering (MBSE) is the systems equivalent!
+<SEO title="Walkthrough" />
 
 ## Walkthrough
 
@@ -59,6 +41,10 @@ Now what's going on in that amplifier?
 Notice how there is no connection between 'speaker' and 'user'?
 The amplifier doesn't care about that, it just cares about its inputs and outputs,
 so that is removed from the diagram. Don't try to say too much!
+
+All of those diagrams, and more, are enabled by the existence of a single model file:
+
+<pre><div dangerouslySetInnerHTML={{ __html: props.data.model.value }} /></pre>
 
 <Link to="/installation/">Installation</Link>
 
