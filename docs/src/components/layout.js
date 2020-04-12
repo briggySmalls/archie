@@ -20,6 +20,7 @@ import Hidden from '@material-ui/core/Hidden';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { Link } from "gatsby"
 
 const drawerWidth = 240;
 
@@ -55,10 +56,20 @@ const useStyles = makeStyles((theme) => ({
 
 const Layout = ({ children }) => {
   const data = useStaticQuery(graphql`
-    query SiteTitleQuery {
+    query {
       site {
         siteMetadata {
           title
+        }
+      }
+      allMdx {
+        edges {
+          node {
+            frontmatter {
+              title
+              isMenuItem
+            }
+          }
         }
       }
     }
@@ -75,11 +86,14 @@ const Layout = ({ children }) => {
       <div>
         <div className={classes.toolbar} />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          {data.allMdx.edges.map((edge, index) => {
+            const title = edge.node.frontmatter.title
+            return (
+              <ListItem button key={title} component={Link} to='/some-url'>
+                <ListItemText primary={title} />
+              </ListItem>
+            )
+          })}
         </List>
       </div>
     );
