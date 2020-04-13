@@ -111,26 +111,26 @@ const Layout = ({ children }) => {
 
   return (
     <>
-      {/* Display a topbar */}
-      <AppBar position="sticky" className={classes.appBar}>
-        <Toolbar>
-          <Hidden smUp implementation="css">
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Hidden>
-          <Link to='/'>
-            <MaterialLink variant="h6" noWrap>
+      <header>
+        {/* Display a topbar */}
+        <AppBar position="sticky" className={classes.appBar}>
+          <Toolbar>
+            <Hidden smUp implementation="css">
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Hidden>
+            <MaterialLink variant="h6" color="inherit" noWrap component={Link} to='/'>
               {data.site.siteMetadata.title}
             </MaterialLink>
-          </Link>
-        </Toolbar>
-      </AppBar>
+          </Toolbar>
+        </AppBar>
+      </header>
       <nav className={classes.drawer} aria-label="mailbox folders">
         {/* Drawer for mobile */}
         <Hidden smUp implementation="css">
