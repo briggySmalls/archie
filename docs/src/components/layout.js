@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Layout = ({ children }) => {
+const Layout = ({ showSidebar, children }) => {
   // Prepare our CSS styles
   const classes = useStyles();
   // Request site data
@@ -88,80 +88,97 @@ const Layout = ({ children }) => {
 
   // Design a drawer for navigating content
   const drawer = (
-      <div>
-        <div className={classes.toolbar} />
-        <List>
-          {
-            // Sort the site data by menuPosition
-            data.allMdx.edges.sort(function (a, b) {
-              return a.node.frontmatter.menuPosition - b.node.frontmatter.menuPosition
-            }).map((edge, index) => {
-              const title = edge.node.frontmatter.title
-              const slug = edge.node.fields.slug
-              return (
-                <ListItem button key={title} component={Link} to={slug}>
-                  <ListItemText primary={title} />
-                </ListItem>
-              )
-            })
+    <div>
+      <div className={classes.toolbar} />
+      <List>
+        {
+          // Sort the site data by menuPosition
+          data.allMdx.edges.sort(function (a, b) {
+            return a.node.frontmatter.menuPosition - b.node.frontmatter.menuPosition
+          }).map((edge, index) => {
+            const title = edge.node.frontmatter.title
+            const slug = edge.node.fields.slug
+            return (
+              <ListItem button key={title} component={Link} to={slug}>
+                <ListItemText primary={title} />
+              </ListItem>
+            )
+          })
+        }
+      </List>
+    </div>
+  )
+
+  // Show draw responsively
+  const responsiveDrawer = (
+    <>
+      {/* Drawer for mobile */}
+      <Hidden smUp implementation="css">
+        <Drawer
+          variant="temporary"
+          anchor='left'
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          ModalProps={{
+            keepMounted: true, // Better open performance on mobile.
+          }}
+        >
+          {drawer}
+        </Drawer>
+      </Hidden>
+      {/* Drawer for desktop */}
+      <Hidden xsDown implementation="css">
+        <Drawer
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+          variant="permanent"
+          open
+        >
+          {drawer}
+        </Drawer>
+      </Hidden>
+    </>
+  )
+
+  // Topbar to hold site title, etc
+  const appBar = (
+    <AppBar position="sticky" className={classes.appBar}>
+      <Toolbar>
+        <Hidden smUp implementation="css">
+          {/* Only show sidebar toggler if instructed */}
+          {showSidebar &&
+            <IconButton
+              color="inherit"
+              aria-label="open menu"
+              edge="start"
+              onClick={handleDrawerToggle}
+            >
+              <MenuIcon />
+            </IconButton>
           }
-        </List>
-      </div>
-    );
+        </Hidden>
+        <MaterialLink variant="h6" color="inherit" noWrap component={Link} to='/'>
+          {data.site.siteMetadata.title}
+        </MaterialLink>
+      </Toolbar>
+    </AppBar>
+  )
 
   return (
     <>
       <header>
-        {/* Display a topbar */}
-        <AppBar position="sticky" className={classes.appBar}>
-          <Toolbar>
-            <Hidden smUp implementation="css">
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                edge="start"
-                onClick={handleDrawerToggle}
-              >
-                <MenuIcon />
-              </IconButton>
-            </Hidden>
-            <MaterialLink variant="h6" color="inherit" noWrap component={Link} to='/'>
-              {data.site.siteMetadata.title}
-            </MaterialLink>
-          </Toolbar>
-        </AppBar>
+        {appBar}
       </header>
-      <nav className={classes.drawer} aria-label="mailbox folders">
-        {/* Drawer for mobile */}
-        <Hidden smUp implementation="css">
-          <Drawer
-            variant="temporary"
-            anchor='left'
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-          >
-            {drawer}
-          </Drawer>
-        </Hidden>
-        {/* Drawer for desktop */}
-        <Hidden xsDown implementation="css">
-          <Drawer
-            classes={{
-              paper: classes.drawerPaper,
-            }}
-            variant="permanent"
-            open
-          >
-            {drawer}
-          </Drawer>
-        </Hidden>
-      </nav>
+      {/* Only show drawer if instructed */}
+      {showSidebar &&
+        <nav className={classes.drawer} aria-label="site pages">
+          {responsiveDrawer}
+        </nav>
+      }
       <div
         style={{
           margin: `0 auto`,
@@ -182,7 +199,12 @@ const Layout = ({ children }) => {
 }
 
 Layout.propTypes = {
+  showSidebar: PropTypes.node.isRequired,
   children: PropTypes.node.isRequired,
+}
+
+Layout.defaultProps = {
+  showSidebar: true,
 }
 
 export default Layout

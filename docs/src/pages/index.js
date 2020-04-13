@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 
 const HomePage = ({data}) => {
   return (
-    <Layout>
+    <Layout showSidebar={false}>
       <SEO title="Home" />
       <h1>Systems engineering without the bloat</h1>
       <p>Archie is a lightweight tool for generating model-based architecture diagrams.</p>
