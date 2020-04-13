@@ -75,7 +75,7 @@ func tagHandler(w http.ResponseWriter, r *http.Request) {
 
 func readSingleParameter(url *url.URL, parameter string, allowEmpty bool) (value string, err error) {
 	items := url.Query()[parameter]
-	switch (len(items)) {
+	switch len(items) {
 	case 1:
 		// If there is exactly one, we're always happy
 		return items[0], nil
