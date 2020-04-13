@@ -12,7 +12,6 @@ import AppBar from '@material-ui/core/AppBar';
 import MenuIcon from '@material-ui/icons/Menu';
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import "./layout.css"
 import Drawer from '@material-ui/core/Drawer';
@@ -21,6 +20,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from "gatsby"
+import MaterialLink from '@material-ui/core/Link';
 
 const drawerWidth = 240;
 
@@ -55,6 +55,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Layout = ({ children }) => {
+  // Prepare our CSS styles
+  const classes = useStyles();
+  // Request site data
   const data = useStaticQuery(graphql`
     query {
       site {
@@ -62,45 +65,54 @@ const Layout = ({ children }) => {
           title
         }
       }
-      allMdx {
+      allMdx(filter: {frontmatter: {menuPosition: {ne: null}}}) {
         edges {
           node {
             frontmatter {
               title
-              isMenuItem
+              menuPosition
+            }
+            fields {
+              slug
             }
           }
         }
       }
     }
   `)
-
+  // Handle hide/show of menu on mobile
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
-  const classes = useStyles();
 
-  // Design a drawer
+  // Design a drawer for navigating content
   const drawer = (
       <div>
         <div className={classes.toolbar} />
         <List>
-          {data.allMdx.edges.map((edge, index) => {
-            const title = edge.node.frontmatter.title
-            return (
-              <ListItem button key={title} component={Link} to='/some-url'>
-                <ListItemText primary={title} />
-              </ListItem>
-            )
-          })}
+          {
+            // Sort the site data by menuPosition
+            data.allMdx.edges.sort(function (a, b) {
+              return a.node.frontmatter.menuPosition - b.node.frontmatter.menuPosition
+            }).map((edge, index) => {
+              const title = edge.node.frontmatter.title
+              const slug = edge.node.fields.slug
+              return (
+                <ListItem button key={title} component={Link} to={slug}>
+                  <ListItemText primary={title} />
+                </ListItem>
+              )
+            })
+          }
         </List>
       </div>
     );
 
   return (
     <>
-      <AppBar position="fixed" className={classes.appBar}>
+      {/* Display a topbar */}
+      <AppBar position="sticky" className={classes.appBar}>
         <Toolbar>
           <Hidden smUp implementation="css">
             <IconButton
@@ -112,12 +124,15 @@ const Layout = ({ children }) => {
               <MenuIcon />
             </IconButton>
           </Hidden>
-          <Typography variant="h6" noWrap>
-            {data.site.siteMetadata.title}
-          </Typography>
+          <Link to='/'>
+            <MaterialLink variant="h6" noWrap>
+              {data.site.siteMetadata.title}
+            </MaterialLink>
+          </Link>
         </Toolbar>
       </AppBar>
       <nav className={classes.drawer} aria-label="mailbox folders">
+        {/* Drawer for mobile */}
         <Hidden smUp implementation="css">
           <Drawer
             variant="temporary"
@@ -134,7 +149,7 @@ const Layout = ({ children }) => {
             {drawer}
           </Drawer>
         </Hidden>
-        {/* Drawer for mobile */}
+        {/* Drawer for desktop */}
         <Hidden xsDown implementation="css">
           <Drawer
             classes={{
