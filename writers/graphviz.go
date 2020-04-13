@@ -7,6 +7,7 @@ import (
 
 // GraphvizStrategy is the strategy for drawing a graphviz graph from a model/view.
 type GraphvizStrategy struct {
+	CustomFooter string
 }
 
 var colors = []string{
@@ -38,6 +39,9 @@ func (p GraphvizStrategy) Header(scribe Scribe) {
 
 // Footer writes a footer
 func (p GraphvizStrategy) Footer(scribe Scribe) {
+	for _, line := range strings.Split(p.CustomFooter, "\n") {
+		scribe.WriteLine(line)
+	}
 	scribe.UpdateIndent(-1)
 	scribe.WriteLine("}")
 }

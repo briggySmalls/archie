@@ -40,7 +40,7 @@ func ReadModel(modelAndConfig []byte) (archie.Archie, error) {
 	case "plantuml":
 		writer = writers.PlantUmlStrategy{CustomFooter: p.Config.Footer}
 	case "graphviz":
-		writer = writers.GraphvizStrategy{}
+		writer = writers.GraphvizStrategy{CustomFooter: p.Config.Footer}
 	default:
 		return nil, fmt.Errorf("Unexpected writer strategy: %s", p.Config.Writer)
 	}
