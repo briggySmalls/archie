@@ -1,0 +1,84 @@
+diagrams:
+  - type: context
+  - type: context
+    scope: sound-system
+  - type: context
+    scope: sound-system/amplifier
+model: |
+  config:
+    writer: graphviz
+  model:
+    elements:
+      - name: user
+        kind: actor
+      - name: sound-system
+        children:
+          - name: speaker
+            children:
+              - name: enclosure
+                tags: [physical]
+              - name: driver
+                tags: [electronic, mechanical]
+              - connector
+              - cable
+            associations:
+              - source: cable
+                destination: connector
+              - source: connector
+                destination: driver
+              - source: driver
+                destination: enclosure
+          - name: amplifier
+            children:
+              - name: connector
+                tags: [electronic]
+              - name: bluetooth receiver
+                tags: [electronic]
+              - name: ac-dc converter
+                tags: [electronic]
+              - name: mixer
+                tags: [electronic]
+              - name: amplifier
+                tags: [electronic]
+              - name: power button
+                tags: [electronic, mechanical]
+            associations:
+              - source: bluetooth receiver
+                destination: amplifier
+              - source: ac-dc converter
+                destination: bluetooth receiver
+              - source: mixer
+                destination: amplifier
+              - source: ac-dc converter
+                destination: amplifier
+              - source: amplifier
+                destination: connector
+              - source: power button
+                destination: ac-dc converter
+        associations:
+          - source: amplifier/connector
+            destination: speaker/cable
+      - name: app
+        children:
+        - bluetooth driver
+        - spotify client
+        - ui
+        associations:
+        - source: ui
+          destination: spotify client
+        - source: spotify client
+          destination: bluetooth driver
+    associations:
+      # Sound system
+      - source: sound-system/speaker/driver
+        destination: user
+        tags: [sound]
+      - source: user
+        destination: sound-system/amplifier/power button
+        tags: [press]
+      # App
+      - source: user
+        destination: app/ui
+      - source: app/bluetooth driver
+        destination: sound-system/amplifier/bluetooth receiver
+        tags: [control]

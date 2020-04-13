@@ -8,11 +8,11 @@ import Button from '@material-ui/core/Button';
 
 const HomePage = ({data}) => {
   return (
-    <Layout>
+    <Layout showSidebar={false}>
       <SEO title="Home" />
       <h1>Systems engineering without the bloat</h1>
       <p>Archie is a lightweight tool for generating model-based architecture diagrams.</p>
-      <Link to="/overview/"><Button color="primary">Learn more...</Button></Link>
+      <Link to="/rationale/"><Button color="primary">Learn more...</Button></Link>
       <Grid container spacing={3}>
         <Grid item>
           <h2>Define a model...</h2>
@@ -23,7 +23,7 @@ const HomePage = ({data}) => {
           <div dangerouslySetInnerHTML={{ __html: data.scopeA.value }} />
         </Grid>
         <Grid item>
-          <h2>Context of C</h2>
+          <h2>Context of B</h2>
           <div dangerouslySetInnerHTML={{ __html: data.scopeB.value }} />
         </Grid>
       </Grid>
@@ -32,7 +32,7 @@ const HomePage = ({data}) => {
 }
 
 export const query = graphql`
-query MyQuery {
+query {
   model: archieModel(name: {eq: "simple"}) {
     value
   }

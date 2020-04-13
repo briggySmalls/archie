@@ -1,0 +1,56 @@
+---
+title: Walkthrough
+menuPosition: 2
+---
+
+import Layout from "../components/layout"
+import SEO from "../components/seo"
+import { Link } from "gatsby"
+import { graphql } from "gatsby";
+
+export const query = graphql`
+query {
+  model: archieModel(name: {eq: "sound-system"}) {
+    value
+  }
+  landscape: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: null}}) {
+    value
+  }
+  soundSystem: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: "sound-system"}}) {
+    value
+  }
+  amplifier: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: "sound-system/amplifier"}}) {
+    value
+  }
+}
+`
+
+<Layout>
+<SEO title="Walkthrough" />
+
+# Walkthrough
+
+Lets say we're designing a snazzy new home audio system.
+We might start off by picturing it in the home, and the systems it might talk to:
+
+<div dangerouslySetInnerHTML={{ __html: props.data.landscape.value }} />
+
+Happy in the knowledge that we know what our system will talk to, we open it up and define the innards:
+
+<div dangerouslySetInnerHTML={{ __html: props.data.soundSystem.value }} />
+
+Now what's going on in that amplifier?
+
+<div dangerouslySetInnerHTML={{ __html: props.data.amplifier.value }} />
+
+Notice how there is no connection between 'speaker' and 'user'?
+The amplifier doesn't care about that, it just cares about its inputs and outputs,
+so that is removed from the diagram. Don't try to say too much!
+
+All of those diagrams, and more, are enabled by the existence of a single model file:
+
+<pre><div dangerouslySetInnerHTML={{ __html: props.data.model.value }} /></pre>
+
+<Link to="/installation/">Installation</Link>
+
+</Layout>

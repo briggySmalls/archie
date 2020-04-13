@@ -8,6 +8,7 @@ const { spawn } = require('child_process');
 const { v4 } = require('uuid')
 const crypto = require('crypto')
 const winston = require('winston')
+const { createFilePath } = require(`gatsby-source-filesystem`)
 
 const logger = winston.createLogger({
   level: (process.env.NODE_ENV !== 'production') ? 'debug' : 'info',
@@ -18,17 +19,74 @@ const logger = winston.createLogger({
   ]
 });
 
+exports.createSchemaCustomization = ({ actions }) => {
+  const { createTypes } = actions
+  const typeDefs = `
+    """
+    Archie Node
+    """
+    type ArchieModel implements Node @infer {
+      name: String!
+      value: String!
+    }
+
+    """
+    SVG Node
+    """
+    type SvgImage implements Node @infer {
+      name: String!
+      args: Args!
+    }
+
+    """
+    Args Node
+    """
+    type Args {
+      name: String!
+      scope: String
+      tag: String
+    }
+  `
+  createTypes(typeDefs)
+}
+
 exports.onCreateNode = async ({ node, getNode, actions }) => {
-  // Short-circuit if we're not considering a yaml file
-  if (node.internal.type !== `DataYaml`) {
-    return
+  // Pull out the actions we care about
+  const { createNode, createNodeField, createParentChildLink } = actions
+  // Process nodes of interest
+  switch (node.internal.type) {
+    case `DataYaml`:
+      // Convert yaml files into archie nodes
+      await processArchie(node, getNode, createNode, createParentChildLink)
+      return
+    case `Mdx`:
+      // Add a slug to Mdx pages
+      addSlugToMdx(node, getNode, createNodeField)
+      return
+    default:
+      return
   }
+}
+
+function addSlugToMdx(node, getNode, createNodeField) {
+  // Detemine the slug from the node
+  const slug = createFilePath({ node, getNode, basePath: `pages` })
+  console.log(slug)
+  // Add the slug to the Mdx node
+  createNodeField({
+    node,
+    name: `slug`,
+    value: slug,
+  })
+}
+
+async function processArchie(node, getNode, createNode, createParentChildLink) {
   // Get the archie model string
   const model = node.model
   // Get the filepath
   const fileNode = getNode(node.parent)
   // Create an archie model node
-  createModel(actions.createNode, model, fileNode.name, node.id)
+  createModel(createNode, model, fileNode.name, node.id)
   // Now create diagram nodes
   for (const diagram of node.diagrams) {
     // Get the arguments
@@ -41,9 +99,9 @@ exports.onCreateNode = async ({ node, getNode, actions }) => {
     // Convert the dot graph to svg
     const svg = await convertToSvg(graphviz)
     // Create a node
-    const diagramNode = createSvg(actions.createNode, svg, args, node.id)
+    const diagramNode = createSvg(createNode, svg, args, node.id)
     // Link the new node to its parent
-    actions.createParentChildLink({parent: node, child: diagramNode})
+    createParentChildLink({parent: node, child: diagramNode})
   }
   logger.debug(`finished!`)
 }
