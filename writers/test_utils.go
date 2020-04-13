@@ -3,7 +3,7 @@ package writers
 import (
 	"fmt"
 	mdl "github.com/briggysmalls/archie/internal/model"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 	"sort"
 	"testing"
 )
