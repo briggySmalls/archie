@@ -10,7 +10,7 @@ func TestDrawGraphviz(t *testing.T) {
     m, elMap := createTestModel()
 
     // Drawer
-    d := New(GraphvizStrategy{})
+    d := New(GraphvizStrategy{CustomFooter: "rankdir=LR;"})
     output, err := d.Write(*m)
     assert.NilError(t, err)
 
@@ -41,6 +41,7 @@ func TestDrawGraphviz(t *testing.T) {
         label = <User>
     ];
     "%[2]s" -> "%[3]s"
+    rankdir=LR;
 }
 `
     // Assert result
