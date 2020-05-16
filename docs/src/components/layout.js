@@ -21,6 +21,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from "gatsby"
 import MaterialLink from '@material-ui/core/Link';
+import "typeface-roboto";
 
 const drawerWidth = 240;
 

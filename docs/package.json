@@ -25,6 +25,7 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-helmet": "^5.2.1",
+    "typeface-roboto": "^0.0.75",
     "uuid": "^7.0.3",
     "winston": "^3.2.1"
   },
