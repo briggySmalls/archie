@@ -36,6 +36,7 @@ exports.createSchemaCustomization = ({ actions }) => {
     type SvgImage implements Node @infer {
       name: String!
       args: Args!
+      value: String!
     }
 
     """
