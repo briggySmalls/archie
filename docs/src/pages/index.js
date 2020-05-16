@@ -12,7 +12,7 @@ const HomePage = ({data}) => {
       <SEO title="Home" />
       <h1>Systems engineering without the bloat</h1>
       <p>Archie is a lightweight tool for generating model-based architecture diagrams.</p>
-      <Link to="/rationale/"><Button color="primary">Learn more...</Button></Link>
+      <Link to="/rationale/"><Button color="primary" variant="contained">Learn more...</Button></Link>
       <Grid container spacing={3}>
         <Grid item>
           <h2>Define a model...</h2>
