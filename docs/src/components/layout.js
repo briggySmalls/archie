@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
   },
+  main: {
+    fontFamily: 'Roboto',
+  },
   drawer: {
     [theme.breakpoints.up('sm')]: {
       width: drawerWidth,
@@ -187,7 +190,7 @@ const Layout = ({ showSidebar, children }) => {
           padding: `0 1.0875rem 1.45rem`,
         }}
       >
-        <main>{children}</main>
+        <main className={classes.main}>{children}</main>
         <footer>
           © {new Date().getFullYear()}, Made with ❤️ by{" "}
           <a href="https://github.com/briggySmalls" target="_blank" rel="noopener noreferrer">
