@@ -10,8 +10,14 @@ import (
 // A relevant associated element is one that is associated to one of the child elements of the scope, where either:
 // the parent is an ancestor of scope, or it is a root element.
 func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
-	// Find elements with correct tag
-	taggedElements := findTaggedElements(model, scope, tag)
+	// Short-circuit if scope has no children
+	var taggedElements []mdl.Element
+	if len(model.Children(scope)) == 0 {
+		taggedElements = append(taggedElements, scope)
+	} else {
+		// Find elements with correct tag
+		taggedElements = findTaggedElements(model, scope, tag)
+	}
 	// Find related elements
 	relatedElements, err := findRelatedElements(model, taggedElements)
 	panicOnError(err)
@@ -23,11 +29,7 @@ func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
 }
 
 func findTaggedElements(model *mdl.Model, scope mdl.Element, tag string) []mdl.Element {
-	// Short-circuit if scope has no children
-	if len(model.Children(scope)) == 0 {
-		return []mdl.Element{scope}
-	}
-	// Otherwise search for children with the scope
+	// Search for children with the tag
 	var elements []mdl.Element
 	for _, child := range model.Children(scope) {
 		// Check if the child has the tag
