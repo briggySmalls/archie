@@ -85,10 +85,50 @@ func TestTagNarrowScope(t *testing.T) {
 
 	// Check relationships are correct
 	expectedAssociations := []mdl.Association{
-		mdl.NewAssociation(elMap["1/1/1"], elMap["1/2/1"], []string{"start"}),
+		mdl.NewAssociation(elMap["1/1/1"], elMap["1/2/1/1"], []string{"start"}),
 		mdl.NewAssociation(elMap["1/2/1/2"], elMap["1/2/2"], []string{"display"}),
 		mdl.NewAssociation(elMap["2/1/1"], elMap["1/2/1/1"], []string{"receive"}),
-		mdl.NewAssociation(elMap["1/2/1/2"], elMap["2/1/2"], []string{"send"}),
+		mdl.NewAssociation(elMap["1/2/1/1"], elMap["2/1/2"], []string{"send"}),
+	}
+	for _, ass := range expectedAssociations {
+		// Assert elements are present
+		assert.Assert(t, is.Contains(l.Associations, ass))
+	}
+	assert.Assert(t, is.Len(l.Associations, len(expectedAssociations)))
+}
+
+// Test creating view for a scope with no children
+func TestTagScopeNoChildren(t *testing.T) {
+	// Create a simple model
+	m, elMap := createTagModel()
+
+	// Create the view
+	l := NewTagView(m, elMap["1/2/1/1"], "software")
+
+	// Check elements are correct
+	expectedElements := []mdl.Element{
+		elMap["1"],
+		elMap["1/1"],
+		elMap["1/1/1"],
+		elMap["1/2/1"],
+		elMap["1/2/1/1"],
+		elMap["1/2/1/2"],
+		elMap["2"],
+		elMap["2/1"],
+		elMap["2/1/1"],
+		elMap["2/1/2"],
+	}
+	for _, el := range expectedElements {
+		// Assert elements are present
+		assert.Assert(t, is.Contains(l.Elements, el))
+	}
+	assert.Assert(t, is.Len(l.Elements, len(expectedElements)))
+
+	// Check relationships are correct
+	expectedAssociations := []mdl.Association{
+		mdl.NewAssociation(elMap["1/1/1"], elMap["1/2/1/1"], []string{"start"}),
+		mdl.NewAssociation(elMap["2/1/1"], elMap["1/2/1/1"], []string{"receive"}),
+		mdl.NewAssociation(elMap["1/2/1/1"], elMap["2/1/2"], []string{"send"}),
 	}
 	for _, ass := range expectedAssociations {
 		// Assert elements are present
