@@ -20,6 +20,7 @@ func TestTagElements(t *testing.T) {
 	m.AddAssociation(elMap["1/2/1"], elMap["1/2/2"], []string{"actuate"})
 	m.AddAssociation(elMap["1/3"], elMap["1/1/1"], []string{"listen"})
 	m.AddAssociation(elMap["1/1/2"], elMap["1/2/2"], []string{"spin"})
+	m.AddAssociation(elMap["2/1/1"], elMap["1/2/1/1"], []string{"receive"})
 
 	// Create the view
 	l := NewTagView(m, elMap["1"], "software")
@@ -34,6 +35,9 @@ func TestTagElements(t *testing.T) {
 		elMap["1/1/2"],
 		elMap["1/2/1"],
 		elMap["1/2/2"],
+		elMap["2"],
+		elMap["2/1"],
+		elMap["2/1/1"],
 	}
 	for _, el := range expectedElements {
 		// Assert elements are present
@@ -47,6 +51,7 @@ func TestTagElements(t *testing.T) {
 		mdl.NewAssociation(elMap["1/1/1"], elMap["1/2/1"], []string{"start"}),
 		mdl.NewAssociation(elMap["1/2/1"], elMap["1/2/2"], []string{"actuate"}),
 		mdl.NewAssociation(elMap["1/3"], elMap["1/1/1"], []string{"listen"}),
+		mdl.NewAssociation(elMap["2/1/1"], elMap["1/2/1"], []string{"receive"}),
 	}
 	for _, ass := range expectedAssociations {
 		// Assert elements are present
