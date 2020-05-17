@@ -13,9 +13,9 @@ func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
 	// Find elements with correct tag
 	taggedElements := findElements(model, scope, tag)
 
-	// We also want to add other elements that:
-	// - Have a tag (untagged means a simple logical divider)
-	// - Haven't got a tagged parent (too specific/deep)
+	// We also want to add other, related, elements that either:
+	// - Have a tag and haven't got a tagged ancestor
+	// - Have no children, and haven't got a tagged ancestor
 	var relatedElements []mdl.Element
 	for _, rel := range model.ImplicitAssociations() {
 		for _, el := range taggedElements {
@@ -23,8 +23,13 @@ func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
 				// This relationship links one of the tagged elements
 				if parent, err := model.Parent(linked); err != nil {
 					panicOnError(err)
-				} else if parent != nil && len(parent.Tags()) == 0 && len(linked.Tags()) > 0 {
-					relatedElements = append(relatedElements, linked)
+				} else if hasTaggedParent, err := checkForTaggedAnscestor(model, parent, tag); err != nil {
+					panicOnError(err)
+				} else if hasTaggedParent == false {
+					// The linked element has no tagged parent
+					if containsString(linked.Tags(), tag) || len(model.Children(linked)) == 0 {
+						relatedElements = append(relatedElements, linked)
+					}
 				}
 			}
 		}
@@ -36,6 +41,23 @@ func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
 	// We shouldn't error (we've pulled elements out sensibly)
 	panicOnError(err)
 	return view
+}
+
+func checkForTaggedAnscestor(model *mdl.Model, el mdl.Element, tag string) (bool, error) {
+	if el == nil {
+		// We've reached the top
+		return false, nil
+	}
+	// Check if it has the tag
+	if containsString(el.Tags(), tag) {
+		return true, nil
+	}
+	// Recurse up the parent
+	parent, err := model.Parent(el)
+	if err != nil {
+		return false, err
+	}
+	return checkForTaggedAnscestor(model, parent, tag)
 }
 
 func findElements(model *mdl.Model, scope mdl.Element, tag string) []mdl.Element {
