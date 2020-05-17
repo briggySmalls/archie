@@ -110,6 +110,7 @@ func TestTagScopeNoChildren(t *testing.T) {
 		elMap["1"],
 		elMap["1/1"],
 		elMap["1/1/1"],
+		elMap["1/2"],
 		elMap["1/2/1"],
 		elMap["1/2/1/1"],
 		elMap["2"],
