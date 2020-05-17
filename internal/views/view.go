@@ -2,6 +2,7 @@ package views
 
 import (
 	mdl "github.com/briggysmalls/archie/internal/model"
+	"sort"
 )
 
 type srcAndDest struct {
@@ -98,6 +99,8 @@ func coalesceAssociations(associations []mdl.Association) []mdl.Association {
 				tags = append(tags, t)
 			}
 		}
+		// Sort the tags (dict ordering cannot be relied upon)
+		sort.Strings(tags)
 		// Add the coalesced association
 		coalesced = append(coalesced, mdl.NewAssociation(pair.Source, pair.Destination, tags))
 	}
