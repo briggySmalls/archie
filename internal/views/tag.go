@@ -39,6 +39,11 @@ func NewTagView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
 }
 
 func findElements(model *mdl.Model, scope mdl.Element, tag string) []mdl.Element {
+	// Short-circuit if scope has no children
+	if len(model.Children(scope)) == 0 {
+		return []mdl.Element{scope}
+	}
+	// Otherwise search for children with the scope
 	var elements []mdl.Element
 	for _, child := range model.Children(scope) {
 		// Check if the child has the tag
