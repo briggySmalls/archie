@@ -6,7 +6,6 @@ import (
 
 // NewTagView creates a view that shows the context of elements with a specified tag.
 // The view contains: a) main elements of interest, b) relevant associated elements.
-// The view contains: a) the 'oldest' element with the specified tag, b) relevant associated elements.
 // The main elements of interest are the 'oldest' elements that have the specified tag.
 // A relevant associated element is one that is associated to one of the child elements of the scope, where either:
 // the parent is an ancestor of scope, or it is a root element.
