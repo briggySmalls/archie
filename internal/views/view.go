@@ -100,7 +100,7 @@ func coalesceAssociations(associations []mdl.Association) []mdl.Association {
 			}
 		}
 		// Sort the tags (dict ordering cannot be relied upon)
-		tags = sort.Strings(tags)
+		sort.Strings(tags)
 		// Add the coalesced association
 		coalesced = append(coalesced, mdl.NewAssociation(pair.Source, pair.Destination, tags))
 	}
