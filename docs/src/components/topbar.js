@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useStaticQuery, graphql } from "gatsby";
 import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -8,17 +9,6 @@ import { Link } from "gatsby";
 import AppBar from '@material-ui/core/AppBar';
 import MaterialLink from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
-
-// Request site data
-const data = useStaticQuery(graphql`
-  query {
-    site {
-      siteMetadata {
-        title
-      }
-    }
-  }
-`);
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -33,9 +23,19 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // Topbar to hold site title, etc
-const TopBar = ({ showSidebar }) => {
+const TopBar = ({ showSidebar, handleDrawerToggle }) => {
   // Prepare our CSS styles
   const classes = useStyles();
+  // Request site data
+  const data = useStaticQuery(graphql`
+    query {
+      site {
+        siteMetadata {
+          title
+        }
+      }
+    }
+  `);
   return (
     <AppBar position="sticky" className={classes.appBar}>
       <Toolbar>
@@ -60,12 +60,11 @@ const TopBar = ({ showSidebar }) => {
   )
 };
 
-
-Layout.propTypes = {
+TopBar.propTypes = {
   showSidebar: PropTypes.node.isRequired,
 }
 
-Layout.defaultProps = {
+TopBar.defaultProps = {
   showSidebar: true,
 }
 
