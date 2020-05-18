@@ -1,0 +1,79 @@
+---
+title: Context
+menuPosition: 4
+---
+
+import Layout from "../components/layout"
+import SEO from "../components/seo"
+import Example from "../components/example"
+import { Link } from "gatsby"
+
+import { graphql } from "gatsby";
+
+export const query = graphql`
+query {
+  model: archieModel(name: {eq: "sound-system"}) {
+    value
+  }
+  landscape: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: null}}) {
+    value
+  }
+  soundSystem: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: "sound-system"}}) {
+    value
+  }
+  amplifier: svgImage(args: {name: {eq: "sound-system"}, scope: {eq: "sound-system/amplifier"}}) {
+    value
+  }
+}
+`
+
+<Layout>
+<SEO title="Context" />
+
+# Context diagram
+
+## Description
+
+A context diagram shows the context of the specified element, with respect to a particular `scope` element.
+
+The view contains:
+
+1. Main elements of interest
+1. Relevant associated elements.
+
+### Main elements of interest
+
+The main elements of interest are those that are children of the scoping element.
+Or, if the scoping element has no children, the scoping element itself.
+
+### Relevant associated elements
+
+A relevant associated element is one that is associated to one of the main elements of interest,
+where either:
+
+- Its immediate parent is an ancestor of the scope
+- It is a root element.
+
+## Example: entire system
+
+The simplest 'context' is one with the scope of the entire system.
+All the 'top level' elements have been added (children of the world scope!).
+
+<Example
+    code="archie context model.yml"
+    image={props.data.landscape.value}
+    model={props.data.model.value} />
+
+## Example: sub-item
+
+If we change the scope to a sub-item, in this case `sound-system`, we see that it is opened up
+and it's two children, `amplifier` and `speaker` are revealed.
+
+The only connections that are shown are those that connect directly to these children.
+
+<Example
+    code="archie context model.yml --scope sound-system"
+    image={props.data.soundSystem.value}
+    model={props.data.model.value} />
+
+</Layout>
