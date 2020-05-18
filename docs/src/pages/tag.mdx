@@ -1,0 +1,91 @@
+---
+title: Tag
+menuPosition: 5
+---
+
+import Layout from "../components/layout"
+import SEO from "../components/seo"
+import Example from "../components/example"
+import { Link } from "gatsby"
+
+import { graphql } from "gatsby";
+
+export const query = graphql`
+query {
+  model: archieModel(name: {eq: "sound-system"}) {
+    value
+  }
+  soundSystem: svgImage(args: {
+    name: {eq: "sound-system"},
+    scope: {eq: "sound-system"},
+    type: {eq: "tag"}
+  }) {
+    value
+  }
+  amplifier: svgImage(args: {
+    name: {eq: "sound-system"},
+    scope: {eq: "sound-system/amplifier"},
+    type: {eq: "tag"}
+  }) {
+    value
+  }
+}
+`
+
+<Layout>
+<SEO title="Tag" />
+
+# Tag diagram
+
+## Description
+
+The tag diagram is designed to 'burrow down' into components to reveal elements with specific tags.
+Our usage usually use tags to represent different 'disciplines' in a system, e.g. software, mechanical,
+electronics. We find this helpful for getting a low-level view of a system relevant for small teams.
+
+## Definition
+
+A tag diagram shows the context of the specified element, with respect to a particular `scope`
+element.
+
+The view contains:
+
+1. Main elements of interest
+1. Relevant associated elements.
+
+### Main elements of interest
+
+The main elements of interest are the 'oldest' descendents of the scoping element that have the
+specified tag. Or, if the scoping element has no children, the scoping element itself.
+
+### Relevant associated elements
+
+A relevant associated element is one that is associated to one of the main elements of interest,
+where either:
+
+- Its got any tag and hasn't got a tagged ancestor
+- It has no children, and hasn't got a tagged ancestor
+
+## Example: entire system
+
+The simplest 'context' is one with the scope of the entire system.
+All the 'top level' elements have been added (children of the world scope!).
+
+<Example
+    code="archie tag model.yml --tag sound-system"
+    image={props.data.soundSystem.value}
+    model={props.data.model.value} />
+
+## Example: sub-item
+
+If we change the scope to a sub-item, in this case `sound-system`, we see that it is opened up
+and it's two children, `amplifier` and `speaker` are revealed.
+
+The only connections that are shown are those that connect directly to these children.
+
+<Example
+    code="archie tag model.yml --scope sound-system/amplifier"
+    image={props.data.amplifier.value}
+    model={props.data.model.value} />
+
+</Layout>

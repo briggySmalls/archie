@@ -4,6 +4,12 @@ diagrams:
     scope: sound-system
   - type: context
     scope: sound-system/amplifier
+  - type: tag
+    scope: sound-system
+    tag: mechanical
+  - type: tag
+    scope: sound-system/amplifier
+    tag: mechanical
 model: |
   config:
     writer: graphviz
@@ -16,7 +22,7 @@ model: |
           - name: speaker
             children:
               - name: enclosure
-                tags: [physical]
+                tags: [mechanical]
               - name: driver
                 tags: [electronic, mechanical]
               - connector
