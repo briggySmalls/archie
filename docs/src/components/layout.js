@@ -21,12 +21,16 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from "gatsby"
 import MaterialLink from '@material-ui/core/Link';
+import "typeface-roboto";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
+  },
+  main: {
+    fontFamily: 'Roboto',
   },
   drawer: {
     [theme.breakpoints.up('sm')]: {
@@ -186,7 +190,7 @@ const Layout = ({ showSidebar, children }) => {
           padding: `0 1.0875rem 1.45rem`,
         }}
       >
-        <main>{children}</main>
+        <main className={classes.main}>{children}</main>
         <footer>
           © {new Date().getFullYear()}, Made with ❤️ by{" "}
           <a href="https://github.com/briggySmalls" target="_blank" rel="noopener noreferrer">
