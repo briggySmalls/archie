@@ -5,23 +5,19 @@
  * See: https://www.gatsbyjs.org/docs/use-static-query/
  */
 
-import React from "react"
-import PropTypes from "prop-types"
-import { useStaticQuery, graphql } from "gatsby"
-import AppBar from '@material-ui/core/AppBar';
-import MenuIcon from '@material-ui/icons/Menu';
-import IconButton from '@material-ui/core/IconButton';
-import Toolbar from '@material-ui/core/Toolbar';
+import React from "react";
+import PropTypes from "prop-types";
+import { useStaticQuery, graphql } from "gatsby";
 import { makeStyles } from '@material-ui/core/styles';
-import "./layout.css"
+import "./layout.css";
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import { Link } from "gatsby"
-import MaterialLink from '@material-ui/core/Link';
+import { Link } from "gatsby";
 import "typeface-roboto";
+import TopBar from './topbar';
 
 const drawerWidth = 240;
 
@@ -37,9 +33,6 @@ const useStyles = makeStyles((theme) => ({
       width: drawerWidth,
       flexShrink: 0,
     },
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -58,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Layout = ({ showSidebar, children }) => {
+const Layout = ({ showSidebar, location, children }) => {
   // Prepare our CSS styles
   const classes = useStyles();
   // Request site data
@@ -83,7 +76,8 @@ const Layout = ({ showSidebar, children }) => {
         }
       }
     }
-  `)
+  `);
+
   // Handle hide/show of menu on mobile
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const handleDrawerToggle = () => {
@@ -148,33 +142,9 @@ const Layout = ({ showSidebar, children }) => {
     </>
   )
 
-  // Topbar to hold site title, etc
-  const appBar = (
-    <AppBar position="sticky" className={classes.appBar}>
-      <Toolbar>
-        <Hidden smUp implementation="css">
-          {/* Only show sidebar toggler if instructed */}
-          {showSidebar &&
-            <IconButton
-              color="inherit"
-              aria-label="open menu"
-              edge="start"
-              onClick={handleDrawerToggle}
-            >
-              <MenuIcon />
-            </IconButton>
-          }
-        </Hidden>
-        <MaterialLink variant="h6" color="inherit" noWrap component={Link} to='/'>
-          {data.site.siteMetadata.title}
-        </MaterialLink>
-      </Toolbar>
-    </AppBar>
-  )
-
   return (
     <>
-      {appBar}
+      <TopBar showSidebar={showSidebar} />
       {/* Only show drawer if instructed */}
       {showSidebar &&
         <nav className={classes.drawer} aria-label="site pages">
@@ -202,6 +172,7 @@ const Layout = ({ showSidebar, children }) => {
 
 Layout.propTypes = {
   showSidebar: PropTypes.node.isRequired,
+  location: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
 }
 
