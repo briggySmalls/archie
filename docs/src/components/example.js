@@ -5,6 +5,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Code from "../components/code"
 
 
 function TabPanel(props) {
@@ -58,13 +59,13 @@ const Example = ({code, image, model}) => {
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
-        <pre>{ code }</pre>
+        <Code>{ code }</Code>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <div dangerouslySetInnerHTML={{ __html: image }} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <pre><div dangerouslySetInnerHTML={{ __html: model }} /></pre>
+        <Code><div dangerouslySetInnerHTML={{ __html: model }} /></Code>
       </TabPanel>
     </>
   )
