@@ -174,9 +174,7 @@ const Layout = ({ showSidebar, children }) => {
 
   return (
     <>
-      <header>
-        {appBar}
-      </header>
+      {appBar}
       {/* Only show drawer if instructed */}
       {showSidebar &&
         <nav className={classes.drawer} aria-label="site pages">
