@@ -7,6 +7,7 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { Link } from "gatsby"
 import { graphql } from "gatsby";
+import Code from "../components/code";
 
 export const query = graphql`
 query {
@@ -49,7 +50,7 @@ so that is removed from the diagram. Don't try to say too much!
 
 All of those diagrams, and more, are enabled by the existence of a single model file:
 
-<pre><div dangerouslySetInnerHTML={{ __html: props.data.model.value }} /></pre>
+<Code>{ props.data.model.value }</Code>
 
 <Link to="/installation/">Installation</Link>
 
