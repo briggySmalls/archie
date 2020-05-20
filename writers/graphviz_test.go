@@ -1,6 +1,7 @@
 package writers
 
 import (
+    mdl "github.com/briggysmalls/archie/internal/model"
     "gotest.tools/assert"
     "testing"
 )
@@ -46,4 +47,30 @@ func TestDrawGraphviz(t *testing.T) {
 `
     // Assert result
     assertOutput(t, output, resultFormat, elMap)
+}
+
+func TestCollapseGraphviz(t *testing.T) {
+    // Create a simple model
+    m := mdl.NewModel()
+    // Create the items we'll be testing
+    actor := mdl.NewActor("User")
+    one := mdl.NewItem("One", nil)
+    oneChild := mdl.NewItem("OneChild", nil)
+    oneChildChild := mdl.NewItem("OneChildChild", nil)
+    // Add the items, and their relationships to the model
+    m.AddRootElement(actor)
+    m.AddRootElement(one)
+    m.AddElement(oneChild, one)
+    m.AddElement(oneChildChild, oneChild)
+    // Link the children together
+    m.AddAssociation(actor, oneChildChild, nil)
+    // Drawer
+    d := New(GraphvizStrategy{CustomFooter: "rankdir=LR;"})
+    output, err := d.Write(*m)
+    assert.NilError(t, err)
+    // Assert output
+    const resultFormat = `
+`
+    // Assert result
+    // assertOutput(t, output, resultFormat, elMap)
 }

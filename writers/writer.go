@@ -3,6 +3,7 @@ package writers
 import (
 	"fmt"
 	mdl "github.com/briggysmalls/archie/internal/model"
+	"sort"
 	"strings"
 )
 
@@ -91,14 +92,17 @@ func (d *writer) FullName(element mdl.Element) (string, error) {
 // Recursive function for drawing elements
 func (d *writer) writeElement(model *mdl.Model, el mdl.Element) error {
 	var err error
-	children := model.Children(el)
+	// Try to collapse parents if possible
+	collapsed, actual := collapseSingleParents(model, el)
+	// Determine how to draw our collapsed element
+	children := model.Children(actual)
 	if len(children) == 0 {
 		// Write a simple component
-		d.strategy.Element(d, Element(el))
+		d.strategy.Element(d, Element(collapsed))
 		return nil
 	}
-	// Start a new package
-	d.strategy.StartParentElement(d, Element(el))
+	// Start a parent
+	d.strategy.StartParentElement(d, Element(collapsed))
 	for _, child := range children {
 		// Recurse through children
 		err = d.writeElement(model, child)
@@ -140,4 +144,49 @@ func (d *writer) UpdateIndent(indicator int) {
 	default:
 		// Do nothing
 	}
+}
+
+func collapseSingleParents(model *mdl.Model, el mdl.Element) (collapsed, actual mdl.Element) {
+	// Get the collapsable elements
+	collapsable := getCollapsable(model, el, []mdl.Element{el})
+	// Pull out the names
+	names := make([]string, len(collapsable))
+	for i, el := range collapsable {
+		names[i] = el.Name()
+	}
+	// Create a new collapsed element
+	collapsed = mdl.NewItem(strings.Join(names, "/"), collapsable[0].Tags())
+	actual = collapsable[len(collapsable)-1]
+	return
+}
+
+func getCollapsable(model *mdl.Model, el mdl.Element, els []mdl.Element) []mdl.Element {
+	children := model.Children(el)
+	// If the next element is not a single-parent, bail
+	if len(children) != 0 {
+		return els
+	}
+	// If tags differ, bail
+	child := children[0]
+	if !areTagsEqual(el.Tags(), child.Tags()) {
+		return els
+	}
+	// Recurse (there may be more!)
+	return getCollapsable(model, child, append(els, child))
+}
+
+func areTagsEqual(a, b []string) bool {
+	// Short-circuit if lengths differ
+	if len(a) != len(b) {
+		return false
+	}
+	sort.Strings(a)
+	sort.Strings(b)
+	// Ensure each entry matches
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
