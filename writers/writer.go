@@ -94,6 +94,8 @@ func (d *writer) writeElement(model *mdl.Model, el mdl.Element) error {
 	var err error
 	// Try to collapse parents if possible
 	collapsed, actual := collapseSingleParents(model, el)
+	// collapsed := el
+	// actual := el
 	// Determine how to draw our collapsed element
 	children := model.Children(actual)
 	if len(children) == 0 {
@@ -149,6 +151,12 @@ func (d *writer) UpdateIndent(indicator int) {
 func collapseSingleParents(model *mdl.Model, el mdl.Element) (collapsed, actual mdl.Element) {
 	// Get the collapsable elements
 	collapsable := getCollapsable(model, el, []mdl.Element{el})
+	// Short-circuit if there is no collapsing to be done
+	if len(collapsable) == 1 {
+		collapsed = collapsable[0]
+		actual = collapsable[0]
+		return
+	}
 	// Pull out the names
 	names := make([]string, len(collapsable))
 	for i, el := range collapsable {
@@ -163,7 +171,7 @@ func collapseSingleParents(model *mdl.Model, el mdl.Element) (collapsed, actual 
 func getCollapsable(model *mdl.Model, el mdl.Element, els []mdl.Element) []mdl.Element {
 	children := model.Children(el)
 	// If the next element is not a single-parent, bail
-	if len(children) != 0 {
+	if len(children) != 1 {
 		return els
 	}
 	// If tags differ, bail
