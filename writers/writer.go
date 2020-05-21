@@ -94,8 +94,6 @@ func (d *writer) writeElement(model *mdl.Model, el mdl.Element) error {
 	var err error
 	// Try to collapse parents if possible
 	collapsed, actual := collapseSingleParents(model, el)
-	// collapsed := el
-	// actual := el
 	// Determine how to draw our collapsed element
 	children := model.Children(actual)
 	if len(children) == 0 {
