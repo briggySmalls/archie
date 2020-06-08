@@ -1,20 +1,20 @@
 package writers
 
 import (
-    "gotest.tools/assert"
-    "testing"
+	"gotest.tools/assert"
+	"testing"
 )
 
 func TestDrawGraphviz(t *testing.T) {
-    // Create the test model
-    m, elMap := createTestModel()
+	// Create the test model
+	m, elMap := createTestModel()
 
-    // Drawer
-    d := New(GraphvizStrategy{CustomFooter: "rankdir=LR;"})
-    output, err := d.Write(*m)
-    assert.NilError(t, err)
+	// Drawer
+	d := New(GraphvizStrategy{CustomFooter: "rankdir=LR;"})
+	output, err := d.Write(*m)
+	assert.NilError(t, err)
 
-    const resultFormat = `digraph arch {
+	const resultFormat = `digraph arch {
     graph [fontname=Helvetica]
     edge [fontsize=9; fontname=Helvetica; color="#333333"]
     node [shape=plaintext; margin=0; fontname=Helvetica]
@@ -44,6 +44,6 @@ func TestDrawGraphviz(t *testing.T) {
     rankdir=LR;
 }
 `
-    // Assert result
-    assertOutput(t, output, resultFormat, elMap)
+	// Assert result
+	assertOutput(t, output, resultFormat, elMap)
 }

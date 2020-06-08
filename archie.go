@@ -12,6 +12,7 @@ import (
 type Archie interface {
 	ContextView(element string) (string, error)
 	TagView(element, tag string) (string, error)
+	StructureView(element, tag string) (string, error)
 	Elements() map[string]string
 }
 
@@ -68,6 +69,17 @@ func (a *archie) TagView(scope, tag string) (diagram string, err error) {
 	}
 	// Create the view
 	view := views.NewTagView(a.model, element, tag)
+	// Convert to diagram
+	diagram, err = a.writer.Write(view)
+	return
+}
+
+func (a *archie) StructureView(scope, tag string) (diagram string, err error) {
+	// Lookup the scope
+	var element mdl.Element
+	element, err = a.lookupScope(scope)
+	// Create the view
+	view := views.NewStructureView(a.model, element)
 	// Convert to diagram
 	diagram, err = a.writer.Write(view)
 	return
