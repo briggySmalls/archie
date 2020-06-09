@@ -44,6 +44,9 @@ func (a *archie) ContextView(scope string) (diagram string, err error) {
 	// Lookup the scope
 	var element mdl.Element
 	element, err = a.lookupScope(scope)
+	if err != nil {
+		return
+	}
 	// Create the view
 	view := views.NewContextView(a.model, element)
 	// Convert to diagram
@@ -60,6 +63,9 @@ func (a *archie) TagView(scope, tag string) (diagram string, err error) {
 	// Lookup the scope
 	var element mdl.Element
 	element, err = a.lookupScope(scope)
+	if err != nil {
+		return
+	}
 	// Create the view
 	view := views.NewTagView(a.model, element, tag)
 	// Convert to diagram
