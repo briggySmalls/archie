@@ -1,9 +1,10 @@
 package archie
 
 import (
+	"testing"
+
 	"github.com/briggysmalls/archie/writers"
 	"gotest.tools/assert"
-	"testing"
 )
 
 var yaml = `
@@ -64,6 +65,10 @@ func TestContext(t *testing.T) {
 	// Create a landscape view
 	_, err = a.ContextView("sound system")
 	assert.NilError(t, err)
+
+	// Create diagram but the scope does not exist
+	_, err = a.ContextView("I don't exist")
+	assert.ErrorContains(t, err, "I don't exist")
 }
 
 func TestExternalStrategy(t *testing.T) {
