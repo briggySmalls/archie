@@ -5,7 +5,7 @@ import (
 )
 
 // NewStructureView creates a view that shows the children of the scoped element
-func NewStructureView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model {
+func NewStructureView(model *mdl.Model, scope mdl.Element, tag string, maxDepth int) mdl.Model {
 	var primaries []mdl.Element
 	if scope == nil {
 		primaries = model.RootElements()
@@ -19,13 +19,17 @@ func NewStructureView(model *mdl.Model, scope mdl.Element, tag string) mdl.Model
 		}
 
 		view.AddRootElement(primary)
-		addChildren(model, &view, primary, tag)
+		addChildren(model, &view, primary, tag, 1, maxDepth)
 	}
 
 	return view
 }
 
-func addChildren(from, to *mdl.Model, of mdl.Element, tag string) {
+func addChildren(from, to *mdl.Model, of mdl.Element, tag string, depth int, maxDepth int) {
+	if maxDepth != 0 && depth > maxDepth {
+		return
+	}
+
 	for _, kid := range from.Children(of) {
 		if hasOnlyOtherTags(tag, kid.Tags()) {
 			continue
@@ -33,7 +37,7 @@ func addChildren(from, to *mdl.Model, of mdl.Element, tag string) {
 
 		to.AddRootElement(kid)
 		to.AddAssociation(of, kid, []string{})
-		addChildren(from, to, kid, tag)
+		addChildren(from, to, kid, tag, depth+1, maxDepth)
 	}
 }
 

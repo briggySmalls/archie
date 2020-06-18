@@ -15,7 +15,7 @@ func TestStrucureWithoutScope(t *testing.T) {
 	m.AddRootElement(mdl.NewItem("2", []string{}))
 	m.AddRootElement(mdl.NewActor("no"))
 
-	v := NewStructureView(&m, nil, "")
+	v := NewStructureView(&m, nil, "", 0)
 	assert.Assert(t, is.Len(v.Elements, 2))
 	assert.Assert(t, is.Len(v.Associations, 0))
 }
@@ -27,7 +27,7 @@ func TestStrucureWithTag(t *testing.T) {
 	m.AddRootElement(mdl.NewItem("2", []string{"no"}))
 	m.AddRootElement(mdl.NewActor("no"))
 
-	v := NewStructureView(&m, nil, "yes")
+	v := NewStructureView(&m, nil, "yes", 0)
 	assert.Assert(t, is.Len(v.Elements, 1))
 	assert.Equal(t, v.Elements[0].Name(), "1")
 }
@@ -41,7 +41,7 @@ func TestStrucureScoped(t *testing.T) {
 	m.AddRootElement(two)
 	m.AddElement(twokid, two)
 
-	v := NewStructureView(&m, two, "")
+	v := NewStructureView(&m, two, "", 0)
 	assert.Assert(t, is.Len(v.Elements, 2))
 	assert.Assert(t, is.Len(v.Associations, 1))
 	assert.Assert(t, is.Equal(v.Associations[0].Source(), two))

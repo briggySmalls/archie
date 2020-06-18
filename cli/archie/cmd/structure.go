@@ -6,6 +6,7 @@ import (
 
 var structureScope string
 var structureTag string
+var structureMaxDepth int
 
 // structureCmd represents the tag command
 var structureCmd = &cobra.Command{
@@ -25,7 +26,7 @@ Those that are associated to one of the main elements of interest, where either:
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// Generate the diagram
-		diagram, err = arch.StructureView(structureScope, structureTag)
+		diagram, err = arch.StructureView(structureScope, structureTag, structureMaxDepth)
 	},
 }
 
@@ -35,4 +36,5 @@ func init() {
 	fs := structureCmd.Flags()
 	fs.StringVarP(&structureScope, "scope", "s", "", "scope for the tag view")
 	fs.StringVarP(&structureTag, "tag", "t", "", "tag to filter by")
+	fs.IntVarP(&structureMaxDepth, "max-depth", "d", 0, "Maximum depth to show")
 }
