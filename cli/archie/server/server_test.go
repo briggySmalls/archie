@@ -1,12 +1,13 @@
 package server
 
 import (
-	"gotest.tools/assert"
-	is "gotest.tools/assert/cmp"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"gotest.tools/assert"
+	is "gotest.tools/assert/cmp"
 )
 
 var model = `
@@ -99,6 +100,15 @@ func TestRoutes(t *testing.T) {
 				"rectangle \"ac-dc converter\"",
 				"skinparam nodesep 10",
 				"skinparam ranksep 10",
+			},
+		},
+		{
+			"diagram/structure?scope=sound-system&tag=mechanical",
+			structureHandler,
+			[]string{
+				`rectangle "amplifier"`,
+				`rectangle "input select"`,
+				`rectangle "power button"`,
 			},
 		},
 	}

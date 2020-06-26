@@ -2,12 +2,14 @@ package server
 
 import (
 	"fmt"
-	"github.com/briggysmalls/archie"
-	"github.com/briggysmalls/archie/cli/archie/utils"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
+
+	"github.com/briggysmalls/archie"
+	"github.com/briggysmalls/archie/cli/archie/utils"
+	"github.com/gorilla/mux"
 )
 
 // Serve a REST API exposing Archie functionality
@@ -16,6 +18,7 @@ func Serve(address string) error {
 	r := mux.NewRouter()
 	r.PathPrefix("/diagram/context").HandlerFunc(contextHandler).Methods("POST")
 	r.PathPrefix("/diagram/tag").HandlerFunc(tagHandler).Methods("POST")
+	r.PathPrefix("/diagram/structure").HandlerFunc(structureHandler).Methods("POST")
 
 	// Serve
 	return http.ListenAndServe(address, r)
@@ -69,6 +72,58 @@ func tagHandler(w http.ResponseWriter, r *http.Request) {
 		errorHandler(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	// Return diagram in browser
+	fmt.Fprintf(w, chart)
+}
+
+func structureHandler(w http.ResponseWriter, r *http.Request) {
+	// Get the model
+	archie, err := readModel(r)
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	// Determine the item
+	scope, err := readSingleParameter(r.URL, "scope", true)
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Determine the tag
+	tag, err := readSingleParameter(r.URL, "tag", true)
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Determine the max depth
+	depthStr, err := readSingleParameter(r.URL, "max-depth", true)
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var maxDepth int
+
+	if len(depthStr) > 0 {
+		// Convert to number
+		maxDepth, err = strconv.Atoi(depthStr)
+		if err != nil {
+			errorHandler(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	} else {
+		maxDepth = 0
+	}
+
+	// Create the view
+	chart, err := archie.StructureView(scope, tag, maxDepth)
+	if err != nil {
+		errorHandler(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	// Return diagram in browser
 	fmt.Fprintf(w, chart)
 }
