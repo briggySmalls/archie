@@ -21,6 +21,7 @@ type Element interface {
 	Tags() []string
 	ID() string
 	IsActor() bool
+	HasTag(tag string) bool
 }
 
 // NewItem creates a new item element
@@ -50,6 +51,15 @@ func (e *element) ID() string {
 
 func (e *element) IsActor() bool {
 	return e.kind == actor
+}
+
+func (e *element) HasTag(tag string) bool {
+	for _, t := range e.Tags() {
+		if t == tag {
+			return true
+		}
+	}
+	return false
 }
 
 func (e *element) Name() string {
